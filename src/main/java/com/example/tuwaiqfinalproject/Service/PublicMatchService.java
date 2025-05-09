@@ -85,12 +85,13 @@ public class PublicMatchService {
         if(field==null){
             throw new ApiException("Field Not Found");
         }
-        TimeSlot timeSlot = timeSlotRepository.findByPublicMatchIsNotNull();
-            PublicMatch match = timeSlot.getPublicMatch();
-            if (match == null) {
+
+        TimeSlot timeSlot = timeSlotRepository.findTimeSlotByField(field);
+        PublicMatch publicMatch=publicMatchRepository.findPublicMatchByField(field);
+            if (publicMatch == null) {
                 throw new ApiException("Public Match Not Found");
             }
-                       return match;
+                       return publicMatch;
         }
     // عرض الفرق وعدد اللاعبين
     public PublicMatchDTO getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
@@ -142,38 +143,39 @@ public class PublicMatchService {
         TeamB teamB=publicMatch.getTeamB();
         teamB.setPlayersCount(teamB.getPlayersCount()+1);
     }
-
-    public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId) {
-        Player player = playerRepository.findPlayerById(playerId);
-        PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
-        if (player == null) {
-            throw new ApiException("player Not Found");
-        }
-        if (publicMatch == null) {
-            throw new ApiException("public Match Not Found");
-        }
-        String selectedTeamName = null;
-        if (publicMatch.getTeamA() != null && publicMatch.getPlayer().getId().equals(playerId)) {
-            selectedTeamName = publicMatch.getTeamA().getTeamName();
-        } else if (publicMatch.getTeamB() != null && publicMatch.getPlayer().getId().equals(playerId)) {
-            selectedTeamName = publicMatch.getTeamB().getTeamName();
-        }
-        List<TimeSlot> timeSlots = publicMatch.getTimeSlots();
-        if (timeSlots.isEmpty()) {
-            throw new ApiException("No time slots found for this match");
-        }
-
-        TimeSlot slot = timeSlots.get(0); // أخذ أول وقت فقط
-
-        return new PlayerSelectionDTO(
-                publicMatch.getField().getName(),
-                publicMatch.getField().getLocation(),
-                slot.getPrice(),
-                selectedTeamName,
-                slot.getDate(),
-                slot.getStartTime()
-        );
-    }
+//
+//    public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId) {
+//        Player player = playerRepository.findPlayerById(playerId);
+//        PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
+//        if (player == null) {
+//            throw new ApiException("player Not Found");
+//        }
+//
+//        if (publicMatch == null) {
+//            throw new ApiException("public Match Not Found");
+//        }
+//        String selectedTeamName = null;
+//        if (publicMatch.getTeamA() != null && publicMatch.getPlayer().getId().equals(playerId)) {
+//            selectedTeamName = publicMatch.getTeamA().getTeamName();
+//        } else if (publicMatch.getTeamB() != null && publicMatch.getPlayer().getId().equals(playerId)) {
+//            selectedTeamName = publicMatch.getTeamB().getTeamName();
+//        }
+//        List<TimeSlot> timeSlots = publicMatch.getTimeSlots();
+//        if (timeSlots.isEmpty()) {
+//            throw new ApiException("No time slots found for this match");
+//        }
+//
+//        TimeSlot slot = timeSlots.get(0); // أخذ أول وقت فقط
+//
+//        return new PlayerSelectionDTO(
+//                publicMatch.getField().getName(),
+//                publicMatch.getField().getLocation(),
+//                slot.getPrice(),
+//                selectedTeamName,
+//                slot.getDate(),
+//                slot.getStartTime()
+//        );
+//    }
 
 
     }
