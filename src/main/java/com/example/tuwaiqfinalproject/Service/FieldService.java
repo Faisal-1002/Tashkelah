@@ -168,14 +168,13 @@ public class FieldService {
             throw new ApiException("No fields found for this sport in your city");
         return fields;
     }
-
     //اختيار ملعب
     public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
-        User user=authRepository.findUserById(playerId);
+        Player player=playerRepository.findPlayerById(playerId);
         Field field= fieldRepository.findFieldById(fieldId);
         Sport sport=sportRepository.findSportByName(sportName);
       
-        if(user==null){
+        if(player==null){
             throw new ApiException("Player Not Found");
         }
 
@@ -194,7 +193,6 @@ public class FieldService {
         publicMatch.setField(field);
         publicMatch.setPlayer(player);
     }
-
     // 24. Faisal - Assign field for private match - Tested
     public void playerChoseAFieldForPrivateMatch(Integer user_id, Integer fieldId) {
         Player player = playerRepository.findPlayerById(user_id);
