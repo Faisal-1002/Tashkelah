@@ -1,8 +1,9 @@
 package com.example.tuwaiqfinalproject.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -14,40 +15,35 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "Name is required")
-    @Column(columnDefinition = "varchar(100) not null")
+    @Column(columnDefinition = "varchar(100)")
     private String name;
 
-    @NotEmpty(message = "Card number is required")
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(20)")
     private String number;
 
-    @NotEmpty(message = "CVC is required")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10)")
     private String cvc;
 
-    @NotEmpty(message = "Month is required")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10)")
     private String month;
 
-    @NotEmpty(message = "Year is required")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10)")
     private String year;
 
-    @Column(columnDefinition = "double not null")
+    @Column(columnDefinition = "double")
     private double amount;
 
-    @NotEmpty(message = "Currency is required")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(20)")
     private String currency;
 
-    @NotEmpty(message = "Description is required")
-    @Column(columnDefinition = "varchar(255) not null")
+    @Column(columnDefinition = "varchar(255)")
     private String description;
 
-    @NotEmpty(message = "Callback URL is required")
-    @Column(columnDefinition = "varchar(255) not null")
+    @Column(columnDefinition = "varchar(255)")
     private String callbackUrl;
+
+    @Column(columnDefinition = "time")
+    private LocalDateTime payment_date;
 
     @OneToOne
     private Booking booking;
