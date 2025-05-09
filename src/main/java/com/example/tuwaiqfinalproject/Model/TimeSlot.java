@@ -12,7 +12,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Entity
 public class TimeSlot {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -34,21 +33,10 @@ public class TimeSlot {
     @Column(columnDefinition = "double not null")
     private Double price;
 
-//    @NotNull(message = "Max players must not be null")
-//    @Min(value = 2, message = "There must be at least 2 players")
-//    @Column(columnDefinition = "int not null")
-//    private Integer maxPlayers;
-
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    private String status; // e.g., OPEN, FULL, CLOSED
+    private String status;
 
     @ManyToOne
     private Field field;
-
-//    @ManyToOne
-//    private PublicMatch publicMatch;
-
-    @ManyToOne
-    private PrivateMatch privateMatch;
 }

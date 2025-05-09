@@ -25,10 +25,6 @@ public class PublicMatch {
     @Column(columnDefinition = "varchar(20) not null")
     private String status; // e.g. OPEN, FULL
 
-//    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
-//    private List<TimeSlot> timeSlots;
-
-
     @ManyToOne
     @JsonIgnore
     private Field field;

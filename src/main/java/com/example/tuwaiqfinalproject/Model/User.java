@@ -28,8 +28,8 @@ public class User implements UserDetails {
     @Column(columnDefinition = "varchar(255) not null")
     private String password;
 
-    @Column(nullable = false)
     @Pattern(regexp = "ORGANIZER|PLAYER|ADMIN",message = "Role must be ORGANIZER, PLAYER, or ADMIN")
+    @Column(columnDefinition = "varchar(20)")
     private String role;
 
     @Column(columnDefinition = "varchar(50) not null")

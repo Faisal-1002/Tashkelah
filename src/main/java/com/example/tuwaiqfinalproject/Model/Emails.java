@@ -1,9 +1,8 @@
 package com.example.tuwaiqfinalproject.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,13 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Emails {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer id;
 
+    @Email(message = "Must be a valid email")
+    @NotEmpty(message = "Email cannot be empty")
+    @Column(columnDefinition = "varchar(100) not null")
+    private String email;
 
-    private String subject;
-    private String messageBody;
+    @ManyToOne
+    private PrivateMatch privateMatch;
 }

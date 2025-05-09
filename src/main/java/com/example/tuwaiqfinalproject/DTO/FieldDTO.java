@@ -28,5 +28,4 @@ public class FieldDTO {
 
     @NotNull(message = "capacity must not be empty")
     private Integer capacity;
-
 }

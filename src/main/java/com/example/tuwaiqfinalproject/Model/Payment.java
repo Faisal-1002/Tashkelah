@@ -1,7 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,23 +15,37 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "Amount must not be null")
-    @Positive(message = "Amount must be positive")
-    @Column(columnDefinition = "double not null")
-    private Double amount;
+    @Column(columnDefinition = "varchar(100)")
+    private String name;
 
-    @NotEmpty(message = "Payment method must not be empty")
-    @Column(columnDefinition = "varchar(30) not null")
-    private String method; // e.g. CARD, APPLE_PAY, STC_PAY
+    @Column(columnDefinition = "varchar(20)")
+    private String number;
 
-    @NotNull(message = "Payment date must not be null")
-    @Column(columnDefinition = "datetime not null")
-    private LocalDateTime date;
+    @Column(columnDefinition = "varchar(10)")
+    private String cvc;
 
-    @NotEmpty(message = "Payment status must not be empty")
-    @Column(columnDefinition = "varchar(20) not null")
-    private String status; // e.g. PAID, FAILED
+    @Column(columnDefinition = "varchar(10)")
+    private String month;
+
+    @Column(columnDefinition = "varchar(10)")
+    private String year;
+
+    @Column(columnDefinition = "double")
+    private double amount;
+
+    @Column(columnDefinition = "varchar(20)")
+    private String currency;
+
+    @Column(columnDefinition = "varchar(255)")
+    private String description;
+
+    @Column(columnDefinition = "varchar(255)")
+    private String callbackUrl;
+
+    @Column(columnDefinition = "time")
+    private LocalDateTime payment_date;
 
     @OneToOne
     private Booking booking;
+
 }
