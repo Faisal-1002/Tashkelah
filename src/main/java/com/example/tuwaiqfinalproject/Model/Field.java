@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -39,7 +40,7 @@ public class Field {
     private LocalTime closeTime;
 
     @NotNull(message = "capacity must not be empty")
-    @Column(columnDefinition = "capacity not null")
+    @Column(columnDefinition = "int not null")
     @Min(value = 2)
     @Max(value = 22)
     private Integer capacity;
@@ -49,4 +50,13 @@ public class Field {
 
     @ManyToOne
     private Sport sport;
+
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    private List<TimeSlot> timeSlots;
+
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    private List<PrivateMatch> privateMatches;
+
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    private List<PublicMatch> publicMatches;
 }

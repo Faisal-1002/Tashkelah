@@ -2,6 +2,7 @@ package com.example.tuwaiqfinalproject.Model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import java.util.List;
 
@@ -20,11 +21,12 @@ public class PrivateMatch {
     private String name;
 
     @NotEmpty(message = "Status must not be empty")
+    @Pattern(
+            regexp = "PENDING|SCHEDULED|CONFIRMED",
+            message = "Status must be one of: PENDING, SCHEDULED, CONFIRMED"
+    )
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
-
-    @OneToOne
-    private TimeSlot timeSlot;
 
     @OneToOne(mappedBy = "privateMatch", cascade = CascadeType.ALL)
     private Booking booking;
@@ -35,6 +37,7 @@ public class PrivateMatch {
     @OneToOne
     private Player player;
 
-    @OneToMany(mappedBy = "privateMatch", cascade = CascadeType.ALL)
-    private List<TimeSlot> timeSlots;
+    @ManyToOne
+    private Field field;
+
 }

@@ -41,9 +41,4 @@ public class TimeSlot {
     @ManyToOne
     private Field field;
 
-    @ManyToOne
-    private PublicMatch publicMatch;
-
-    @ManyToOne
-    private PrivateMatch privateMatch;
 }

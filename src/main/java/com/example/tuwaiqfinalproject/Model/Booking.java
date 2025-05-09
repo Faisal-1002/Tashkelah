@@ -19,15 +19,18 @@ public class Booking {
 
     @NotNull(message = "Booking time must not be null")
     @Column(columnDefinition = "datetime not null")
-    private LocalDateTime time;
+    private LocalDateTime bookingTime;
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    private String status; // e.g. CONFIRMED, CANCELLED
+    private String status; // CONFIRMED, CANCELLED, etc.
 
     @NotNull(message = "isPaid must not be null")
     @Column(columnDefinition = "boolean not null")
     private Boolean isPaid;
+
+    @Column(columnDefinition = "double not null")
+    private Double totalAmount;
 
     @OneToOne
     private PrivateMatch privateMatch;

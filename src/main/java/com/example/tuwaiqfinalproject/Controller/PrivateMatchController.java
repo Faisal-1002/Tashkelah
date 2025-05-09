@@ -1,11 +1,14 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
+import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Model.PrivateMatch;
+import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Service.PrivateMatchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +32,6 @@ public class PrivateMatchController {
         return ResponseEntity.status(200).body(match);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addPrivateMatch(@RequestBody @Valid PrivateMatch match) {
-        privateMatchService.addPrivateMatch(match);
-        return ResponseEntity.status(200).body(new ApiResponse("Private match added successfully"));
-    }
-
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updatePrivateMatch(@PathVariable Integer id,
                                                 @RequestBody @Valid PrivateMatch updatedMatch) {
@@ -47,4 +44,18 @@ public class PrivateMatchController {
         privateMatchService.deletePrivateMatch(id);
         return ResponseEntity.status(200).body(new ApiResponse("Private match deleted successfully"));
     }
+
+    @PostMapping("/private-match")
+    public ResponseEntity<?> createPrivateMatch(@AuthenticationPrincipal User user, @RequestBody @Valid PrivateMatch privateMatch) {
+        privateMatchService.createPrivateMatch(user.getId(), privateMatch);
+        return ResponseEntity.status(200).body(new ApiResponse("Private match created successfully"));
+    }
+
+    @PostMapping("/book")
+    public ResponseEntity<?> bookPrivateMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
+        privateMatchService.bookPrivateMatch(user.getId(), slotIds);
+        return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
+    }
+
+
 }
