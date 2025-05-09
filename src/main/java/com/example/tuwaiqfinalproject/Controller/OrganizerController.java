@@ -52,4 +52,16 @@ public class OrganizerController {
         organizerService.deleteOrganizer(user.getId());
         return ResponseEntity.status(200).body(new ApiResponse("Organizer deleted successfully"));
     }
+
+
+
+
+
+    @PutMapping("/approve/{organizerId}")
+    public ResponseEntity<?> approveOrganizer(@PathVariable Integer organizerId,
+                                              @RequestParam Boolean isApproved) {
+        organizerService.approveOrganizer(organizerId, isApproved);
+        return ResponseEntity.status(200).body ("Organizer license approval status updated and email sent.");
+    }
+
 }

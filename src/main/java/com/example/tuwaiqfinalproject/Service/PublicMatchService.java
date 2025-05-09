@@ -17,6 +17,7 @@ import java.util.List;
 public class PublicMatchService {
 
     private final PublicMatchRepository publicMatchRepository;
+    private final OrganizerRepository organizerRepository;
     private final PlayerRepository playerRepository;
     private final SportRepository sportRepository;
     private final FieldRepository fieldRepository;
@@ -52,6 +53,27 @@ public class PublicMatchService {
             throw new ApiException("Public match not found");
         publicMatchRepository.delete(match);
     }
+
+    //Taha -
+    public List<PublicMatch> showFieldMatches(Integer fieldId, Integer userId) {
+
+        Organizer organizer = organizerRepository.findById(userId)
+                .orElseThrow(() -> new ApiException("Organizer not found"));
+
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ApiException("Field not found"));
+
+        if (!field.getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("You are not authorized to view matches for this field");
+        }
+
+        return publicMatchRepository.findByField_Id(fieldId);
+    }
+
+
+
+}
+
     // اختيار فريق عشوائي
     public void PlayWithPublicTeam(Integer sportId,Integer fieldId,Integer playerId){
         Player player=playerRepository.findPlayerById(playerId);

@@ -19,7 +19,6 @@ import java.util.List;
 public class EmailsService {
 
     private final JavaMailSender mailSender;
-
     private final EmailsRepository emailsRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final PlayerRepository playerRepository;
