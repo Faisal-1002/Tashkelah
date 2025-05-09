@@ -2,9 +2,12 @@ package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.DTO.FieldDTO;
 import com.example.tuwaiqfinalproject.Model.Organizer;
+import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Service.FieldService;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.PackagePrivate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.SqlReturnType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,4 +42,13 @@ public class FieldController {
         fieldService.deleteField(organizer, fieldId);
         return ResponseEntity.status(200).body("Field deleted successfully");
     }
+    @GetMapping("getBySportAndCity/{city}/{sport}")
+public ResponseEntity getFieldBySportAndCity(@PathVariable String city, @PathVariable String sport ){
+    return ResponseEntity.status(200).body(fieldService.getFieldBySportAndCity(city,sport));
+}
+@PutMapping("choseField/{fieldId}/{sportName}")
+public ResponseEntity choseField(@AuthenticationPrincipal Player player, @PathVariable Integer fieldId, @PathVariable String sportName){
+    fieldService.choseField(sportName,player.getId(),fieldId);
+    return ResponseEntity.status(200).body("The stadium has been successfully selected.");
+}
 }

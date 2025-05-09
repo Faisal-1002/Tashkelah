@@ -1,11 +1,13 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
+import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
 import com.example.tuwaiqfinalproject.Service.PublicMatchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,5 +47,22 @@ public class PublicMatchController {
     public ResponseEntity<?> deletePublicMatch(@PathVariable Integer id) {
         publicMatchService.deletePublicMatch(id);
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
+    }
+
+    @PutMapping("PlayWithPublicTeam/{sportId}/{fieldId}")
+    public ResponseEntity PlayWithPublicTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+        publicMatchService.PlayWithPublicTeam(sportId, fieldId, player.getId());
+        return ResponseEntity.status(200).body(new ApiResponse("You have entered the general team."));
+    }
+
+    @GetMapping("getMatchAndTeam/{sportId}/{fieldId}/{publicMatchId}")
+    public ResponseEntity getMatchAndTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable Integer publicMatchId) {
+        return ResponseEntity.status(200).body(publicMatchService.getMatchAndTeam(player.getId(), sportId, fieldId, publicMatchId));
+    }
+
+    @PutMapping("selectTeam/{sportId}/{fieldId}")
+    public ResponseEntity selectTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+        publicMatchService.selectTeam(player.getId(), sportId, fieldId);
+        return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
 }

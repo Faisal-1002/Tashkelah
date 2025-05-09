@@ -2,10 +2,8 @@ package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.DTO.FieldDTO;
-import com.example.tuwaiqfinalproject.Model.Field;
-import com.example.tuwaiqfinalproject.Model.Organizer;
-import com.example.tuwaiqfinalproject.Repository.FieldRepository;
-import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
+import com.example.tuwaiqfinalproject.Model.*;
+import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +21,8 @@ public class FieldService {
 
     private final FieldRepository fieldRepository;
     private final OrganizerRepository organizerRepository;
+    private final SportRepository sportRepository;
+    private final AuthRepository authRepository;
 
     public List<Field> getAllFields(){
         return fieldRepository.findAll();
@@ -101,5 +101,45 @@ public class FieldService {
 
         fieldRepository.delete(field);
     }
+    // اظهار الملاعب للكل على حسب المدينه + الرياضه
+    public List<Field> getFieldBySportAndCity(String location,String sportName){
+        Sport sport=sportRepository.findSportByName(sportName);
+        List<Field> field=fieldRepository.findFieldByLocation(location);
+        if(sport==null){
+            throw new ApiException("Sport Not Found");
+        }
+        if(field==null){
+            throw new ApiException("Field Not Found");
+        }
+        for(Field f:field){
+            if( f.getLocation().equals(location) && f.getSport().getName().equals(sportName)){
+//            throw new ApiException("There is no stadium for this sport in your city at the moment.");
+                return field;
+            }
+        }
+        return null;
+    }
+    //اختيار ملعب
+    public void choseField(String sportName,Integer playerId, Integer fieldId ){
+        User user=authRepository.findUserById(playerId);
+        Field field= fieldRepository.findFieldById(fieldId);
+        Sport sport=sportRepository.findSportByName(sportName);
+        if(user==null){
+            throw new ApiException("Player Not Found");
+        }
+
+        if(field==null){
+            throw new ApiException("Field Not Found");
+        }
+        if(sport==null){
+            throw new ApiException("Field Not Found");
+        }
+        if ( user.getRole().equals("Player") &&
+                field.getLocation().equals(user.getCity()) &&
+                field.getSport().getName().equals(sportName)){
+            fieldRepository.save(field);
+        }
+    }
+
 
 }
