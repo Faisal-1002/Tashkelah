@@ -39,18 +39,12 @@ public class PlayerService {
         return player;
     }
 
-    // انشاء حساب , اذا كان اللاعب مسجل رساله انه موجود
     public void registerPlayer(PlayerDTO dto) {
-        List<User> userList=authRepository.getUserByUsername(dto.getUsername());
         dto.setRole("PLAYER");
         String hashPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
         User user = new User(null, dto.getUsername(),hashPassword,dto.getRole(),dto.getName(),dto.getPhone(),dto.getCity(),dto.getEmail(), null, null);
         Player player = new Player(null, dto.getGender(), dto.getBirthDate(),user,null,null);
-        for(User u:userList){
-            if(u.getUsername()==dto.getUsername()){
-                throw new ApiException("Player Exist,");
-            }
-        }
+
         authRepository.save(user);
         playerRepository.save(player);
     }

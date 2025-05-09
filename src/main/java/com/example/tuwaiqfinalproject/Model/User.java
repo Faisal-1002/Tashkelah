@@ -27,7 +27,7 @@ public class User implements UserDetails {
     @Column(columnDefinition = "varchar(255) not null")
     private String password;
 
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(20)")
     private String role;
 
     @Column(columnDefinition = "varchar(50) not null")

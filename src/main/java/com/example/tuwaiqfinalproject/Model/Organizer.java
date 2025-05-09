@@ -31,4 +31,5 @@ public class Organizer {
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
     private List<PublicMatch> publicMatches;
+
 }
