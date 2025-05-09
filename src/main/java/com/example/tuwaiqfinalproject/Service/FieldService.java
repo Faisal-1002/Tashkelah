@@ -31,30 +31,60 @@ public class FieldService {
         return fieldRepository.findAll();
     }
 
+
+
+
+    // Taha-----------------
+// Private method to save an uploaded image file
     private String saveImage(MultipartFile file) {
+        // Check if the uploaded file is empty
         if (file.isEmpty()) {
             throw new ApiException("No file selected");
         }
 
+        // Check if the file is an image by verifying the content type
         String contentType = file.getContentType();
-        if (!contentType.startsWith("image/")) {
+        if (contentType == null || !contentType.startsWith("image/")) {
             throw new ApiException("Invalid file type. Only images are allowed.");
         }
 
         try {
+            // Define the directory where images will be saved
+            String uploadsDir = "uploads";
+            Path uploadsPath = Paths.get(uploadsDir);
+
+            // If the directory does not exist, create it
+            if (!Files.exists(uploadsPath)) {
+                Files.createDirectories(uploadsPath);
+            }
+
+            // Generate a unique file name using UUID to prevent naming conflicts
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path path = Paths.get("uploads/" + fileName);
-            Files.write(path, file.getBytes());
+
+            // Define the full path where the file will be saved
+            Path filePath = uploadsPath.resolve(fileName);
+
+            // Save the file bytes to the specified path
+            Files.write(filePath, file.getBytes());
+
+            // Return the name of the saved file (to be stored or returned as needed)
             return fileName;
+
         } catch (IOException e) {
+            e.printStackTrace(); // Print the stack trace to the console for debugging
             throw new ApiException("Failed to save image");
         }
     }
 
+    //Taha--------------
+    // Public method to allow an approved organizer to add a new field with an image
     public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
         Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
         if (organizer == null) {
             throw new ApiException("Organizer not found");
+        }
+        if (!organizer.getStatus()) {
+            throw new ApiException("Your account is not yet approved");
         }
 
         Sport sport = sportRepository.findSportById(sport_id);
@@ -63,11 +93,10 @@ public class FieldService {
         }
 
         String photo = saveImage(photoFile);
-
         Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, sport, null, null, null);
-
         fieldRepository.save(field);
     }
+
 
 
     public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO){
@@ -189,6 +218,16 @@ public class FieldService {
         privateMatch.setField(field);
         privateMatch.setStatus("SCHEDULED");
         privateMatchRepository.save(privateMatch);
+    }
+
+    //Taha----------------------------------
+    public List<Field> getAllOrganizerFields(Integer userId) {
+       Organizer organizer= organizerRepository.findOrganizerById(userId);
+        if (organizer==null) {
+            throw new ApiException("You are not allowed to view another organizer's fields");
+        }
+
+        return fieldRepository.findFieldByOrganizer_Id(organizer.getId());
     }
 
 }

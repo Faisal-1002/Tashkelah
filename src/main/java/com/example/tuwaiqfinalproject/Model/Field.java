@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Field {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,10 +45,15 @@ public class Field {
     @Column(columnDefinition = "int not null")
     @Min(value = 2)
     @Max(value = 22)
+    @Column(name = "capacity")
     private Integer capacity;
 
     @ManyToOne
+    @JsonIgnore
     private Organizer organizer;
+
+    @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
+    private List<PublicMatch> publicMatches;
 
     @ManyToOne
     private Sport sport;
