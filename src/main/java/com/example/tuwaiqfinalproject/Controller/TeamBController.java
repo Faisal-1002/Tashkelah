@@ -26,7 +26,7 @@ public class TeamBController {
     public ResponseEntity updateTeamB(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamBId,
                                       @RequestBody TeamB teamB) {
-        teamBService.updateTameB(publicMatch, teamBId, teamB);
+        teamBService.updateTeamB(publicMatch, teamBId, teamB);
         return ResponseEntity.status(200).body("TeamB updated successfully");
     }
 

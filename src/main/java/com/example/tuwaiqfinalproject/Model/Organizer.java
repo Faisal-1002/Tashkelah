@@ -2,6 +2,7 @@ package com.example.tuwaiqfinalproject.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
@@ -19,8 +20,8 @@ public class Organizer {
     @Column(columnDefinition = "varchar(10) not null unique")
     private String licenceNumber;
 
-    @Column(columnDefinition = "varchar(20) not null")
-    private String status;
+
+    private Boolean status;
 
     @OneToOne
     @MapsId

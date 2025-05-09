@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.DTO;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -24,8 +25,11 @@ public class OrganizerDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotEmpty(message = "Role must not be empty")
+    @Column(nullable = false)
+    @Pattern(regexp = "ORGANIZER|PLAYER|ADMIN",message = "Role must be ORGANIZER, PLAYER, or ADMIN")
     private String role;
+
+
 
     @NotEmpty(message = "Name must not be empty")
     private String name;
@@ -40,6 +44,5 @@ public class OrganizerDTO {
     @NotEmpty(message = "License number must not be empty")
     private String licenceNumber;
 
-    @NotEmpty(message = "Status must not be empty")
-    private String status;
+    private Boolean status ;
 }

@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -8,12 +9,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Field {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +42,20 @@ public class Field {
     private LocalTime closeTime;
 
     @NotNull(message = "capacity must not be empty")
-    @Column(columnDefinition = "capacity not null")
     @Min(value = 2)
     @Max(value = 22)
+    @Column(name = "capacity")
     private Integer capacity;
 
     @ManyToOne
+    @JsonIgnore
     private Organizer organizer;
+
+    //   @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    //    private List<TimeSlot> timeSlots;
+
+    @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
+    private List<PublicMatch> publicMatches;
 
     @ManyToOne
     private Sport sport;

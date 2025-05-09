@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -24,10 +25,12 @@ public class PublicMatch {
     @Column(columnDefinition = "varchar(20) not null")
     private String status; // e.g. OPEN, FULL
 
-    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
-    private List<TimeSlot> timeSlots;
+//    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+//    private List<TimeSlot> timeSlots;
+
 
     @ManyToOne
+    @JsonIgnore
     private Field field;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")

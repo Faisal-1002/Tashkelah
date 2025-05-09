@@ -1,11 +1,14 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
+import com.example.tuwaiqfinalproject.Model.Organizer;
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
+import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Service.PublicMatchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.List;
 public class PublicMatchController {
 
     private final PublicMatchService publicMatchService;
+
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllPublicMatches() {
@@ -46,4 +51,15 @@ public class PublicMatchController {
         publicMatchService.deletePublicMatch(id);
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
+
+
+
+    //Taha
+    @GetMapping("/field/{fieldId}/matches")
+    public ResponseEntity<List<PublicMatch>> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId)
+                                                         {
+        return ResponseEntity.ok(publicMatchService.showFieldMatches(fieldId, user.getId()));
+    }
+
+
 }
