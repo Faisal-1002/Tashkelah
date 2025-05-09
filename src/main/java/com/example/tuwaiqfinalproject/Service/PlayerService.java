@@ -2,7 +2,6 @@ package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.DTO.PlayerDTO;
-import com.example.tuwaiqfinalproject.Model.Field;
 import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Repository.AuthRepository;
@@ -77,7 +76,5 @@ public class PlayerService {
         authRepository.delete(player.getUser());
         playerRepository.delete(player);
     }
-
-
 
 }

@@ -4,9 +4,9 @@ import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -14,11 +14,7 @@ import java.util.List;
 public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
-    private final SportRepository sportRepository;
     private final PlayerRepository playerRepository;
-    private final AuthRepository authRepository;
-    private final FieldRepository fieldRepository;
-    private final PublicMatchRepository publicMatchRepository;
 
     public List<TimeSlot> getAllTimeSlots() {
         return timeSlotRepository.findAll();
@@ -50,5 +46,28 @@ public class TimeSlotService {
             throw new ApiException("TimeSlot not found");
         timeSlotRepository.delete(timeSlot);
     }
+
+    // 25. Faisal - Time slots for the assign filed - Tested
+    public List<TimeSlot> getTimeSlotsForPrivateMatchField(Integer userId, LocalDate date) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+
+        PrivateMatch match = player.getPrivateMatch();
+        if (match == null || !match.getStatus().equals("SCHEDULED"))
+            throw new ApiException("Private match not found or not scheduled");
+
+        Field field = match.getField();
+        if (field == null)
+            throw new ApiException("No field assigned to this match");
+
+        return timeSlotRepository.findValidSlotsByFieldAndDate(
+                field.getId(),
+                date,
+                field.getOpenTime(),
+                field.getCloseTime()
+        );
+    }
+
 
 }

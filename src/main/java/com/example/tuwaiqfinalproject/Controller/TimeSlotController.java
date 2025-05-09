@@ -2,12 +2,16 @@ package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
 import com.example.tuwaiqfinalproject.Model.TimeSlot;
+import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Service.TimeSlotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -46,4 +50,12 @@ public class TimeSlotController {
         timeSlotService.deleteTimeSlot(id);
         return ResponseEntity.status(200).body(new ApiResponse("TimeSlot deleted successfully"));
     }
+
+    @GetMapping("/private-match/slots/{date}")
+    public ResponseEntity<?> getAvailableTimeSlotsForPrivateMatch(@AuthenticationPrincipal User user, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<TimeSlot> slots = timeSlotService.getTimeSlotsForPrivateMatchField(user.getId(), date);
+        return ResponseEntity.status(200).body(slots);
+    }
+
+
 }

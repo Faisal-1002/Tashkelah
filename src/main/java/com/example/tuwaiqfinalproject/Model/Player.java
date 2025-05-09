@@ -2,8 +2,6 @@ package com.example.tuwaiqfinalproject.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Past;
 import lombok.*;
 
 import java.time.LocalDate;
