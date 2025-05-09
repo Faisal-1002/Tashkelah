@@ -10,5 +10,4 @@ import java.util.List;
 public interface FieldRepository extends JpaRepository<Field, Integer> {
     Field findFieldById(Integer id);
     List<Field> findFieldByLocation(String location);
-
 }

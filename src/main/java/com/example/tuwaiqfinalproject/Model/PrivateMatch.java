@@ -29,8 +29,8 @@ public class PrivateMatch {
     @OneToOne(mappedBy = "privateMatch", cascade = CascadeType.ALL)
     private Booking booking;
 
-//    @OneToMany(mappedBy = "privateMatch", cascade = CascadeType.ALL)
-//    private List<Emails> emails;
+    @OneToMany(mappedBy = "privateMatch", cascade = CascadeType.ALL)
+    private List<Emails> emails;
 
     @OneToOne
     private Player player;
