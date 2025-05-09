@@ -52,4 +52,5 @@ public class BookingController {
         bookingService.deleteBooking(id);
         return ResponseEntity.status(200).body(new ApiResponse("Booking deleted successfully"));
     }
+
 }

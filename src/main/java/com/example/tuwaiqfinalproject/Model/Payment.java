@@ -1,10 +1,8 @@
 package com.example.tuwaiqfinalproject.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -16,23 +14,42 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "Amount must not be null")
-    @Positive(message = "Amount must be positive")
-    @Column(columnDefinition = "double not null")
-    private Double amount;
+    @NotEmpty(message = "Name is required")
+    @Column(columnDefinition = "varchar(100) not null")
+    private String name;
 
-    @NotEmpty(message = "Payment method must not be empty")
-    @Column(columnDefinition = "varchar(30) not null")
-    private String method; // e.g. CARD, APPLE_PAY, STC_PAY
-
-    @NotNull(message = "Payment date must not be null")
-    @Column(columnDefinition = "datetime not null")
-    private LocalDateTime date;
-
-    @NotEmpty(message = "Payment status must not be empty")
+    @NotEmpty(message = "Card number is required")
     @Column(columnDefinition = "varchar(20) not null")
-    private String status; // e.g. PAID, FAILED
+    private String number;
+
+    @NotEmpty(message = "CVC is required")
+    @Column(columnDefinition = "varchar(10) not null")
+    private String cvc;
+
+    @NotEmpty(message = "Month is required")
+    @Column(columnDefinition = "varchar(10) not null")
+    private String month;
+
+    @NotEmpty(message = "Year is required")
+    @Column(columnDefinition = "varchar(10) not null")
+    private String year;
+
+    @Column(columnDefinition = "double not null")
+    private double amount;
+
+    @NotEmpty(message = "Currency is required")
+    @Column(columnDefinition = "varchar(10) not null")
+    private String currency;
+
+    @NotEmpty(message = "Description is required")
+    @Column(columnDefinition = "varchar(255) not null")
+    private String description;
+
+    @NotEmpty(message = "Callback URL is required")
+    @Column(columnDefinition = "varchar(255) not null")
+    private String callbackUrl;
 
     @OneToOne
     private Booking booking;
+
 }

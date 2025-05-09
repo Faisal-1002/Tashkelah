@@ -4,7 +4,6 @@ import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +13,6 @@ import java.util.List;
 public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
-    private final SportRepository sportRepository;
-    private final PlayerRepository playerRepository;
-    private final AuthRepository authRepository;
-    private final FieldRepository fieldRepository;
-    private final PublicMatchRepository publicMatchRepository;
 
     public List<TimeSlot> getAllTimeSlots() {
         return timeSlotRepository.findAll();
