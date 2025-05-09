@@ -22,7 +22,8 @@ public class FieldService {
     private final FieldRepository fieldRepository;
     private final OrganizerRepository organizerRepository;
     private final SportRepository sportRepository;
-    private final AuthRepository authRepository;
+    private final PlayerRepository playerRepository;
+    private final PublicMatchRepository publicMatchRepository;
 
     public List<Field> getAllFields(){
         return fieldRepository.findAll();
@@ -120,26 +121,27 @@ public class FieldService {
         return null;
     }
     //اختيار ملعب
-    public void choseField(String sportName,Integer playerId, Integer fieldId ){
-        User user=authRepository.findUserById(playerId);
-        Field field= fieldRepository.findFieldById(fieldId);
-        Sport sport=sportRepository.findSportByName(sportName);
-        if(user==null){
+    public void choseField(String sportName,Integer playerId, Integer fieldId ) {
+        Player player = playerRepository.findPlayerById(playerId);
+        Field field = fieldRepository.findFieldById(fieldId);
+        Sport sport = sportRepository.findSportByName(sportName);
+        if (playerId == null) {
             throw new ApiException("Player Not Found");
         }
 
-        if(field==null){
+        if (field == null) {
             throw new ApiException("Field Not Found");
         }
-        if(sport==null){
+        if (sport == null) {
             throw new ApiException("Field Not Found");
         }
-        if ( user.getRole().equals("Player") &&
-                field.getLocation().equals(user.getCity()) &&
-                field.getSport().getName().equals(sportName)){
-            fieldRepository.save(field);
+
+        if (!field.getLocation().equals(player.getUser().getCity()) ||
+                !field.getSport().getName().equals(sportName)) {
+            throw new ApiException("Field does not match player's city or sport");
         }
+        PublicMatch publicMatch = new PublicMatch();
+        publicMatch.setField(field);
+        publicMatch.setPlayer(player);
     }
-
-
 }

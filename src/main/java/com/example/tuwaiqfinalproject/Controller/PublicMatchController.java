@@ -56,13 +56,22 @@ public class PublicMatchController {
     }
 
     @GetMapping("getMatchAndTeam/{sportId}/{fieldId}/{publicMatchId}")
-    public ResponseEntity getMatchAndTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable Integer publicMatchId) {
-        return ResponseEntity.status(200).body(publicMatchService.getMatchAndTeam(player.getId(), sportId, fieldId, publicMatchId));
+    public ResponseEntity getMatchAndTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(publicMatchService.getAllAvailableMatches(player.getId(), sportId, fieldId));
     }
 
+    @GetMapping("getTeams/{publicMatchId}")
+    public ResponseEntity getTeamsForPublicMatch(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
+        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(player.getId(),publicMatchId));
+    }
     @PutMapping("selectTeam/{sportId}/{fieldId}")
     public ResponseEntity selectTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
-        publicMatchService.selectTeam(player.getId(), sportId, fieldId);
+        publicMatchService.PublicTeamSelection(player.getId(), sportId, fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
+    @GetMapping("chekout/{publicMatchId}")
+    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
+        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
+    }
+
 }
