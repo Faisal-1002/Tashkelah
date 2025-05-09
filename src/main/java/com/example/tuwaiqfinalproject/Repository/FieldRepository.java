@@ -19,5 +19,6 @@ public interface FieldRepository extends JpaRepository<Field, Integer> {
     List<Field>findAllBySportNameAndLocation(String sportName,String city);
     @Query("SELECT f FROM Field f WHERE f.sport.name = ?1 AND f.location = ?2")
     List<Field> findAllBySportNameAndCity(String sportName, String location);
+    List<Field> findAllBySportId(Integer sportId);
   
 }

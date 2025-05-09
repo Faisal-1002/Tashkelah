@@ -21,7 +21,7 @@ public class TeamAService {
         if(publicMatch== null){
             throw new ApiException("PublicMatch not found");
         }
-
+        teamA.setMaxPlayersCount(publicMatch.getField().getCapacity()/2);
         publicMatch.setTeamA(teamA);
     }
 

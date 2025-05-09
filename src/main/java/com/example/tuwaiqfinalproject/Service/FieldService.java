@@ -22,7 +22,6 @@ public class FieldService {
     private final FieldRepository fieldRepository;
     private final OrganizerRepository organizerRepository;
     private final SportRepository sportRepository;
-    private final PublicMatchRepository publicMatchRepository;
     private final AuthRepository authRepository;
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
@@ -141,12 +140,12 @@ public class FieldService {
     }
 
     //اختيار ملعب
-    public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
-        User user=authRepository.findUserById(playerId);
+    public void playerChoseAFieldForAPublicMatch(String sportName,Integer playerId, Integer fieldId){
+        Player player=playerRepository.findPlayerById(playerId);
         Field field= fieldRepository.findFieldById(fieldId);
         Sport sport=sportRepository.findSportByName(sportName);
       
-        if(user==null){
+        if(player==null){
             throw new ApiException("Player Not Found");
         }
 
@@ -154,7 +153,7 @@ public class FieldService {
             throw new ApiException("Field Not Found");
         }
         if (sport == null) {
-            throw new ApiException("Field Not Found");
+            throw new ApiException("Sport Not Found");
         }
 
         if (!field.getLocation().equals(player.getUser().getCity()) ||
@@ -163,7 +162,6 @@ public class FieldService {
         }
         PublicMatch publicMatch = new PublicMatch();
         publicMatch.setField(field);
-        publicMatch.setPlayer(player);
     }
 
     // 24. Faisal - Assign field for private match - Tested

@@ -24,6 +24,8 @@ public class TeamA {
 
     private Integer playersCount;
 
+    private Integer maxPlayersCount;
+
     @OneToOne
     @JsonIgnore
     private PublicMatch publicMatch;
