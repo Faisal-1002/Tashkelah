@@ -22,7 +22,7 @@ public class TeamBService {
         if(publicMatch== null){
             throw new ApiException("PublicMatch not found");
         }
-
+        teamB.setMaxPlayersCount(publicMatch.getField().getCapacity()/2);
         publicMatch.setTeamB(teamB);
     }
 

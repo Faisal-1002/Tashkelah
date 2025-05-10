@@ -24,6 +24,7 @@ public class TeamB {
 
     private Integer playersCount;
 
+    private Integer maxPlayersCount;
 
     @OneToOne
     @JsonIgnore

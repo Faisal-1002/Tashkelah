@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TeamBRepository extends JpaRepository<TeamB, Integer > {
     TeamB findTeamBById(Integer id);
+    TeamB findTeamBByTeamName(String teamName);
 }

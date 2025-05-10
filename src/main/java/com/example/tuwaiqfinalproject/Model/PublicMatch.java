@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -37,8 +38,8 @@ public class PublicMatch {
     @PrimaryKeyJoinColumn
     private TeamB teamB;
 
-    @ManyToOne
-    private Player player;
+    @OneToMany
+    private Set<Player> players;
 
     @ManyToOne
     private Organizer organizer;
