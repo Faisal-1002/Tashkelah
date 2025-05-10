@@ -66,6 +66,7 @@ public class PublicMatchController {
     public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
         return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
     }
+
     @PutMapping("/selectTeam/{sportId}/{fieldId}/{teamName}")
     public ResponseEntity<?> selectTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable String teamName) {
         publicMatchService.PublicTeamSelection(user.getId(), sportId, fieldId, teamName);

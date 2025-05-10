@@ -17,4 +17,6 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
     List<TimeSlot> findValidSlotsByFieldAndDate(Integer fieldId, LocalDate date, LocalTime openTime, LocalTime closeTime);
     @Query("SELECT t FROM TimeSlot t WHERE t.public_match IS NOT NULL")
     List<TimeSlot> findAllWithPublicMatch();
+    TimeSlot findTimeSlotWherePublicMatchIsNotNull();
 }
+

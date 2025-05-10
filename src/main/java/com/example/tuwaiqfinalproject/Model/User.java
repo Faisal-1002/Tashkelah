@@ -50,10 +50,10 @@ public class User implements UserDetails {
     @PrimaryKeyJoinColumn
     private Player player;
 //Solve the problem of circular relationships between the user object and the player
-    @Override
-    public int hashCode() {
-        return Objects.hash(id); // استخدام حقل id فقط لتوليد الـ hashCode
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id); // استخدام حقل id فقط لتوليد الـ hashCode
+//    }
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn

@@ -39,7 +39,7 @@ public class PublicMatch {
     @PrimaryKeyJoinColumn
     private Team team;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
     private Set<Player> players;
 
     @ManyToOne
