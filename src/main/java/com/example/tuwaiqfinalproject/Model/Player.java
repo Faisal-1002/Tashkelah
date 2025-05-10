@@ -24,7 +24,6 @@ public class Player {
 
     @OneToOne
     @MapsId
-    @JsonIgnore
     private User user;
 
 //Solve the problem of circular relationships between the user object and the player
