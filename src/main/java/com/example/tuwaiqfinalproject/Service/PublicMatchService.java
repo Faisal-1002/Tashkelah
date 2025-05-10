@@ -142,7 +142,7 @@ public class PublicMatchService {
         Player player=playerRepository.findPlayerById(playerId);
         Sport sport=sportRepository.findSportById(sportId);
         Field field=fieldRepository.findFieldById(fieldId);
-        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(player.getPublicMatch().getId());
+        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(player.getPublic_match().getId());
         if(player==null){
             throw new ApiException("Player Not Found");
         }

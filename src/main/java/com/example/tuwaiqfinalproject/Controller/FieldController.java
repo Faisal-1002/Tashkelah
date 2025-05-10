@@ -53,21 +53,15 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field deleted successfully"));
     }
 
-    @GetMapping("/getBySportAndCity/{sport}")
-    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable String sport) {
-        return ResponseEntity.status(200).body(fieldService.getFieldBySportAndCity(user.getId(), sport));
+    @GetMapping("/getBySportAndCity/{sportId}")
+    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
+        return ResponseEntity.status(200).body(fieldService.playerGetFieldsBySportAndCity(user.getId(), sportId));
     }
 
-    @PutMapping("/choseField/{fieldId}/{sportName}")
-    public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable String sportName) {
-        fieldService.playerChoseAFieldForAPublicMatch(sportName, user.getId(), fieldId);
+    @PutMapping("/choseField/{fieldId}/{sportId}")
+    public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable Integer sportId) {
+        fieldService.playerChoseAFieldAndJoinPublicMatch(user.getId(), fieldId, sportId);
         return ResponseEntity.status(200).body(new ApiResponse("The stadium has been successfully selected"));
-    }
-
-    @PutMapping("/private-match/assign-field/{fieldId}")
-    public ResponseEntity<?> assignFieldToPrivateMatch(@PathVariable Integer fieldId, @AuthenticationPrincipal User user) {
-        fieldService.playerChoseAFieldForPrivateMatch(user.getId(), fieldId);
-        return ResponseEntity.status(200).body(new ApiResponse("Field assigned successfully"));
     }
 
     //Taha - get photo

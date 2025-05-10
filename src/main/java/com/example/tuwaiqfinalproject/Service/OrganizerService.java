@@ -22,7 +22,6 @@ public class OrganizerService {
     private final AuthRepository authRepository;
     private final JavaMailSender mailSender;
 
-
     public List<Organizer> getAllOrganizers() {
         return organizerRepository.findAll();
     }
@@ -33,7 +32,6 @@ public class OrganizerService {
             throw new ApiException("Organizer not found");
         return organizer;
     }
-
 
     public Organizer getOrganizerById(Integer organizerId) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
@@ -47,9 +45,8 @@ public class OrganizerService {
         String hashedPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
 
         User user = new User(null, dto.getUsername(), hashedPassword, dto.getRole(),
-                dto.getName(), dto.getPhone(), dto.getCity(), dto.getEmail(), null, null);
-
-        Organizer organizer = new Organizer(null, dto.getLicenceNumber(), false, user, null, null);
+                dto.getName(), dto.getPhone(), dto.getAddress(), dto.getEmail(), null, null);
+        Organizer organizer = new Organizer(null, dto.getLicence_number(), "INACTIVE", user, null, null);
 
         authRepository.save(user);
         organizerRepository.save(organizer);
@@ -66,9 +63,9 @@ public class OrganizerService {
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setPhone(dto.getPhone());
-        user.setCity(dto.getCity());
+        user.setAddress(dto.getAddress());
 
-        organizer.setLicenceNumber(dto.getLicenceNumber());
+        organizer.setLicenceNumber(dto.getLicence_number());
         organizer.setStatus(dto.getStatus());
 
         authRepository.save(user);
@@ -84,18 +81,13 @@ public class OrganizerService {
         organizerRepository.delete(organizer);
     }
 
-
-
-
-
-
-    //Taha----------------------
+    // Taha - Admin approve organizer
     public void approveOrganizer(Integer organizerId, Boolean isApproved) {
         Organizer organizer = organizerRepository.findById(organizerId)
                 .orElseThrow(() -> new ApiException("Organizer not found"));
 
         // Set the approval status
-        organizer.setStatus(isApproved);
+        organizer.setStatus("ACTIVE");
 
         // Save the updated organizer entity to the database
         organizerRepository.save(organizer);
@@ -104,7 +96,7 @@ public class OrganizerService {
         sendApprovalEmail(organizer, isApproved);
     }
 
-    //Taha----------------------- //test
+    // Taha - Send approve notification to organizer - tested
     private void sendApprovalEmail(Organizer organizer, Boolean isApproved) {
         // Set the email subject
         String subject = "License Approval Notification";
@@ -124,7 +116,5 @@ public class OrganizerService {
         // Send the email
         mailSender.send(mailMessage);
     }
-
-
 
 }

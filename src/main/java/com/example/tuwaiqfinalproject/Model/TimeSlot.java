@@ -1,6 +1,5 @@
 package com.example.tuwaiqfinalproject.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -24,11 +23,11 @@ public class TimeSlot {
 
     @NotNull(message = "Start time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime startTime;
+    private LocalTime start_time;
 
     @NotNull(message = "End time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime endTime;
+    private LocalTime end_time;
 
     @NotNull(message = "Price must not be null")
     @Min(value = 0, message = "Price must be non-negative")

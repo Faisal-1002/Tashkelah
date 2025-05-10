@@ -23,7 +23,7 @@ public class Sport {
 
     @Min(value = 2, message = "Default player count must be at least 2")
     @Column(columnDefinition = "int not null")
-    private Integer defaultPlayerCount;
+    private Integer default_player_count;
 
     @OneToMany(mappedBy = "sport", cascade = CascadeType.ALL)
     private List<Field> fields;

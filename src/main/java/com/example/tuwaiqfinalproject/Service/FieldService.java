@@ -30,11 +30,7 @@ public class FieldService {
         return fieldRepository.findAll();
     }
 
-
-
-
-    // Taha-----------------
-// Private method to save an uploaded image file
+    // Taha - Upload image for a field
     private String saveImage(MultipartFile file) {
         // Check if the uploaded file is empty
         if (file.isEmpty()) {
@@ -96,6 +92,23 @@ public class FieldService {
         fieldRepository.save(field);
     }
 
+        String photo = saveImage(photoFile);
+        Field field = new Field(
+                null,
+                fieldDTO.getName(),
+                fieldDTO.getAddress(),
+                fieldDTO.getDescription(),
+                photo,
+                fieldDTO.getOpen_time(),
+                fieldDTO.getClose_time(),
+                fieldDTO.getCapacity(),
+                sport,
+                organizer,
+                null,
+                null,
+                null);
+        fieldRepository.save(field);
+    }
 
     public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO){
         Field field= fieldRepository.findFieldById(fieldId);
@@ -111,10 +124,10 @@ public class FieldService {
 
         field.setName(fieldDTO.getName());
         field.setDescription(fieldDTO.getDescription());
-//        field.setPhoto(field.getPhoto());
-        field.setLocation(fieldDTO.getLocation());
-        field.setOpenTime(fieldDTO.getOpenTime());
-        field.setCloseTime(fieldDTO.getCloseTime());
+        field.setPhoto(field.getPhoto());
+        field.setAddress(fieldDTO.getAddress());
+        field.setOpen_time(fieldDTO.getOpen_time());
+        field.setClose_time(fieldDTO.getClose_time());
 
         fieldRepository.save(field);
     }
@@ -144,9 +157,11 @@ public class FieldService {
         Sport sport = sportRepository.findSportByName(sportName);
         if (sport == null)
             throw new ApiException("Sport not found");
-        List<Field> fields = fieldRepository.findAllBySportNameAndCity(sportName, user.getCity());
+
+        List<Field> fields = fieldRepository.findAllBySportIdAndLocation(sportId, player.getUser().getAddress());
         if (fields.isEmpty())
             throw new ApiException("No fields found for this sport in your city");
+
         return fields;
     }
     //2- Eatzaz - player Chose Field For Public Match - tested
@@ -158,18 +173,20 @@ public class FieldService {
         if(player==null){
             throw new ApiException("Player Not Found");
         }
-
+        Field field = fieldRepository.findFieldById(field_id);
         if (field == null) {
             throw new ApiException("Field Not Found");
         }
+        Sport sport = sportRepository.findSportById(sport_id);
         if (sport == null) {
             throw new ApiException("Sport Not Found");
         }
 
         if (!field.getLocation().equals(player.getUser().getCity()) ||
                 !field.getSport().getName().equals(sport.getName())) {
+        if (!field.getAddress().equals(player.getUser().getAddress()) ||
+                !field.getSport().getId().equals(sport_id))
             throw new ApiException("Field does not match player's city or sport");
-        }
         PublicMatch publicMatch = new PublicMatch();
         publicMatch.setField(field);
     }
@@ -198,7 +215,7 @@ public class FieldService {
         privateMatchRepository.save(privateMatch);
     }
 
-    //Taha----------------------------------
+    // Taha - Get all organizer fields
     public List<Field> getAllOrganizerFields(Integer userId) {
        Organizer organizer= organizerRepository.findOrganizerById(userId);
         if (organizer==null) {

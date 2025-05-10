@@ -32,11 +32,10 @@ public class PublicMatch {
     @JsonIgnore
     private Field field;
 
-    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
-    private List<TimeSlot> timeSlots;
+    @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
+    private List<TimeSlot> time_slots;
 
-
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "public_match")
     @PrimaryKeyJoinColumn
     private Team team;
 
@@ -47,6 +46,6 @@ public class PublicMatch {
     @JsonIgnore
     private Organizer organizer;
 
-    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
     private List<Booking> bookings;
 }

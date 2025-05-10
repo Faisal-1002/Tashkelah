@@ -24,10 +24,10 @@ public class Team {
 
     private Integer playersCount;
 
-    private Integer maxPlayersCount;
+    private Integer max_players_count;
 
     @OneToOne
     @JsonIgnore
-    private PublicMatch publicMatch;
+    private PublicMatch public_match;
 
 }

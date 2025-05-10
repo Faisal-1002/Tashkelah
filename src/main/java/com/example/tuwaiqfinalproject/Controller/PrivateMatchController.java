@@ -45,17 +45,10 @@ public class PrivateMatchController {
         return ResponseEntity.status(200).body(new ApiResponse("Private match deleted successfully"));
     }
 
-    @PostMapping("/private-match")
-    public ResponseEntity<?> createPrivateMatch(@AuthenticationPrincipal User user, @RequestBody @Valid PrivateMatch privateMatch) {
-        privateMatchService.createPrivateMatch(user.getId(), privateMatch);
+    @PostMapping("/create/{fieldId}")
+    public ResponseEntity<?> createPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
+        privateMatchService.createPrivateMatchWithField(user.getId(), fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Private match created successfully"));
     }
-
-    @PostMapping("/book")
-    public ResponseEntity<?> bookPrivateMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
-        privateMatchService.bookPrivateMatch(user.getId(), slotIds);
-        return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
-    }
-
 
 }

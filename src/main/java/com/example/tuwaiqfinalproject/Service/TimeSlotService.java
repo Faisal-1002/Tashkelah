@@ -63,7 +63,7 @@ public class TimeSlotService {
         if (player == null)
             throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivateMatch();
+        PrivateMatch match = player.getPrivate_match();
         if (match == null || !match.getStatus().equals("SCHEDULED"))
             throw new ApiException("Private match not found or not scheduled");
 
@@ -74,8 +74,8 @@ public class TimeSlotService {
         return timeSlotRepository.findValidSlotsByFieldAndDate(
                 field.getId(),
                 date,
-                field.getOpenTime(),
-                field.getCloseTime()
+                field.getOpen_time(),
+                field.getClose_time()
         );
     }
 
