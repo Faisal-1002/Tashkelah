@@ -89,13 +89,14 @@ public class PublicMatchService {
         if (field.getSport() != sport)
             throw new ApiException("Sports do not match");
 
-        List<PublicMatch> matches = publicMatchRepository.findPublicMatchByField(field);
-        TimeSlot timeSlot = timeSlotRepository.findByPublicMatchIsNotNull();
-        PublicMatch match = timeSlot.getPublicMatch();
-            if (match == null) {
-                throw new ApiException("Public Match Not Found");
-            }
-       return match;
+//        List<PublicMatch> matches = publicMatchRepository.findPublicMatchByField(field);
+//        TimeSlot timeSlot = timeSlotRepository.findTimeSlotByPublicMatchIsNotNull();
+//        PublicMatch match = timeSlot.getPublicMatch();
+//            if (match == null) {
+//                throw new ApiException("Public Match Not Found");
+//            }
+//       return match;
+        return null;
     }
     // Eatzaz - Get teams for public match
     public PublicMatchDTO getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
