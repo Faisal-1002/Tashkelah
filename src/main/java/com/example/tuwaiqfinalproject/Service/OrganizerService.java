@@ -7,6 +7,8 @@ import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Repository.AuthRepository;
 import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ public class OrganizerService {
 
     private final OrganizerRepository organizerRepository;
     private final AuthRepository authRepository;
+    private final JavaMailSender mailSender;
+
 
     public List<Organizer> getAllOrganizers() {
         return organizerRepository.findAll();
@@ -45,7 +49,7 @@ public class OrganizerService {
         User user = new User(null, dto.getUsername(), hashedPassword, dto.getRole(),
                 dto.getName(), dto.getPhone(), dto.getCity(), dto.getEmail(), null, null);
 
-        Organizer organizer = new Organizer(null, dto.getLicenceNumber(), dto.getStatus(), user, null, null);
+        Organizer organizer = new Organizer(null, dto.getLicenceNumber(), false, user, null, null);
 
         authRepository.save(user);
         organizerRepository.save(organizer);
@@ -79,4 +83,48 @@ public class OrganizerService {
         authRepository.delete(organizer.getUser());
         organizerRepository.delete(organizer);
     }
+
+
+
+
+
+
+    //Taha----------------------
+    public void approveOrganizer(Integer organizerId, Boolean isApproved) {
+        Organizer organizer = organizerRepository.findById(organizerId)
+                .orElseThrow(() -> new ApiException("Organizer not found"));
+
+        // Set the approval status
+        organizer.setStatus(isApproved);
+
+        // Save the updated organizer entity to the database
+        organizerRepository.save(organizer);
+
+        // Send an approval or rejection email to the organizer
+        sendApprovalEmail(organizer, isApproved);
+    }
+
+    //Taha----------------------- //test
+    private void sendApprovalEmail(Organizer organizer, Boolean isApproved) {
+        // Set the email subject
+        String subject = "License Approval Notification";
+
+        // Set the email body message based on the approval status "falls reject", "true approved"
+        String message = isApproved ? "Your license has been approved." : "Your license has been rejected.";
+
+        // Get the organizer's email address from their associated user account
+        String recipientEmail = organizer.getUser().getEmail();
+
+        // Create the email message
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(recipientEmail);
+        mailMessage.setSubject(subject);
+        mailMessage.setText(message);
+
+        // Send the email
+        mailSender.send(mailMessage);
+    }
+
+
+
 }

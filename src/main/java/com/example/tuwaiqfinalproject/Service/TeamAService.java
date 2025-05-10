@@ -25,7 +25,7 @@ public class TeamAService {
         publicMatch.setTeamA(teamA);
     }
 
-    public void updateTameA(PublicMatch publicMatch, Integer tameAId,TeamA teamA) {
+    public void updateTeamA(PublicMatch publicMatch, Integer tameAId,TeamA teamA) {
 
         TeamA oldTeam = teamARepository.findTeamAById(tameAId);
         if (oldTeam == null) {

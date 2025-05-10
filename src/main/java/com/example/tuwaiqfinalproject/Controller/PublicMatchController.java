@@ -1,8 +1,10 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
+import com.example.tuwaiqfinalproject.Model.Organizer;
 import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
+import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Service.PublicMatchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ import java.util.List;
 public class PublicMatchController {
 
     private final PublicMatchService publicMatchService;
+
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllPublicMatches() {
@@ -49,6 +53,13 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
 
+    //Taha
+    @GetMapping("/field/{fieldId}/matches")
+    public ResponseEntity<List<PublicMatch>> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId)
+                                                         {
+        return ResponseEntity.ok(publicMatchService.showFieldMatches(fieldId, user.getId()));
+    }
+
     @PutMapping("PlayWithPublicTeam/{sportId}/{fieldId}")
     public ResponseEntity PlayWithPublicTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
         publicMatchService.PlayWithPublicTeam(sportId, fieldId, player.getId());
@@ -69,9 +80,9 @@ public class PublicMatchController {
         publicMatchService.PublicTeamSelection(player.getId(), sportId, fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
-    @GetMapping("chekout/{publicMatchId}")
-    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
-        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
-    }
+//    @GetMapping("chekout/{publicMatchId}")
+//    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
+//        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
+//    }
 
 }

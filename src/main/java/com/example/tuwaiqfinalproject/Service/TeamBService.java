@@ -26,7 +26,7 @@ public class TeamBService {
         publicMatch.setTeamB(teamB);
     }
 
-    public void updateTameB(PublicMatch publicMatch, Integer tameB_id,TeamB teamB) {
+    public void updateTeamB(PublicMatch publicMatch, Integer tameB_id,TeamB teamB) {
 
         TeamB oldTeam = teamBRepository.findTeamBById(tameB_id);
         if (oldTeam == null) {
@@ -48,8 +48,9 @@ public class TeamBService {
         if (teamB==null){
             throw new ApiException("Team not found");
         }
-        if (!teamB.getPublicMatch().getId().equals(publicMatch.getId()));
-        throw new ApiException("You are not allowed to delete another team data");
-
+        if (!teamB.getPublicMatch().getId().equals(publicMatch.getId())) {
+            throw new ApiException("You are not allowed to delete another team data");
+        }
+        teamBRepository.delete(teamB);
     }
 }

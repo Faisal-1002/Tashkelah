@@ -17,6 +17,7 @@ import java.util.List;
 public class PublicMatchService {
 
     private final PublicMatchRepository publicMatchRepository;
+    private final OrganizerRepository organizerRepository;
     private final PlayerRepository playerRepository;
     private final SportRepository sportRepository;
     private final FieldRepository fieldRepository;
@@ -55,6 +56,27 @@ public class PublicMatchService {
             throw new ApiException("Public match not found");
         publicMatchRepository.delete(match);
     }
+
+    //Taha -
+    public List<PublicMatch> showFieldMatches(Integer fieldId, Integer userId) {
+
+        Organizer organizer = organizerRepository.findById(userId)
+                .orElseThrow(() -> new ApiException("Organizer not found"));
+
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ApiException("Field not found"));
+
+        if (!field.getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("You are not authorized to view matches for this field");
+        }
+
+        return publicMatchRepository.findByField_Id(fieldId);
+    }
+
+
+
+}
+
     // اختيار فريق عشوائي
     public void PlayWithPublicTeam(Integer sportId,Integer fieldId,Integer playerId){
         Player player=playerRepository.findPlayerById(playerId);
@@ -88,18 +110,14 @@ public class PublicMatchService {
         if(field==null){
             throw new ApiException("Field Not Found");
         }
-        if (field.getSport() != sport)
-            throw new ApiException("Sports do not match");
-
-        List<PublicMatch> matches = publicMatchRepository.findPublicMatchByField(field);
-        //TimeSlot timeSlot = timeSlotRepository.findByPublicMatchIsNotNull();
-        PublicMatch match = timeSlot.getPublicMatch();
-            if (match == null) {
+        TimeSlot timeSlot = timeSlotRepository.findTimeSlotByField(field);
+        PublicMatch publicMatch=publicMatchRepository.findPublicMatchByField(field);
+            if (publicMatch == null) {
                 throw new ApiException("Public Match Not Found");
             }
-       return match;
-    }
-    // Eatzaz - Get teams for public match
+                       return publicMatch;
+        }
+    // عرض الفرق وعدد اللاعبين
     public PublicMatchDTO getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
         Player player=playerRepository.findPlayerById(PlayerId);
         PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
@@ -152,6 +170,7 @@ public class PublicMatchService {
             publicMatch.setTeamB(publicMatch.getTeamB());
         }
     }
+
     // Eatzaz - Show player selections - need testing
     public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId) {
         Player player = playerRepository.findPlayerById(playerId);
@@ -184,6 +203,4 @@ public class PublicMatchService {
                 slot.getStartTime()
         );
     }
-
-
-    }
+}
