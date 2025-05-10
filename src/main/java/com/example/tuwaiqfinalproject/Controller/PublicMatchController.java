@@ -56,12 +56,12 @@ public class PublicMatchController {
         publicMatchService.PlayWithPublicMatch(sportId, fieldId, user.getId());
         return ResponseEntity.status(200).body(new ApiResponse("You have entered the general team."));
     }
-//
-//    @GetMapping("/getMatchAndTeam/{sportId}/{fieldId}/{publicMatchId}")
-//    public ResponseEntity getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
-//        return ResponseEntity.status(200).body(publicMatchService.getAllAvailableMatches(user.getId(), sportId, fieldId));
-//    }
-//
+
+    @GetMapping("/getMatchAndTeam/{sportId}/{fieldId}/{publicMatchId}")
+    public ResponseEntity getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(publicMatchService.getAllAvailableMatches(user.getId(), sportId, fieldId));
+    }
+
 //    @GetMapping("/getTeams/{publicMatchId}")
 //    public ResponseEntity getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
 //        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));

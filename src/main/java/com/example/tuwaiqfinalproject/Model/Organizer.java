@@ -17,7 +17,7 @@ public class Organizer {
     private Integer id;
 
     @Column(columnDefinition = "varchar(10) not null unique")
-    private String licenceNumber;
+    private String licence_number;
 
     @Column(columnDefinition = "varchar(10) not null")
     private String status;

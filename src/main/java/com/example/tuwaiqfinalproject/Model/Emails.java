@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,6 +26,7 @@ public class Emails {
     private String email;
 
     @ManyToOne
+    @JsonIgnore
     private PrivateMatch private_match;
 
 }

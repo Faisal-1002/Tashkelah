@@ -65,7 +65,7 @@ public class OrganizerService {
         user.setPhone(dto.getPhone());
         user.setAddress(dto.getAddress());
 
-        organizer.setLicenceNumber(dto.getLicence_number());
+        organizer.setLicence_number(dto.getLicence_number());
         organizer.setStatus(dto.getStatus());
 
         authRepository.save(user);
