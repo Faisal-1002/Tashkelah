@@ -1,5 +1,7 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -34,6 +36,7 @@ public class PrivateMatch {
     private Player player;
 
     @ManyToOne
+    @JsonIgnore
     private Field field;
 
     @OneToMany(mappedBy = "private_match", cascade = CascadeType.ALL)

@@ -47,6 +47,7 @@ public class Field {
     private Integer capacity;
 
     @ManyToOne
+    @JsonIgnore
     private Sport sport;
 
     @ManyToOne
