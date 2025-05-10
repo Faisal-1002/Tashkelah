@@ -34,6 +34,7 @@ public class PublicMatchService {
             throw new ApiException("Public match not found");
         return match;
     }
+
 // 3 - Eatzaz - add Public match with Field - tested
     public void addPublicMatch(Integer organizerId,PublicMatch match,Integer fieldId) {
         Organizer organizer=organizerRepository.findOrganizerById(organizerId);
@@ -84,6 +85,7 @@ public class PublicMatchService {
         if (publicMatch == null || !publicMatch.getField().getSport().getId().equals(sport.getId())) {
             throw new ApiException("No open public match found for this field and sport");
         }
+        player.setPublic_match(publicMatch);
         publicMatch.getPlayers().add(player);
         publicMatchRepository.save(publicMatch);
     }
@@ -159,7 +161,7 @@ public class PublicMatchService {
         if (team.getPublic_match() == null) {
             throw new ApiException("Public match data missing in team");
         }
-        Team_DTO teamADto = new Team_DTO(null, team.getPublic_match().getName(), team.getPublic_match().getStatus(), team.getPlayersCount(), team.getMax_players_count());
+        Team_DTO teamADto = new Team_DTO(null, "name", team.getPublic_match().getStatus(), team.getPlayersCount(), team.getMax_players_count());
         return new PublicMatchDTO(teamADto);
     }
 
