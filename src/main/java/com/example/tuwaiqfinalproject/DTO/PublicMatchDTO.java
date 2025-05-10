@@ -1,6 +1,5 @@
 package com.example.tuwaiqfinalproject.DTO;
 
-import com.example.tuwaiqfinalproject.Model.TeamB;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +13,4 @@ public class PublicMatchDTO {
 
     private TeamA_DTO teamA;
 
-
-    private TeamB_DTO teamB;
 }

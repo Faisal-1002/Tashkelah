@@ -78,24 +78,24 @@ public class FieldService {
 
     //Taha--------------
     // Public method to allow an approved organizer to add a new field with an image
-    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
-        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
-        if (organizer == null) {
-            throw new ApiException("Organizer not found");
-        }
-        if (!organizer.getStatus()) {
-            throw new ApiException("Your account is not yet approved");
-        }
-
-        Sport sport = sportRepository.findSportById(sport_id);
-        if (sport == null) {
-            throw new ApiException("Sport not found");
-        }
-
-        String photo = saveImage(photoFile);
-        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, sport, null, null, null);
-        fieldRepository.save(field);
-    }
+//    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
+//        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
+//        if (organizer == null) {
+//            throw new ApiException("Organizer not found");
+//        }
+//        if (!organizer.getStatus()) {
+//            throw new ApiException("Your account is not yet approved");
+//        }
+//
+//        Sport sport = sportRepository.findSportById(sport_id);
+//        if (sport == null) {
+//            throw new ApiException("Sport not found");
+//        }
+//
+//        String photo = saveImage(photoFile);
+//        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, sport, null, null, null);
+//        fieldRepository.save(field);
+//    }
 
 
 

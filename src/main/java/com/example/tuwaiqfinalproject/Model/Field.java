@@ -45,7 +45,7 @@ public class Field {
     @Column(columnDefinition = "int not null")
     @Min(value = 2)
     @Max(value = 22)
-    @Column(name = "capacity")
+//    @Column(name = "capacity")
     private Integer capacity;
 
     @ManyToOne
@@ -64,6 +64,6 @@ public class Field {
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<PrivateMatch> privateMatches;
 
-    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
-    private List<PublicMatch> publicMatches;
+//    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+//    private List<PublicMatch> publicMatches;
 }
