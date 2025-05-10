@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class TeamA {
+public class Team {
 
     @Id
     private Integer id;
@@ -23,6 +23,8 @@ public class TeamA {
     private String teamName;
 
     private Integer playersCount;
+
+    private Integer maxPlayer;
 
     @OneToOne
     @JsonIgnore

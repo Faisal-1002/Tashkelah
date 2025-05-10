@@ -155,7 +155,7 @@ public class FieldService {
 //        return null;
 //    }
 
-    // اظهار الملاعب للكل على حسب المدينه + الرياضه
+    // 1- Eatzaz - Show stadiums to the user according to the type of sport - need test
     public List<Field> getFieldBySportAndCity(Integer user_id, String sportName) {
         User user=authRepository.findUserById(user_id);
         if(user==null)
@@ -168,7 +168,7 @@ public class FieldService {
             throw new ApiException("No fields found for this sport in your city");
         return fields;
     }
-    //اختيار ملعب
+    //2 - Eatzaz -Choose a stadium - you need to test
     public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
         Player player=playerRepository.findPlayerById(playerId);
         Field field= fieldRepository.findFieldById(fieldId);
@@ -191,7 +191,8 @@ public class FieldService {
         }
         PublicMatch publicMatch = new PublicMatch();
         publicMatch.setField(field);
-        publicMatch.setPlayer(player);
+        publicMatchRepository.save(publicMatch);
+//        publicMatch.setPlayer(player);
     }
     // 24. Faisal - Assign field for private match - Tested
     public void playerChoseAFieldForPrivateMatch(Integer user_id, Integer fieldId) {

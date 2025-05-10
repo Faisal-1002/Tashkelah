@@ -2,7 +2,7 @@ package com.example.tuwaiqfinalproject.Controller;
 
 
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
-import com.example.tuwaiqfinalproject.Model.TeamA;
+import com.example.tuwaiqfinalproject.Model.Team;
 import com.example.tuwaiqfinalproject.Service.TeamAService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +18,16 @@ public class TeamAController {
 
     @PostMapping("/add")
     public ResponseEntity addTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
-                                   @RequestBody TeamA teamA) {
-        teamAService.addTeamA(publicMatch.getId(), teamA);
+                                   @RequestBody Team team) {
+        teamAService.addTeamA(publicMatch.getId(), team);
         return ResponseEntity.status(200).body("TeamA added successfully");
     }
 
     @PutMapping("/update/{teamAId}")
     public ResponseEntity updateTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId,
-                                      @RequestBody TeamA teamA) {
-        teamAService.updateTeamA(publicMatch, teamAId, teamA);
+                                      @RequestBody Team team) {
+        teamAService.updateTeamA(publicMatch, teamAId, team);
         return ResponseEntity.status(200).body("TeamA updated successfully");
     }
 

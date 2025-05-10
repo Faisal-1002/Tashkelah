@@ -2,7 +2,7 @@ package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
-import com.example.tuwaiqfinalproject.Model.TeamA;
+import com.example.tuwaiqfinalproject.Model.Team;
 import com.example.tuwaiqfinalproject.Repository.PublicMatchRepository;
 import com.example.tuwaiqfinalproject.Repository.TeamARepository;
 import lombok.RequiredArgsConstructor;
@@ -15,19 +15,19 @@ public class TeamAService {
     private final TeamARepository teamARepository;
     private final PublicMatchRepository publicMatchRepository;
 
-    public void addTeamA(Integer publicMatchId, TeamA teamA){
+//    public void addTeamA(Integer publicMatchId, Team team){
+//
+//        PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
+//        if(publicMatch== null){
+//            throw new ApiException("PublicMatch not found");
+//        }
+//
+//        publicMatch.setTeamA(team);
+//    }
 
-        PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
-        if(publicMatch== null){
-            throw new ApiException("PublicMatch not found");
-        }
+    public void updateTeamA(PublicMatch publicMatch, Integer tameAId, Team team) {
 
-        publicMatch.setTeamA(teamA);
-    }
-
-    public void updateTeamA(PublicMatch publicMatch, Integer tameAId,TeamA teamA) {
-
-        TeamA oldTeam = teamARepository.findTeamAById(tameAId);
+        Team oldTeam = teamARepository.findTeamAById(tameAId);
         if (oldTeam == null) {
             throw new ApiException("TeamA not found");
 
@@ -36,19 +36,19 @@ public class TeamAService {
         if (!oldTeam.getPublicMatch().getId().equals(publicMatch.getId())) {
             throw new ApiException("You are not allowed to update another Team data");
         }
-        oldTeam.setTeamName(teamA.getTeamName());
-        oldTeam.setPlayersCount(teamA.getPlayersCount());
+        oldTeam.setTeamName(team.getTeamName());
+        oldTeam.setPlayersCount(team.getPlayersCount());
         teamARepository.save(oldTeam);
     }
 
     public void deleteTeamA(PublicMatch publicMatch, Integer teamAId){
 
-        TeamA teamA= teamARepository.findTeamAById(teamAId);
+        Team team = teamARepository.findTeamAById(teamAId);
 
-        if (teamA==null){
+        if (team ==null){
             throw new ApiException("Team not found");
         }
-        if (!teamA.getPublicMatch().getId().equals(publicMatch.getId()));
+        if (!team.getPublicMatch().getId().equals(publicMatch.getId()));
         throw new ApiException("You are not allowed to delete another team data");
 
     }

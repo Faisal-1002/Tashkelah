@@ -31,11 +31,11 @@ public class PublicMatch {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
     @PrimaryKeyJoinColumn
-    private TeamA teamA;
+    private Team team;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
     @PrimaryKeyJoinColumn
-    private TeamB teamB;
+    private PublicMatch publicMatch;
 
     @ManyToOne
     private Player player;
