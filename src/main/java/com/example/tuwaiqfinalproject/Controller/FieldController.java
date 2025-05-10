@@ -35,11 +35,11 @@ public class FieldController {
         return ResponseEntity.status(200).body(fieldService.getAllFields());
     }
 
-//    @PostMapping("/add/{sport_id}")
-//    public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-//        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
-//        return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
-//    }
+    @PostMapping("/add/{sport_id}")
+    public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
+        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
+        return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
+    }
 
     @PutMapping("/update/{fieldId}")
     public ResponseEntity<?> updateField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestBody FieldDTO fieldDTO) {
@@ -53,14 +53,14 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field deleted successfully"));
     }
 
-    @GetMapping("/getBySportAndCity/{sportId}")
-    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
-        return ResponseEntity.status(200).body(fieldService.playerGetFieldsBySportAndCity(user.getId(), sportId));
-    }
+//    @GetMapping("/getBySportAndCity/{sportId}")
+//    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
+//        return ResponseEntity.status(200).body(fieldService.playerChoseAFieldForAPublicMatch(user.getId(), sportId););
+//    }
 
     @PutMapping("/choseField/{fieldId}/{sportId}")
     public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable Integer sportId) {
-        fieldService.playerChoseAFieldAndJoinPublicMatch(user.getId(), fieldId, sportId);
+        fieldService.playerChoseAFieldForAPublicMatch(user.getId(), fieldId, sportId);
         return ResponseEntity.status(200).body(new ApiResponse("The stadium has been successfully selected"));
     }
 

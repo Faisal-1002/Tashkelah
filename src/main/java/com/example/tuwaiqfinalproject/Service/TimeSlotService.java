@@ -15,6 +15,8 @@ public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
     private final PlayerRepository playerRepository;
+    private final PublicMatchRepository publicMatchRepository;
+    private final FieldRepository fieldRepository;
 
     public List<TimeSlot> getAllTimeSlots() {
         return timeSlotRepository.findAll();
@@ -27,7 +29,15 @@ public class TimeSlotService {
         return timeSlot;
     }
 
-    public void addTimeSlot(TimeSlot timeSlot) {
+    public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
+        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (publicMatch == null){
+            throw new ApiException("TimeSlot not found");}
+        Field field=fieldRepository.findFieldById(fieldId);
+        if (field == null){
+            throw new ApiException("TimeSlot not found");}
+        timeSlot.setField(field);
+        timeSlot.setPublic_match(publicMatch);
         timeSlotRepository.save(timeSlot);
     }
 

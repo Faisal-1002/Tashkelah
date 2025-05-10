@@ -51,16 +51,4 @@ public class SportService {
         }
         sportRepository.delete(sport);
     }
-
-    // Eatzaz - Choose a sport
-    public void ChooseSport(Integer playerId, Integer sportId) {
-        Player player = playerRepository.findPlayerById(playerId);
-        if (player == null) {
-            throw new ApiException("Sport not found");
-        }
-        Sport sport = sportRepository.findSportById(sportId);
-        if (sport == null) {
-            throw new ApiException("Sport not found");}
-        sportRepository.save(sport);
-    }
 }

@@ -16,7 +16,6 @@ public class TeamService {
     private final PublicMatchRepository publicMatchRepository;
 
     public void addTeamA(Integer publicMatchId, Team team){
-
         PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
         if(publicMatch== null){
             throw new ApiException("PublicMatch not found");
