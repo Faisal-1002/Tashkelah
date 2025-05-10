@@ -92,7 +92,7 @@ public class FieldService {
         }
 
         String photo = saveImage(photoFile);
-        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, sport, null, null, null);
+        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, null, sport, null, null);
         fieldRepository.save(field);
     }
 

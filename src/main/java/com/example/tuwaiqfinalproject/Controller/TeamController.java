@@ -2,8 +2,8 @@ package com.example.tuwaiqfinalproject.Controller;
 
 
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
-import com.example.tuwaiqfinalproject.Model.TeamA;
-import com.example.tuwaiqfinalproject.Service.TeamAService;
+import com.example.tuwaiqfinalproject.Model.Team;
+import com.example.tuwaiqfinalproject.Service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,29 +12,29 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/teama")
 @RequiredArgsConstructor
-public class TeamAController {
+public class TeamController {
 
-    private final TeamAService teamAService;
+    private final TeamService teamService;
 
     @PostMapping("/add")
-    public ResponseEntity addTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
-                                   @RequestBody TeamA teamA) {
-        teamAService.addTeamA(publicMatch.getId(), teamA);
+    public ResponseEntity addTeam(@AuthenticationPrincipal PublicMatch publicMatch,
+                                   @RequestBody Team team) {
+        teamService.addTeamA(publicMatch.getId(), team);
         return ResponseEntity.status(200).body("TeamA added successfully");
     }
 
     @PutMapping("/update/{teamAId}")
-    public ResponseEntity updateTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
+    public ResponseEntity updateTeam(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId,
-                                      @RequestBody TeamA teamA) {
-        teamAService.updateTeamA(publicMatch, teamAId, teamA);
+                                      @RequestBody Team team) {
+        teamService.updateTameA(publicMatch, teamAId, team);
         return ResponseEntity.status(200).body("TeamA updated successfully");
     }
 
     @DeleteMapping("/delete/{teamAId}")
-    public ResponseEntity deleteTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
+    public ResponseEntity deleteTeam(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId) {
-        teamAService.deleteTeamA(publicMatch, teamAId);
+        teamService.deleteTeamA(publicMatch, teamAId);
         return ResponseEntity.status(200).body("TeamA deleted successfully");
     }
 }

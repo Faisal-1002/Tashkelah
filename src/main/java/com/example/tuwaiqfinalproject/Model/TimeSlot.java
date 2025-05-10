@@ -12,6 +12,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Entity
 public class TimeSlot {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -39,4 +40,12 @@ public class TimeSlot {
 
     @ManyToOne
     private Field field;
+
+    @ManyToOne
+    private PrivateMatch privateMatch;
+
+    @ManyToOne
+    private PublicMatch publicMatch;
+
+
 }
