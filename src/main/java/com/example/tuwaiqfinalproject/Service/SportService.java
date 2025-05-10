@@ -1,7 +1,9 @@
 package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
+import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Model.Sport;
+import com.example.tuwaiqfinalproject.Repository.PlayerRepository;
 import com.example.tuwaiqfinalproject.Repository.SportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.util.List;
 public class SportService {
 
     private final SportRepository sportRepository;
+    private final PlayerRepository playerRepository;
 
     // 23. Faisal - Get all sports - Tested
     public List<Sport> getAllSports() {
@@ -47,5 +50,20 @@ public class SportService {
             throw new ApiException("Sport not found");
         }
         sportRepository.delete(sport);
+    }
+    // Eatzaz - Choose a sport
+    public void ChooseSport(Integer playerId, Integer sportId,String sportName) {
+        Player player = playerRepository.findPlayerById(playerId);
+        if (player == null) {
+            throw new ApiException("Sport not found");
+        }
+        Sport sport = sportRepository.findSportById(sportId);
+        if (sport == null) {
+            throw new ApiException("Sport not found");}
+        Sport sportByName=sportRepository.findSportByName(sportName);
+        if(! sport.getName().equals(sportName)){
+
+        }
+        sportRepository.save(sportByName);
     }
 }
