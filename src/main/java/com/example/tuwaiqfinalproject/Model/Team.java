@@ -12,15 +12,15 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeamB {
+@Entity
+public class Team {
 
     @Id
     private Integer id;
 
-    private String teamName;
+    private String name;
 
     private Integer playersCount;
 
@@ -29,4 +29,5 @@ public class TeamB {
     @OneToOne
     @JsonIgnore
     private PublicMatch publicMatch;
+
 }

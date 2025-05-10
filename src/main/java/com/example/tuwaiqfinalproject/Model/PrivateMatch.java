@@ -40,4 +40,7 @@ public class PrivateMatch {
     @ManyToOne
     private Field field;
 
+    @OneToMany(mappedBy = "privateMatch", cascade = CascadeType.ALL)
+    private List<TimeSlot> timeSlots;
+
 }

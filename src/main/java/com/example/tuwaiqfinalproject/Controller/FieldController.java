@@ -49,7 +49,7 @@ public class FieldController {
 
     @PutMapping("/choseField/{fieldId}/{sportName}")
     public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable String sportName) {
-        fieldService.playerChoseAField(sportName, user.getId(), fieldId);
+        fieldService.playerChoseAFieldForAPublicMatch(sportName, user.getId(), fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("The stadium has been successfully selected"));
     }
 

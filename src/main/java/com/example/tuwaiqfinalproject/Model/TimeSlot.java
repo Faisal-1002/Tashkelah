@@ -41,4 +41,11 @@ public class TimeSlot {
     @ManyToOne
     private Field field;
 
+    @ManyToOne
+    private PrivateMatch privateMatch;
+
+    @ManyToOne
+    private PublicMatch publicMatch;
+
+
 }

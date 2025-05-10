@@ -28,13 +28,13 @@ public class PublicMatch {
     @ManyToOne
     private Field field;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
-    @PrimaryKeyJoinColumn
-    private TeamA teamA;
+    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    private List<TimeSlot> timeSlots;
+
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
     @PrimaryKeyJoinColumn
-    private TeamB teamB;
+    private Team team;
 
     @OneToMany
     private Set<Player> players;
