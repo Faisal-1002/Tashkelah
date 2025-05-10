@@ -51,8 +51,9 @@ public class SportService {
         }
         sportRepository.delete(sport);
     }
+
     // Eatzaz - Choose a sport
-    public void ChooseSport(Integer playerId, Integer sportId,String sportName) {
+    public void ChooseSport(Integer playerId, Integer sportId) {
         Player player = playerRepository.findPlayerById(playerId);
         if (player == null) {
             throw new ApiException("Sport not found");
@@ -60,10 +61,6 @@ public class SportService {
         Sport sport = sportRepository.findSportById(sportId);
         if (sport == null) {
             throw new ApiException("Sport not found");}
-        Sport sportByName=sportRepository.findSportByName(sportName);
-        if(! sport.getName().equals(sportName)){
-
-        }
-        sportRepository.save(sportByName);
+        sportRepository.save(sport);
     }
 }
