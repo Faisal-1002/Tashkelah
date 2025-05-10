@@ -13,4 +13,5 @@ public interface PublicMatchRepository extends JpaRepository<PublicMatch, Intege
     PublicMatch findPublicMatchById(Integer id);
     //PublicMatch findBySportAndFieldAndStatus(Sport sport, Field field,String Status);
     List<PublicMatch> findPublicMatchByField(Field field);
+    PublicMatch findBySportAndFieldAndStatus(Sport sport, Field field,String Status);
 }
