@@ -48,7 +48,9 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
+    @JsonIgnore
     private Player player;
+
 //Solve the problem of circular relationships between the user object and the player
 //    @Override
 //    public int hashCode() {
@@ -57,6 +59,7 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
+    @JsonIgnore
     private Organizer organizer;
 
     @Override

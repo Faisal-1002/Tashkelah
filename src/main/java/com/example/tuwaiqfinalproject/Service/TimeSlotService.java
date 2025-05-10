@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,6 +30,34 @@ public class TimeSlotService {
             throw new ApiException("TimeSlot not found");
         return timeSlot;
     }
+
+    // Faisal - Add 24 Time slots for a given date
+    public void createFullDayTimeSlots(Integer fieldId, LocalDate date) {
+        Field field = fieldRepository.findFieldById(fieldId);
+        if (field == null) {
+            throw new ApiException("Field not found");
+        }
+
+        List<TimeSlot> timeSlots = new ArrayList<>();
+
+        for (int hour = 0; hour < 24; hour++) {
+            LocalTime start = LocalTime.of(hour, 0);
+            LocalTime end = (hour == 23) ? LocalTime.MIDNIGHT : LocalTime.of(hour + 1, 0);
+
+            TimeSlot slot = new TimeSlot();
+            slot.setField(field);
+            slot.setDate(date);
+            slot.setStart_time(start);
+            slot.setEnd_time(end);
+            slot.setStatus("AVAILABLE");
+            slot.setPrice(field.getPrice());
+
+            timeSlots.add(slot);
+        }
+
+        timeSlotRepository.saveAll(timeSlots);
+    }
+
 
     public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
         PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);

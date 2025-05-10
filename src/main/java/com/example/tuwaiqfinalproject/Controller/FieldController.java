@@ -37,7 +37,7 @@ public class FieldController {
 
     @PostMapping("/add/{sport_id}")
     public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
+        fieldService.addField(1, sport_id, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
@@ -87,9 +87,9 @@ public class FieldController {
     }
 
     //Taha
-    @GetMapping("/organizer-fields/{organizerId}")
+    @GetMapping("/organizer-fields")
     public ResponseEntity getOrganizerFields(@AuthenticationPrincipal User user) {
-       List<Field> fields = fieldService.getAllOrganizerFields(user.getId());
+       List<Field> fields = fieldService.getAllOrganizerFields(1);
         return ResponseEntity.status(200).body(fields);
     }
 
