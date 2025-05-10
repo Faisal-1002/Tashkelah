@@ -31,7 +31,7 @@ public class TimeSlotService {
         return timeSlot;
     }
 
-    // Faisal - Add 24 Time slots for a given date
+    // Faisal - Add Time slots for a given field and date
     public void createFullDayTimeSlots(Integer fieldId, LocalDate date) {
         Field field = fieldRepository.findFieldById(fieldId);
         if (field == null) {
@@ -40,9 +40,9 @@ public class TimeSlotService {
 
         List<TimeSlot> timeSlots = new ArrayList<>();
 
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = field.getOpen_time().getHour(); hour < field.getClose_time().getHour(); hour++) {
             LocalTime start = LocalTime.of(hour, 0);
-            LocalTime end = (hour == 23) ? LocalTime.MIDNIGHT : LocalTime.of(hour + 1, 0);
+            LocalTime end = LocalTime.of(hour + 1, 0);
 
             TimeSlot slot = new TimeSlot();
             slot.setField(field);
@@ -54,7 +54,6 @@ public class TimeSlotService {
 
             timeSlots.add(slot);
         }
-
         timeSlotRepository.saveAll(timeSlots);
     }
 
@@ -94,8 +93,8 @@ public class TimeSlotService {
             throw new ApiException("Player not found");
 
         PrivateMatch match = player.getPrivate_match();
-        if (match == null || !match.getStatus().equals("SCHEDULED"))
-            throw new ApiException("Private match not found or not scheduled");
+        if (match == null || !match.getStatus().equals("CREATED"))
+            throw new ApiException("Private match not found or its status is not CREATED");
 
         Field field = match.getField();
         if (field == null)

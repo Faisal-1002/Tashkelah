@@ -57,9 +57,11 @@ public class Field {
     private Organizer organizer;
 
     @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PublicMatch> public_matches;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PrivateMatch> private_matches;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)

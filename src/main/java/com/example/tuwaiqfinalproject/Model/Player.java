@@ -24,13 +24,8 @@ public class Player {
 
     @OneToOne
     @MapsId
+    @JsonIgnore
     private User user;
-
-//Solve the problem of circular relationships between the user object and the player
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id); // استخدام حقل id فقط لتوليد الـ hashCode
-//    }
 
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
     private PrivateMatch private_match;
