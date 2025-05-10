@@ -37,7 +37,7 @@ public class TimeSlotService {
         if (field == null){
             throw new ApiException("TimeSlot not found");}
         timeSlot.setField(field);
-        timeSlot.setPublicMatch(publicMatch);
+        timeSlot.setPublic_match(publicMatch);
         timeSlotRepository.save(timeSlot);
     }
 
