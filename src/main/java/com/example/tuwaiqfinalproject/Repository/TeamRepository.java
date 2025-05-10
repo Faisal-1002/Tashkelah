@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TeamARepository extends JpaRepository<Team, Integer> {
+public interface TeamRepository extends JpaRepository<Team, Integer> {
     Team findTeamAById(Integer id);
+    Team findTeamAByName(String teamName);
 }

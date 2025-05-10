@@ -1,6 +1,5 @@
 package com.example.tuwaiqfinalproject.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -13,6 +12,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Entity
 public class TimeSlot {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,11 +23,11 @@ public class TimeSlot {
 
     @NotNull(message = "Start time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime startTime;
+    private LocalTime start_time;
 
     @NotNull(message = "End time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime endTime;
+    private LocalTime end_time;
 
     @NotNull(message = "Price must not be null")
     @Min(value = 0, message = "Price must be non-negative")
@@ -40,7 +40,11 @@ public class TimeSlot {
 
     @ManyToOne
     private Field field;
-    @OneToOne
-@JsonIgnore
-    private PublicMatch publicMatch;
+
+    @ManyToOne
+    private PrivateMatch private_match;
+
+    @ManyToOne
+    private PublicMatch public_match;
+
 }

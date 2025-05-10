@@ -17,6 +17,7 @@ public class SportService {
     private final SportRepository sportRepository;
     private final PlayerRepository playerRepository;
 
+    // 23. Faisal - Get all sports - Tested
     public List<Sport> getAllSports() {
         return sportRepository.findAll();
     }
@@ -39,7 +40,7 @@ public class SportService {
             throw new ApiException("Sport not found");
         }
         sport.setName(updatedSport.getName());
-        sport.setDefaultPlayerCount(updatedSport.getDefaultPlayerCount());
+        sport.setDefault_player_count(updatedSport.getDefault_player_count());
         sportRepository.save(sport);
     }
 

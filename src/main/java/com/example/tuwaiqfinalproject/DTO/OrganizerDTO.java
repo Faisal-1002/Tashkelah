@@ -25,11 +25,8 @@ public class OrganizerDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @Column(nullable = false)
     @Pattern(regexp = "ORGANIZER|PLAYER|ADMIN",message = "Role must be ORGANIZER, PLAYER, or ADMIN")
     private String role;
-
-
 
     @NotEmpty(message = "Name must not be empty")
     private String name;
@@ -38,11 +35,13 @@ public class OrganizerDTO {
     @Pattern(regexp = "^(05)[0-9]{8}$", message = "Phone number must start with 05 and be 10 digits")
     private String phone;
 
-    @NotEmpty(message = "City must not be empty")
-    private String city;
+    @NotEmpty(message = "address must not be empty")
+    private String address;
 
     @NotEmpty(message = "License number must not be empty")
-    private String licenceNumber;
+    private String licence_number;
 
-    private Boolean status ;
+    @NotEmpty(message = "Status must not be empty")
+    @Pattern(regexp = "^(ACTIVE|INACTIVE|PENDING)$", message = "Status must be ACTIVE, INACTIVE or PENDING")
+    private String status;
 }

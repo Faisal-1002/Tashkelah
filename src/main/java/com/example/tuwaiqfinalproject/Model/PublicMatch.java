@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -23,26 +24,25 @@ public class PublicMatch {
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    private String status; // e.g. OPEN, FULL
+    private String status;
 
     @ManyToOne
     @JsonIgnore
     private Field field;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
+    @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
+    private List<TimeSlot> time_slots;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "public_match")
     @PrimaryKeyJoinColumn
     private Team team;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
-    @PrimaryKeyJoinColumn
-    private PublicMatch publicMatch;
-
-    @ManyToOne
-    private Player player;
+    @OneToMany
+    private Set<Player> players;
 
     @ManyToOne
     private Organizer organizer;
 
-    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
     private List<Booking> bookings;
 }

@@ -20,14 +20,14 @@ public class Team {
     @Id
     private Integer id;
 
-    private String teamName;
+    private String name;
 
     private Integer playersCount;
 
-    private Integer maxPlayer;
+    private Integer max_players_count;
 
     @OneToOne
     @JsonIgnore
-    private PublicMatch publicMatch;
+    private PublicMatch public_match;
 
 }
