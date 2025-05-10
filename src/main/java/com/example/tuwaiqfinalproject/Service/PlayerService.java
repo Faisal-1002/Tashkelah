@@ -42,8 +42,8 @@ public class PlayerService {
     public void registerPlayer(PlayerDTO dto) {
         dto.setRole("PLAYER");
         String hashPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
-        User user = new User(null, dto.getUsername(),hashPassword,dto.getRole(),dto.getName(),dto.getPhone(),dto.getCity(),dto.getEmail(), null, null);
-        Player player = new Player(null, dto.getGender(), dto.getBirthDate(),user,null,null);
+        User user = new User(null, dto.getUsername(),hashPassword,dto.getRole(),dto.getName(),dto.getPhone(),dto.getAddress(),dto.getEmail(), null, null);
+        Player player = new Player(null, dto.getGender(), dto.getBirth_date(),user,null,null);
 
         authRepository.save(user);
         playerRepository.save(player);
@@ -61,9 +61,9 @@ public class PlayerService {
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());
         user.setPhone(dto.getPhone());
-        user.setCity(dto.getCity());
+        user.setAddress(dto.getAddress());
         player.setGender(dto.getGender());
-        player.setBirthDate(dto.getBirthDate());
+        player.setBirth_date(dto.getBirth_date());
 
         authRepository.save(user);
         playerRepository.save(player);

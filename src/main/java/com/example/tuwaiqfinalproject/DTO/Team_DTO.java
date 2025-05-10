@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Team_DTO {
 
-    private Integer publicMatch_id;
+    private Integer public_match_id;
 
     @NotEmpty
     private String name;
@@ -17,12 +17,10 @@ public class Team_DTO {
     @NotEmpty
     private String status;
 
-    @NotEmpty
-    private String teamName;
+    @NotNull
+    private Integer players_count;
 
     @NotNull
-    private Integer playersCount;
-
-
+    private Integer max_players_count;
 
 }

@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Emails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,5 +25,6 @@ public class Emails {
     private String email;
 
     @ManyToOne
-    private PrivateMatch privateMatch;
+    private PrivateMatch private_match;
+
 }

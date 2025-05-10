@@ -24,17 +24,16 @@ public class PublicMatch {
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    private String status; // e.g. OPEN, FULL
+    private String status;
 
     @ManyToOne
     @JsonIgnore
     private Field field;
 
-    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
-    private List<TimeSlot> timeSlots;
+    @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
+    private List<TimeSlot> time_slots;
 
-
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "public_match")
     @PrimaryKeyJoinColumn
     private Team team;
 
@@ -44,6 +43,6 @@ public class PublicMatch {
     @ManyToOne
     private Organizer organizer;
 
-    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
     private List<Booking> bookings;
 }

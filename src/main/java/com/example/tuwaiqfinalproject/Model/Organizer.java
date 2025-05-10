@@ -19,8 +19,8 @@ public class Organizer {
     @Column(columnDefinition = "varchar(10) not null unique")
     private String licenceNumber;
 
-
-    private Boolean status;
+    @Column(columnDefinition = "varchar(10) not null")
+    private String status;
 
     @OneToOne
     @MapsId
@@ -31,6 +31,6 @@ public class Organizer {
     private List<Field> fields;
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
-    private List<PublicMatch> publicMatches;
+    private List<PublicMatch> public_matches;
 
 }

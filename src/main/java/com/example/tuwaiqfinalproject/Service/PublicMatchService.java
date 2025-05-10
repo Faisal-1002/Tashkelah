@@ -113,9 +113,9 @@ public class PublicMatchService {
         throw new ApiException("Public match not found");
         }
         Team team = match.getTeam();
-        Team_DTO teamADto = new Team_DTO(null, team.getPublicMatch().getName(), team.getPublicMatch().getStatus(), team.getName(), team.getPlayersCount());
+        Team_DTO teamDto = new Team_DTO(null, team.getPublic_match().getName(), team.getPublic_match().getStatus(), team.getPlayersCount() , null);
 
-        return new PublicMatchDTO(teamADto);
+        return new PublicMatchDTO(teamDto);
     }
 
     // Eatzaz - Choose a team - need testing
@@ -123,7 +123,7 @@ public class PublicMatchService {
         Player player=playerRepository.findPlayerById(playerId);
         Sport sport=sportRepository.findSportById(sportId);
         Field field=fieldRepository.findFieldById(fieldId);
-        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(player.getPublicMatch().getId());
+        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(player.getPublic_match().getId());
         if(player==null){
             throw new ApiException("Player Not Found");
         }
@@ -137,7 +137,7 @@ public class PublicMatchService {
             throw new ApiException("public Match Not Found");
         }
         Team team = teamRepository.findTeamAByName(teamName);
-        if(team != null && team.getPlayersCount()< team.getMaxPlayersCount()){
+        if(team != null && team.getPlayersCount()< team.getMax_players_count()){
             publicMatch.getPlayers().add(player);
             team.setPlayersCount(team.getPlayersCount()+1);
             publicMatch.setTeam(team);
@@ -157,7 +157,7 @@ public class PublicMatchService {
         String selectedTeamName = null;
         if (publicMatch.getTeam() != null && publicMatch.getPlayers().contains(player))
             selectedTeamName = publicMatch.getTeam().getName();
-        List<TimeSlot> timeSlots = publicMatch.getTimeSlots();
+        List<TimeSlot> timeSlots = publicMatch.getTime_slots();
         if (timeSlots.isEmpty()) {
             throw new ApiException("No time slots found for this match");
         }
@@ -166,11 +166,11 @@ public class PublicMatchService {
 
         return new PlayerSelectionDTO(
                 publicMatch.getField().getName(),
-                publicMatch.getField().getLocation(),
+                publicMatch.getField().getAddress(),
                 slot.getPrice(),
                 selectedTeamName,
                 slot.getDate(),
-                slot.getStartTime()
+                slot.getStart_time()
         );
     }
 

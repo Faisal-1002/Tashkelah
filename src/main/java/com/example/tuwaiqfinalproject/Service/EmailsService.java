@@ -28,7 +28,7 @@ public class EmailsService {
         if (privateMatch == null) {
             throw new ApiException("Private match not found");
         }
-        email.setPrivateMatch(privateMatch);
+        email.setPrivate_match(privateMatch);
         emailsRepository.save(email);
     }
 
@@ -52,7 +52,7 @@ public class EmailsService {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivateMatch();
+        PrivateMatch match = player.getPrivate_match();
         if (match == null || !match.getStatus().equals("CONFIRMED"))
             throw new ApiException("Private match must be confirmed before sending invites");
 
@@ -63,8 +63,8 @@ public class EmailsService {
         for (Emails emailEntry : invites) {
             String to = emailEntry.getEmail();
             String subject = "You're Invited to a Private Match!";
-            String body = "Hey there!\n\nYou've been invited to join a private match: " + match.getName()
-                    + "\nLocation: " + match.getField().getLocation()
+            String body = "Hey there!\n\nYou've been invited to join a private match: "
+                    + "\nLocation: " + match.getField().getAddress()
                     + "\nOrganizer: " + player.getUser().getName();
 
            sendEmail(to, subject, body);

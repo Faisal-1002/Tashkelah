@@ -13,8 +13,6 @@ import java.util.List;
 @Repository
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
     TimeSlot findTimeSlotById(Integer id);
-    TimeSlot findTimeSlotByField(Field fieldId);
-    @Query("SELECT t FROM TimeSlot t WHERE t.field.id = ?1 AND t.date = ?2 AND t.startTime >= ?3 AND t.endTime <= ?4")
+    @Query("SELECT t FROM TimeSlot t WHERE t.field.id = ?1 AND t.date = ?2 AND t.start_time >= ?3 AND t.end_time <= ?4")
     List<TimeSlot> findValidSlotsByFieldAndDate(Integer fieldId, LocalDate date, LocalTime openTime, LocalTime closeTime);
-    TimeSlot findTimeSlotByPublicMatchIsNotNull();
 }
