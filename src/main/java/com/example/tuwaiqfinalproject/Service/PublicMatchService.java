@@ -6,6 +6,7 @@ import com.example.tuwaiqfinalproject.DTO.Team_DTO;
 import com.example.tuwaiqfinalproject.DTO.PlayerSelectionDTO;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class PublicMatchService {
     private final SportRepository sportRepository;
     private final FieldRepository fieldRepository;
     private final TeamRepository teamRepository;
+    private final OrganizerRepository organizerRepository;
     private final TimeSlotRepository timeSlotRepository;
 
     public List<PublicMatch> getAllPublicMatches() {
@@ -32,9 +34,19 @@ public class PublicMatchService {
             throw new ApiException("Public match not found");
         return match;
     }
-
-    public void addPublicMatch(PublicMatch match) {
+// 3 - Eatzaz - add Public match with Field - tested
+    public void addPublicMatch(Integer organizerId,PublicMatch match,Integer fieldId) {
+        Organizer organizer=organizerRepository.findOrganizerById(organizerId);
+        if(organizer==null){
+            throw new ApiException("organizer not found");
+        }
+        Field field=fieldRepository.findFieldById(fieldId);
+        if(field==null){
+            throw new ApiException("organizer not found");
+        }
         match.setStatus("OPEN");
+        match.setOrganizer(organizer);
+        match.setField(field);
         publicMatchRepository.save(match);
     }
 
@@ -53,27 +65,30 @@ public class PublicMatchService {
             throw new ApiException("Public match not found");
         publicMatchRepository.delete(match);
     }
-    // اختيار فريق عشوائي
-    public void PlayWithPublicTeam(Integer sportId,Integer fieldId,Integer playerId){
+
+    //4. Eatzaz- Play with a public match -tested
+    public void PlayWithPublicMatch(Integer sportId,Integer fieldId,Integer playerId){
         Player player=playerRepository.findPlayerById(playerId);
-        Sport sport=sportRepository.findSportById(sportId);
-        Field field=fieldRepository.findFieldById(fieldId);
         if(player==null){
             throw new ApiException("Player Not Found");
         }
+        Sport sport=sportRepository.findSportById(sportId);
         if(sport==null){
             throw new ApiException("Sport Not Found");
         }
+        Field field=fieldRepository.findFieldById(fieldId);
         if(field==null){
             throw new ApiException("Field Not Found");
         }
-//        PublicMatch publicMatch = publicMatchRepository
-//                .findBySportAndFieldAndStatus(sport, field, "Pending");
-//        publicMatch.getPlayers().add(player);
-//        publicMatchRepository.save(publicMatch);
+        PublicMatch publicMatch = publicMatchRepository.findPublicMatchByFieldAndStatus(field, "OPEN");
+        if (publicMatch == null || !publicMatch.getField().getSport().getId().equals(sport.getId())) {
+            throw new ApiException("No open public match found for this field and sport");
+        }
+        publicMatch.getPlayers().add(player);
+        publicMatchRepository.save(publicMatch);
     }
-    // Eatzaz - Get public matches - need testing
-    public PublicMatch getAllAvailableMatches(Integer playerId, Integer sportId, Integer fieldId){
+    //5- Eatzaz - Get public matches - tested
+    public List<PublicMatch> getAllAvailableMatches(Integer playerId, Integer sportId, Integer fieldId){
         Player player=playerRepository.findPlayerById(playerId);
         if(player==null){
             throw new ApiException("Player Not Found");
@@ -89,35 +104,39 @@ public class PublicMatchService {
         if (field.getSport() != sport)
             throw new ApiException("Sports do not match");
 
-//        List<PublicMatch> matches = publicMatchRepository.findPublicMatchByField(field);
-//        TimeSlot timeSlot = timeSlotRepository.findTimeSlotByPublicMatchIsNotNull();
-//        PublicMatch match = timeSlot.getPublicMatch();
-//            if (match == null) {
-//                throw new ApiException("Public Match Not Found");
-//            }
-//       return match;
-        return null;
+        List<PublicMatch> matches = publicMatchRepository.findPublicMatchByField(field);
+        TimeSlot timeSlot = timeSlotRepository.findTimeSlotByPublicMatchIsNotNull();
+        PublicMatch match = timeSlot.getPublicMatch();
+            if (match == null) {
+                throw new ApiException("Public Match Not Found");
+            }
+       return matches;
     }
+
     // Eatzaz - Get teams for public match
     public PublicMatchDTO getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
         Player player=playerRepository.findPlayerById(PlayerId);
-        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
-        Field field=fieldRepository.findFieldById(match.getField().getId());
         if(player==null){
             throw new ApiException("player match not found");
         }
-        if(field==null){
-            throw new ApiException("Field match not found");
-        }
+        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
         if(match==null){
         throw new ApiException("Public match not found");
         }
+        Field field=fieldRepository.findFieldById(match.getField().getId());
+        if(field==null){
+            throw new ApiException("Field match not found");
+        }
         Team team = match.getTeam();
+        if (team == null) {
+            throw new ApiException("No team assigned to this match");
+        }
+        if (team.getPublicMatch() == null) {
+            throw new ApiException("Public match data missing in team");
+        }
         Team_DTO teamADto = new Team_DTO(null, team.getPublicMatch().getName(), team.getPublicMatch().getStatus(), team.getName(), team.getPlayersCount());
-
         return new PublicMatchDTO(teamADto);
     }
-
     // Eatzaz - Choose a team - need testing
     public void PublicTeamSelection(Integer playerId, Integer sportId,Integer fieldId, String teamName) {
         Player player=playerRepository.findPlayerById(playerId);

@@ -55,6 +55,7 @@ public class Field {
     private List<PublicMatch> publicMatches;
 
     @ManyToOne
+    @JsonIgnore
     private Sport sport;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)

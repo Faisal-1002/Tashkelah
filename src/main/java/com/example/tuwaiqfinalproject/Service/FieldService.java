@@ -97,7 +97,6 @@ public class FieldService {
     }
 
 
-
     public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO){
         Field field= fieldRepository.findFieldById(fieldId);
 
@@ -135,26 +134,9 @@ public class FieldService {
 
         fieldRepository.delete(field);
     }
-    // اظهار الملاعب للكل على حسب المدينه + الرياضه
-//    public List<Field> getFieldBySportAndCity(String location,String sportName){
-//        Sport sport=sportRepository.findSportByName(sportName);
-//        List<Field> field=fieldRepository.findFieldByLocation(location);
-//        if(sport==null){
-//            throw new ApiException("Sport Not Found");
-//        }
-//        if(field==null){
-//            throw new ApiException("Field Not Found");
-//        }
-//        for(Field f:field){
-//            if( f.getLocation().equals(location) && f.getSport().getName().equals(sportName)){
-////            throw new ApiException("There is no stadium for this sport in your city at the moment.");
-//                return field;
-//            }
-//        }
-//        return null;
-//    }
 
-    // اظهار الملاعب للكل على حسب المدينه + الرياضه
+
+    // 1- Eatzaz - Show stadiums by sport type -tested
     public List<Field> getFieldBySportAndCity(Integer user_id, String sportName) {
         User user=authRepository.findUserById(user_id);
         if(user==null)
@@ -167,11 +149,11 @@ public class FieldService {
             throw new ApiException("No fields found for this sport in your city");
         return fields;
     }
-    //اختيار ملعب
-    public void playerChoseAFieldForAPublicMatch(String sportName,Integer playerId, Integer fieldId){
+    //2- Eatzaz - player Chose Field For Public Match - tested
+    public void playerChoseAFieldForAPublicMatch(Integer sportId,Integer playerId, Integer fieldId){
         Player player=playerRepository.findPlayerById(playerId);
         Field field= fieldRepository.findFieldById(fieldId);
-        Sport sport=sportRepository.findSportByName(sportName);
+        Sport sport=sportRepository.findSportById(sportId);
       
         if(player==null){
             throw new ApiException("Player Not Found");
@@ -185,7 +167,7 @@ public class FieldService {
         }
 
         if (!field.getLocation().equals(player.getUser().getCity()) ||
-                !field.getSport().getName().equals(sportName)) {
+                !field.getSport().getName().equals(sport.getName())) {
             throw new ApiException("Field does not match player's city or sport");
         }
         PublicMatch publicMatch = new PublicMatch();

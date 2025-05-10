@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -39,12 +40,15 @@ public class TimeSlot {
     private String status;
 
     @ManyToOne
+    @JsonIgnore
     private Field field;
 
     @ManyToOne
+    @JsonIgnore
     private PrivateMatch privateMatch;
 
     @ManyToOne
+    @JsonIgnore
     private PublicMatch publicMatch;
 
 

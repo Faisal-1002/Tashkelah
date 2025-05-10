@@ -3,6 +3,7 @@ package com.example.tuwaiqfinalproject.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class PublicMatch {
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
+    @Pattern(regexp = "PENDING|OPEN|FULL")
     private String status; // e.g. OPEN, FULL
 
     @ManyToOne
@@ -42,6 +44,7 @@ public class PublicMatch {
     private Set<Player> players;
 
     @ManyToOne
+    @JsonIgnore
     private Organizer organizer;
 
     @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)

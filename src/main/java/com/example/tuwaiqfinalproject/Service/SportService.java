@@ -50,19 +50,20 @@ public class SportService {
         }
         sportRepository.delete(sport);
     }
-    // Eatzaz - Choose a sport
-    public void ChooseSport(Integer playerId, Integer sportId,String sportName) {
-        Player player = playerRepository.findPlayerById(playerId);
-        if (player == null) {
-            throw new ApiException("Sport not found");
-        }
-        Sport sport = sportRepository.findSportById(sportId);
-        if (sport == null) {
-            throw new ApiException("Sport not found");}
-        Sport sportByName=sportRepository.findSportByName(sportName);
-        if(! sport.getName().equals(sportName)){
-
-        }
-        sportRepository.save(sportByName);
-    }
+//    // Eatzaz - Choose a sport
+//    public void ChooseSport(Integer playerId, String sportName) {
+//        Player player = playerRepository.findPlayerById(playerId);
+//        if (player == null) {
+//            throw new ApiException("Sport not found");
+//        }
+//
+//        Sport sportByName=sportRepository.findSportByName(sportName);
+//        if(! sportByName.getName().equals(sportName)){
+//throw new ApiException("not found");
+//        }
+//        if (player.getPublicMatch() != null && player.getPublicMatch().getField() != null) {
+//        player.getPublicMatch().getField().setSport(sportByName);
+//        playerRepository.save(player);}
+//        throw new ApiException("Public Match or Field not found");
+//    }
 }

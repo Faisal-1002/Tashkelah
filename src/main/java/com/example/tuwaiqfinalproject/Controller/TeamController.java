@@ -16,10 +16,10 @@ public class TeamController {
 
     private final TeamService teamService;
 
-    @PostMapping("/add")
-    public ResponseEntity addTeam(@AuthenticationPrincipal PublicMatch publicMatch,
+    @PostMapping("/add/{publicId}")
+    public ResponseEntity addTeam(@PathVariable Integer publicId,
                                    @RequestBody Team team) {
-        teamService.addTeamA(publicMatch.getId(), team);
+        teamService.addTeamA(publicId, team);
         return ResponseEntity.status(200).body("TeamA added successfully");
     }
 
