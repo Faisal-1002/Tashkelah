@@ -19,25 +19,25 @@ public class Booking {
 
     @NotNull(message = "Booking time must not be null")
     @Column(columnDefinition = "datetime not null")
-    private LocalDateTime bookingTime;
+    private LocalDateTime booking_time;
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    private String status; // CONFIRMED, CANCELLED, etc.
+    private String status;
 
-    @NotNull(message = "isPaid must not be null")
     @Column(columnDefinition = "boolean not null")
-    private Boolean isPaid;
+    private Boolean is_paid = false;
 
     @Column(columnDefinition = "double not null")
-    private Double totalAmount;
+    private Double total_amount;
 
     @OneToOne
-    private PrivateMatch privateMatch;
+    private PrivateMatch private_match;
 
     @ManyToOne
-    private PublicMatch publicMatch;
+    private PublicMatch public_match;
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private Payment payment;
+
 }

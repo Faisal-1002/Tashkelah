@@ -33,7 +33,7 @@ public class PaymentService {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivateMatch();
+        PrivateMatch match = player.getPrivate_match();
         if (match == null || match.getBooking() == null)
             throw new ApiException("No booking found for this match");
 
@@ -44,7 +44,7 @@ public class PaymentService {
         String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments"; // Replace with your real callback
 
         paymentRequest.setName(player.getUser().getName());
-        paymentRequest.setAmount(booking.getTotalAmount());
+        paymentRequest.setAmount(booking.getTotal_amount());
         paymentRequest.setCurrency("SAR");
 
         // 🔒 Moyasar requires amount in the smallest currency unit (e.g. halalas)
@@ -85,7 +85,7 @@ public class PaymentService {
         if (player == null)
             throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivateMatch();
+        PrivateMatch match = player.getPrivate_match();
         if (match == null || match.getBooking() == null)
             throw new ApiException("No booking found for this match");
 
@@ -111,7 +111,7 @@ public class PaymentService {
                 String.class
         );
 
-        booking.setIsPaid(true);
+        booking.setIs_paid(true);
         booking.setStatus("CONFIRMED");
         booking.setPayment(payment);
         bookingRepository.save(booking);

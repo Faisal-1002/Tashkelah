@@ -23,11 +23,11 @@ public class TimeSlot {
 
     @NotNull(message = "Start time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime startTime;
+    private LocalTime start_time;
 
     @NotNull(message = "End time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime endTime;
+    private LocalTime end_time;
 
     @NotNull(message = "Price must not be null")
     @Min(value = 0, message = "Price must be non-negative")
@@ -42,10 +42,9 @@ public class TimeSlot {
     private Field field;
 
     @ManyToOne
-    private PrivateMatch privateMatch;
+    private PrivateMatch private_match;
 
     @ManyToOne
-    private PublicMatch publicMatch;
-
+    private PublicMatch public_match;
 
 }

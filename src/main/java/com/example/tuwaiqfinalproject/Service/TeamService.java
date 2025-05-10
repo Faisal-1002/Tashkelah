@@ -21,7 +21,7 @@ public class TeamService {
         if(publicMatch== null){
             throw new ApiException("PublicMatch not found");
         }
-        team.setMaxPlayersCount(publicMatch.getField().getCapacity()/2);
+        team.setMax_players_count(publicMatch.getField().getCapacity()/2);
         publicMatch.setTeam(team);
     }
 
@@ -33,7 +33,7 @@ public class TeamService {
 
         }
 
-        if (!oldTeam.getPublicMatch().getId().equals(publicMatch.getId())) {
+        if (!oldTeam.getPublic_match().getId().equals(publicMatch.getId())) {
             throw new ApiException("You are not allowed to update another Team data");
         }
         oldTeam.setName(team.getName());
@@ -48,7 +48,7 @@ public class TeamService {
         if (team ==null){
             throw new ApiException("Team not found");
         }
-        if (!team.getPublicMatch().getId().equals(publicMatch.getId()));
+        if (!team.getPublic_match().getId().equals(publicMatch.getId()));
         throw new ApiException("You are not allowed to delete another team data");
 
     }

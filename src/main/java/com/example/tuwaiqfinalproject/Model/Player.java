@@ -19,7 +19,7 @@ public class Player {
     private String gender;
 
     @Column(columnDefinition = "date not null")
-    private LocalDate birthDate;
+    private LocalDate birth_date;
 
     @OneToOne
     @MapsId
@@ -27,8 +27,9 @@ public class Player {
     private User user;
 
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
-    private PrivateMatch privateMatch;
+    private PrivateMatch private_match;
 
     @ManyToOne
-    private PublicMatch publicMatch;
+    private PublicMatch public_match;
+
 }
