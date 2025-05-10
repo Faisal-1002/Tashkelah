@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -29,16 +30,16 @@ public class PublicMatch {
     @JsonIgnore
     private Field field;
 
+    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    private List<TimeSlot> timeSlots;
+
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
     @PrimaryKeyJoinColumn
     private Team team;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "publicMatch")
-    @PrimaryKeyJoinColumn
-    private PublicMatch publicMatch;
-
-    @ManyToOne
-    private Player player;
+    @OneToMany
+    private Set<Player> players;
 
     @ManyToOne
     private Organizer organizer;

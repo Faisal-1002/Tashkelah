@@ -12,27 +12,27 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/teama")
 @RequiredArgsConstructor
-public class TeamAController {
+public class TeamController {
 
     private final TeamService teamService;
 
-//    @PostMapping("/add")
-//    public ResponseEntity addTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
-//                                   @RequestBody Team team) {
-//        teamService.addTeamA(publicMatch.getId(), team);
-//        return ResponseEntity.status(200).body("TeamA added successfully");
-//    }
+    @PostMapping("/add")
+    public ResponseEntity addTeam(@AuthenticationPrincipal PublicMatch publicMatch,
+                                   @RequestBody Team team) {
+        teamService.addTeamA(publicMatch.getId(), team);
+        return ResponseEntity.status(200).body("TeamA added successfully");
+    }
 
     @PutMapping("/update/{teamAId}")
-    public ResponseEntity updateTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
+    public ResponseEntity updateTeam(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId,
                                       @RequestBody Team team) {
-        teamService.updateTeamA(publicMatch, teamAId, team);
+        teamService.updateTameA(publicMatch, teamAId, team);
         return ResponseEntity.status(200).body("TeamA updated successfully");
     }
 
     @DeleteMapping("/delete/{teamAId}")
-    public ResponseEntity deleteTeamA(@AuthenticationPrincipal PublicMatch publicMatch,
+    public ResponseEntity deleteTeam(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId) {
         teamService.deleteTeamA(publicMatch, teamAId);
         return ResponseEntity.status(200).body("TeamA deleted successfully");

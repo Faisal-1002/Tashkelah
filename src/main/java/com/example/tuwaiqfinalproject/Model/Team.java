@@ -20,11 +20,11 @@ public class Team {
     @Id
     private Integer id;
 
-    private String teamName;
+    private String name;
 
     private Integer playersCount;
 
-    private Integer maxPlayer;
+    private Integer maxPlayersCount;
 
     @OneToOne
     @JsonIgnore

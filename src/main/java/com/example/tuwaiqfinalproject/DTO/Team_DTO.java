@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TeamA_DTO {
+public class Team_DTO {
 
     private Integer publicMatch_id;
 

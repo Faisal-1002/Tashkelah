@@ -22,7 +22,6 @@ public class FieldService {
     private final FieldRepository fieldRepository;
     private final OrganizerRepository organizerRepository;
     private final SportRepository sportRepository;
-    private final PublicMatchRepository publicMatchRepository;
     private final AuthRepository authRepository;
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
@@ -78,24 +77,24 @@ public class FieldService {
 
     //Taha--------------
     // Public method to allow an approved organizer to add a new field with an image
-//    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
-//        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
-//        if (organizer == null) {
-//            throw new ApiException("Organizer not found");
-//        }
-//        if (!organizer.getStatus()) {
-//            throw new ApiException("Your account is not yet approved");
-//        }
-//
-//        Sport sport = sportRepository.findSportById(sport_id);
-//        if (sport == null) {
-//            throw new ApiException("Sport not found");
-//        }
-//
-//        String photo = saveImage(photoFile);
-//        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, sport, null, null, null);
-//        fieldRepository.save(field);
-//    }
+    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
+        if (organizer == null) {
+            throw new ApiException("Organizer not found");
+        }
+        if (!organizer.getStatus()) {
+            throw new ApiException("Your account is not yet approved");
+        }
+
+        Sport sport = sportRepository.findSportById(sport_id);
+        if (sport == null) {
+            throw new ApiException("Sport not found");
+        }
+
+        String photo = saveImage(photoFile);
+        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, null, sport, null, null);
+        fieldRepository.save(field);
+    }
 
 
 
@@ -155,7 +154,7 @@ public class FieldService {
 //        return null;
 //    }
 
-    // 1- Eatzaz - Show stadiums to the user according to the type of sport - need test
+    // اظهار الملاعب للكل على حسب المدينه + الرياضه
     public List<Field> getFieldBySportAndCity(Integer user_id, String sportName) {
         User user=authRepository.findUserById(user_id);
         if(user==null)
@@ -168,8 +167,8 @@ public class FieldService {
             throw new ApiException("No fields found for this sport in your city");
         return fields;
     }
-    //2 - Eatzaz -Choose a stadium - you need to test
-    public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
+    //اختيار ملعب
+    public void playerChoseAFieldForAPublicMatch(String sportName,Integer playerId, Integer fieldId){
         Player player=playerRepository.findPlayerById(playerId);
         Field field= fieldRepository.findFieldById(fieldId);
         Sport sport=sportRepository.findSportByName(sportName);
@@ -182,7 +181,7 @@ public class FieldService {
             throw new ApiException("Field Not Found");
         }
         if (sport == null) {
-            throw new ApiException("Field Not Found");
+            throw new ApiException("Sport Not Found");
         }
 
         if (!field.getLocation().equals(player.getUser().getCity()) ||
@@ -191,8 +190,6 @@ public class FieldService {
         }
         PublicMatch publicMatch = new PublicMatch();
         publicMatch.setField(field);
-        publicMatchRepository.save(publicMatch);
-//        publicMatch.setPlayer(player);
     }
     // 24. Faisal - Assign field for private match - Tested
     public void playerChoseAFieldForPrivateMatch(Integer user_id, Integer fieldId) {
