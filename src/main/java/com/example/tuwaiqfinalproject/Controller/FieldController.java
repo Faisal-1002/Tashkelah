@@ -53,10 +53,10 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field deleted successfully"));
     }
 
-//    @GetMapping("/getBySportAndCity/{sportId}")
-//    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
-//        return ResponseEntity.status(200).body(fieldService.playerChoseAFieldForAPublicMatch(user.getId(), sportId););
-//    }
+    @GetMapping("/getBySportAndCity/{sportId}")
+    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
+        return ResponseEntity.status(200).body(fieldService.getFieldBySportAndCity(user.getId(), sportId));
+    }
 
     @PutMapping("/choseField/{fieldId}/{sportId}")
     public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable Integer sportId) {
@@ -86,13 +86,19 @@ public class FieldController {
         return MediaType.APPLICATION_OCTET_STREAM;
     }
 
-
     //Taha
     @GetMapping("/organizer-fields/{organizerId}")
     public ResponseEntity getOrganizerFields(@AuthenticationPrincipal User user) {
        List<Field> fields = fieldService.getAllOrganizerFields(user.getId());
         return ResponseEntity.status(200).body(fields);
     }
+
+    @PostMapping("/private-match/assign-field/{fieldId}")
+    public ResponseEntity<?> assignFieldToPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
+        fieldService.playerChoseAFieldForPrivateMatch(user.getId(), fieldId);
+        return ResponseEntity.status(200).body(new ApiResponse("Field assigned to private match successfully."));
+    }
+
 
 }
 

@@ -19,7 +19,7 @@ public class TeamController {
     @PostMapping("/add/{publicId}")
     public ResponseEntity addTeam(@PathVariable Integer publicId,
                                    @RequestBody Team team) {
-        teamService.addTeamA(publicId, team);
+        teamService.addTeam(publicId, team);
         return ResponseEntity.status(200).body("TeamA added successfully");
     }
 
@@ -27,14 +27,14 @@ public class TeamController {
     public ResponseEntity updateTeam(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId,
                                       @RequestBody Team team) {
-        teamService.updateTameA(publicMatch, teamAId, team);
+        teamService.updateTame(publicMatch, teamAId, team);
         return ResponseEntity.status(200).body("TeamA updated successfully");
     }
 
     @DeleteMapping("/delete/{teamAId}")
     public ResponseEntity deleteTeam(@AuthenticationPrincipal PublicMatch publicMatch,
                                       @PathVariable Integer teamAId) {
-        teamService.deleteTeamA(publicMatch, teamAId);
+        teamService.deleteTeam(publicMatch, teamAId);
         return ResponseEntity.status(200).body("TeamA deleted successfully");
     }
 }
