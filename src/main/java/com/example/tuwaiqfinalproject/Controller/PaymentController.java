@@ -16,14 +16,14 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/card")
-    public ResponseEntity<?> processPayment(@AuthenticationPrincipal User user, @RequestBody Payment paymentRequest) {
-        return ResponseEntity.status(200).body(paymentService.processPayment(user.getId(), paymentRequest));
+    @PostMapping("/card/{privateMatchId}")
+    public ResponseEntity<?> processPayment(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId, @RequestBody Payment paymentRequest) {
+        return ResponseEntity.status(200).body(paymentService.processPayment(2, privateMatchId, paymentRequest));
     }
 
-    @GetMapping("/get-status/{id}")
-    public ResponseEntity<?> getPaymentStatus(@AuthenticationPrincipal User user, @PathVariable String id) {
-        return ResponseEntity.status(HttpStatus.OK).body(paymentService.getPaymentStatusAndConfirm(user.getId(), id));
+    @GetMapping("/get-status/{id}/{privateMatchId}")
+    public ResponseEntity<?> getPaymentStatus(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
+        return ResponseEntity.status(HttpStatus.OK).body(paymentService.getPaymentStatusAndConfirm(2, privateMatchId));
     }
     @PostMapping("/puy")
     public ResponseEntity<?> PublicMatchPayment(@AuthenticationPrincipal User user, @RequestBody Payment paymentRequest) {

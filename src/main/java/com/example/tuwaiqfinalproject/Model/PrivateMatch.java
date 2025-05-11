@@ -20,8 +20,8 @@ public class PrivateMatch {
 
     @NotEmpty(message = "Status must not be empty")
     @Pattern(
-            regexp = "CREATED|PENDING|SCHEDULED|CONFIRMED",
-            message = "Status must be one of: CREATED, PENDING, SCHEDULED, CONFIRMED"
+            regexp = "CREATED|FIELD_ASSIGNED|TIME_RESERVED|AWAITING_PAYMENT|CONFIRMED",
+            message = "Status must be one of: CREATED, FIELD_ASSIGNED, TIME_RESERVED, AWAITING_PAYMENT, CONFIRMED"
     )
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
@@ -32,11 +32,10 @@ public class PrivateMatch {
     @OneToMany(mappedBy = "private_match", cascade = CascadeType.ALL)
     private List<Emails> emails;
 
-    @OneToOne
+    @ManyToOne
     private Player player;
 
     @ManyToOne
-    @JsonIgnore
     private Field field;
 
     @OneToMany(mappedBy = "private_match", cascade = CascadeType.ALL)

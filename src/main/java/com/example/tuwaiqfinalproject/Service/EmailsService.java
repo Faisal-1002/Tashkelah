@@ -49,11 +49,11 @@ public class EmailsService {
     }
 
     // 54. Faisal - Send invites - Tested
-    public void sendInvites(Integer userId) {
+    public void sendInvites(Integer userId, Integer privateMatchId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivate_match();
+        PrivateMatch match = privateMatchRepository.findPrivateMatchById(privateMatchId);
         if (match == null || !match.getStatus().equals("CONFIRMED"))
             throw new ApiException("Private match must be confirmed before sending invites");
 

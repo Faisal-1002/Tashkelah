@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -32,9 +33,11 @@ public class Booking {
     private Double total_amount;
 
     @OneToOne
+    @JsonIgnore
     private PrivateMatch private_match;
 
     @ManyToOne
+    @JsonIgnore
     private PublicMatch public_match;
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
