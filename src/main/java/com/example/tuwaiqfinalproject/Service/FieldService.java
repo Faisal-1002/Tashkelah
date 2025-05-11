@@ -34,7 +34,7 @@ public class FieldService {
         return fieldRepository.findAll();
     }
 
-    // Taha----------------- test-- (3)
+    // Taha----------------- test-- (2)
 // Private method to save an uploaded image file
     private String saveImage(MultipartFile file) {
         // Check if the uploaded file is empty
@@ -76,7 +76,7 @@ public class FieldService {
         }
     }
 
-    //Taha-------------- test-(4)
+    //Taha-------------- test-(1)
     // Public method to allow an approved organizer to add a new field with an image
     public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
         Organizer organizer = organizerRepository.findOrganizerById(organizer_id);

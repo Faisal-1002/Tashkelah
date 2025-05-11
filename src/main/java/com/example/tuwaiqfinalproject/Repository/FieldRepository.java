@@ -22,4 +22,6 @@ public interface FieldRepository extends JpaRepository<Field, Integer> {
     List<Field> findFieldByOrganizer_Id(Integer organizerId);
     @Query("SELECT f FROM Field f WHERE f.sport.id = ?1 AND f.address = ?2")
     List<Field> findAllBySportIdAndLocation(Integer sportId, String location);
+
+
 }

@@ -59,4 +59,17 @@ public class OrganizerController {
         return ResponseEntity.status(200).body(new ApiResponse("Organizer license approval status updated and email sent."));
     }
 
+    @PutMapping("/reject/{organizerId}/{isARejected}")
+    public ResponseEntity<?> rejectOrganizer(@PathVariable Integer organizerId) {
+        organizerService.rejectOrganizer(organizerId);
+        return ResponseEntity.status(200).body(new ApiResponse("Organizer license approval status updated and email sent."));
+    }
+
+    @PutMapping("/block/{organizerId}/{isAblocked}")
+    public ResponseEntity<?> blockOrganizer(@PathVariable Integer organizerId) {
+        organizerService.blockOrganizer(organizerId);
+        return ResponseEntity.status(200).body(new ApiResponse("Organizer license approval status updated and email sent."));
+    }
+
+
 }

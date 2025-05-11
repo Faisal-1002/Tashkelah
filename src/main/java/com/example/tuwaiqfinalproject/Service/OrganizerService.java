@@ -81,51 +81,88 @@ public class OrganizerService {
         organizerRepository.delete(organizer);
     }
 
+
+
     // 2. Taha - Admin approve organizer
+    //  Approve Organizer
     public void approveOrganizer(Integer organizerId, Boolean isApproved) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
 
-        if (!isApproved){
+        if (isApproved) {
+            organizer.setStatus("ACTIVE");
+            organizerRepository.save(organizer);
+            sendApprovalEmail(organizer);
+        } else {
             organizer.setStatus("INACTIVE");
             organizerRepository.save(organizer);
-            sendApprovalEmail(organizer, false);
-            throw new ApiException("Organizer not approved");
+            sendRejectedEmail(organizer);
         }
-        organizer.setStatus("ACTIVE");
-        organizerRepository.save(organizer);
-        sendApprovalEmail(organizer, true);
     }
 
+
+    // Reject Organizer
+    public void rejectOrganizer(Integer organizerId ) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
+
+        organizer.setStatus("INACTIVE");
+        organizerRepository.save(organizer);
+        sendRejectedEmail(organizer);
+    }
+
+    // Block Organizer
+    public void blockOrganizer(Integer organizerId) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
+
+        organizer.setStatus("BLOCKED");
+        organizerRepository.save(organizer);
+        sendBlockedEmail(organizer);
+    }
+
+
+
     // 3. Taha - Send approve notification to organizer - tested
-    private void sendApprovalEmail(Organizer organizer, Boolean isApproved) {
-        // Email subject
-        String subject = "License Approval Notification";
+    private void sendApprovalEmail(Organizer organizer) {
+        String subject = "Your Account Has Been Approved!";
+        String message = "🎉 Congratulations!\n\n" +
+                "Your account has been approved successfully.\n" +
+                "You can now start adding your fields and managing your activities.\n\n" +
+                "Best of luck on your journey!";
 
-        // Email body based on approval status
-        String message;
-        if (isApproved) {
-            message = "Congratulations! 🎉\n\n" +
-                    "Your license has been approved successfully.\n" +
-                    "You can now start adding your fields and managing your activities. Great job, champ! 💪\n\n" +
-                    "Best of luck on your journey!";
-        } else {
-            message = "We’re sorry to inform you that your license has been rejected. 😔\n\n" +
-                    "Please make sure all your information is correct and try again.\n" +
-                    "If you need help, feel free to reach out to us.\n\n" +
-                    "We’re here to support you!";
-        }
+        sendEmail(organizer.getUser().getEmail(), subject, message);
+    }
 
-        // Get the organizer's email
-        String recipientEmail = organizer.getUser().getEmail();
+    private void sendRejectedEmail(Organizer organizer) {
+        String subject = "Your Account Has Been Rejected";
+        String message = "😔 We’re sorry to inform you that your account has been rejected.\n\n" +
+                "Please make sure all your information is correct and try again.\n" +
+                "If you need help, feel free to reach out to us.\n\n" +
+                "We’re here to support you.";
 
-        // Create and send the email
+        sendEmail(organizer.getUser().getEmail(), subject, message);
+    }
+
+
+    private void sendBlockedEmail(Organizer organizer) {
+        String subject = "Your Account Has Been Blocked";
+        String message = "🚫 Your account has been blocked due to policy violations or other reasons.\n\n" +
+                "Please contact support if you believe this is a mistake or require assistance.";
+
+        sendEmail(organizer.getUser().getEmail(), subject, message);
+    }
+
+
+
+    private void sendEmail(String to, String subject, String message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(recipientEmail);
+        mailMessage.setTo(to);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);
-
         mailSender.send(mailMessage);
     }
 
