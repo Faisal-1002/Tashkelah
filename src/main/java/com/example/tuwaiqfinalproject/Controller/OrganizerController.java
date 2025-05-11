@@ -71,5 +71,4 @@ public class OrganizerController {
         return ResponseEntity.status(200).body(new ApiResponse("Organizer license approval status updated and email sent."));
     }
 
-
 }

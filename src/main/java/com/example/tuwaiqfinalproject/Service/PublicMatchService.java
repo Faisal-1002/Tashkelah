@@ -1,17 +1,12 @@
 package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
-import com.example.tuwaiqfinalproject.DTO.PublicMatchDTO;
-import com.example.tuwaiqfinalproject.DTO.Team_DTO;
 import com.example.tuwaiqfinalproject.DTO.PlayerSelectionDTO;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +28,7 @@ public class PublicMatchService {
         return publicMatchRepository.findAll();
     }
 
+    // 18. Faisal - Get public match by id - Tested
     public PublicMatch getPublicMatchById(Integer id) {
         PublicMatch match = publicMatchRepository.findPublicMatchById(id);
         if (match == null)
@@ -89,7 +85,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         publicMatchRepository.delete(match);
     }
 
-    //Taha --------- (1)
+    // 20.Taha - Show public + private matches for a given filed - Tested
     public List<?> showFieldMatches(Integer fieldId, Integer userId) {
 
         Organizer organizer = organizerRepository.findById(userId)
@@ -113,7 +109,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         return allMatches;
     }
 
-    //4. Eatzaz- Play with a public match -tested
+    // 28. Eatzaz - Play with a public match - Tested
     public void PlayWithPublicMatch(Integer sportId,Integer fieldId,Integer playerId){
         Player player=playerRepository.findPlayerById(playerId);
         if(player==null){
@@ -136,8 +132,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         publicMatchRepository.save(publicMatch);
     }
 
-
-    //5- Eatzaz - Get public matches - tested
+    // 29. Eatzaz - Get public matches - Tested
     public List<PublicMatch> getAllAvailablePublicMatches(Integer playerId, Integer sportId, Integer fieldId) {
         Player player = playerRepository.findPlayerById(playerId);
         if (player == null) throw new ApiException("Player Not Found");
@@ -155,8 +150,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         return publicMatchRepository.findPublicMatchByField(field);
     }
 
-
-    // 6. Eatzaz - Get teams for public match -tested
+    // 30. Eatzaz - Get teams for public match - Tested
     public List<Team> getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
         Player player = playerRepository.findPlayerById(PlayerId);
         if (player == null) {
@@ -173,8 +167,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         return match.getTeam();
     }
 
-
-    // 7- Eatzaz - Choose a team - tested
+    // 31. Eatzaz - Choose a team - Tested
     public void PublicTeamSelection(Integer playerId, Integer sportId,Integer fieldId,Integer publicMatchId,Integer teamId) {
         Player player=playerRepository.findPlayerById(playerId);
         PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
@@ -204,8 +197,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
             teamRepository.save(team);
         }
 
-
-    // 8- Eatzaz - Show player selections - tested
+    // 32. Eatzaz - Show player selections - Need testing
     public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId,Integer teamId) {
         Player player = playerRepository.findPlayerById(playerId);
         PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
@@ -216,7 +208,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
             throw new ApiException("public Match Not Found");
         }
 
-Team team=teamRepository.findTeamById(teamId);
+        Team team=teamRepository.findTeamById(teamId);
         String selectedTeamName = null;
         if (publicMatch.getTeam() != null && publicMatch.getPlayers().contains(player)) {
             selectedTeamName = team.getName();
@@ -233,8 +225,9 @@ Team team=teamRepository.findTeamById(teamId);
                 publicMatch.getTime_slots()
         );
     }
-// 11. Eatzaz - Notification that the payment process has been completed -teted
-    public String Notifications(Integer playerId,Integer bookingId){
+
+    // 33. Eatzaz - Notification that the payment process has been completed - Tested
+    public void Notifications(Integer playerId,Integer bookingId){
         Player player=playerRepository.findPlayerById(playerId);
         if(player==null){
             throw new ApiException("Player Not Found");
@@ -249,31 +242,32 @@ Team team=teamRepository.findTeamById(teamId);
         return changeStatusAfterCompleted(booking.getPublic_match().getId(),booking.getId());
 
     }
-//12 . Eatzaz - Change the match status after the number is complete
-public String changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
-    PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
-    if (publicMatch == null) {
-        throw new ApiException("Public Match Not Found");
-    }
 
-    Booking booking = bookingRepository.findBookingById(bookingId);
-    if (booking == null) {
-        throw new ApiException("Booking Not Found");
-    }
+    // 34 . Eatzaz - Change the match status after the number is complete
+    public String changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
+        PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (publicMatch == null) {
+            throw new ApiException("Public Match Not Found");
+        }
 
-    List<Team> teams = publicMatch.getTeam();
-    int numberPlayer = 0;
-    for (Team team : teams) {
-        numberPlayer += team.getPlayersCount();
-    }
+        Booking booking = bookingRepository.findBookingById(bookingId);
+        if (booking == null) {
+            throw new ApiException("Booking Not Found");
+        }
+
+        List<Team> teams = publicMatch.getTeam();
+        int numberPlayer = 0;
+        for (Team team : teams) {
+            numberPlayer += team.getPlayersCount();
+        }
 
 
-    if (numberPlayer == publicMatch.getField().getCapacity()) {
-        publicMatch.setStatus("FULL");
-        publicMatchRepository.save(publicMatch);
-        return "Match status updated to FULL";
+        if (numberPlayer == publicMatch.getField().getCapacity()) {
+            publicMatch.setStatus("FULL");
+            publicMatchRepository.save(publicMatch);
+            return "Match status updated to FULL";
+        }
+        return "Booking successful, waiting for more players";
     }
-    return "Booking successful, waiting for more players";
-}
 
 }

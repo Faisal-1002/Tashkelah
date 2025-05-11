@@ -17,11 +17,12 @@ public class SportService {
     private final SportRepository sportRepository;
     private final PlayerRepository playerRepository;
 
-    // 23. Faisal - Get all sports - Tested
+    // 45. Faisal - Get all sports - Tested
     public List<Sport> getAllSports() {
         return sportRepository.findAll();
     }
 
+    // 46. Faisal - Get sport by id - Tested
     public Sport getSportById(Integer id) {
         Sport sport = sportRepository.findSportById(id);
         if (sport == null) {
@@ -30,6 +31,7 @@ public class SportService {
         return sport;
     }
 
+    // 9. Taha - Add sport - Tested
     public void addSport(Sport sport) {
         sportRepository.save(sport);
     }

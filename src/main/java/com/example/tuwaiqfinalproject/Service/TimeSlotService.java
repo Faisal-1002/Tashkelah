@@ -24,6 +24,7 @@ public class TimeSlotService {
         return timeSlotRepository.findAll();
     }
 
+    // 42. Faisal - Add Time slots by id - Tested
     public TimeSlot getTimeSlotById(Integer id) {
         TimeSlot timeSlot = timeSlotRepository.findTimeSlotById(id);
         if (timeSlot == null)
@@ -31,7 +32,7 @@ public class TimeSlotService {
         return timeSlot;
     }
 
-    // Faisal - Add Time slots for a given field and date
+    // 43. Faisal - Add Time slots for a given field and date - Tested
     public void createFullDayTimeSlots(Integer fieldId, LocalDate date) {
         Field field = fieldRepository.findFieldById(fieldId);
         if (field == null) {
@@ -85,7 +86,7 @@ public class TimeSlotService {
         timeSlotRepository.delete(timeSlot);
     }
 
-    // 25. Faisal - Time slots for the assign filed - Tested
+    // 44. Faisal - Time slots for the assign filed - Tested
     public List<TimeSlot> getTimeSlotsForPrivateMatchField(Integer userId, LocalDate date) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
@@ -106,6 +107,5 @@ public class TimeSlotService {
                 field.getClose_time()
         );
     }
-
 
 }

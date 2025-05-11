@@ -28,7 +28,7 @@ public class PaymentService {
     private String apiKey;
     private static final String MOYASAR_API_URL = "https://api.moyasar.com/v1/payments/";
 
-    // 27. Faisal - Pay - Tested
+    // 48. Faisal - Pay - Tested
     public ResponseEntity<String> processPayment(Integer user_id, Payment paymentRequest) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
@@ -79,7 +79,7 @@ public class PaymentService {
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
-    // 28. Faisal - Get payment status - Tested
+    // 49. Faisal - Get payment status - Tested
     public String getPaymentStatusAndConfirm(Integer user_id, String paymentId) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null)
@@ -118,7 +118,8 @@ public class PaymentService {
 
         return response.getBody();
     }
-    //10. Eatzaz -Payment-  need test
+
+    // 35. Eatzaz - Payment - need testing
     public ResponseEntity<String> PublicMatchPayment(Integer user_id, Payment paymentRequest) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");

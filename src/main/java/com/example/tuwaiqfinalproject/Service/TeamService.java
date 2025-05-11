@@ -21,6 +21,12 @@ public class TeamService {
         return teamRepository.findAll();
     }
 
+    // 57. Faisal - Get team by id - Tested
+    public Team getTeamById(Integer id){
+        return teamRepository.findTeamById(id);
+    }
+
+    // 21. Eatzaz - Add team for a public match - Tested
     public void addTeam(Integer publicMatchId, Team team){
         PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
         if(publicMatch== null){
@@ -32,7 +38,7 @@ public class TeamService {
         team.setMax_players_count(publicMatch.getField().getCapacity()/2);
         team.setPublic_match(publicMatch);
         teamRepository.save(team);
-//        publicMatch.setTeam();
+        publicMatch.getTeam().add(team);
         publicMatchRepository.save(publicMatch);
     }
 
@@ -53,14 +59,12 @@ public class TeamService {
     }
 
     public void deleteTeam(PublicMatch publicMatch, Integer teamAId){
-
         Team team = teamRepository.findTeamById(teamAId);
-
         if (team ==null){
             throw new ApiException("Team not found");
         }
-        if (!team.getPublic_match().getId().equals(publicMatch.getId()));
-        throw new ApiException("You are not allowed to delete another team data");
-
+        if (!team.getPublic_match().getId().equals(publicMatch.getId()))
+            throw new ApiException("You are not allowed to delete another team data");
+        teamRepository.delete(team);
     }
 }
