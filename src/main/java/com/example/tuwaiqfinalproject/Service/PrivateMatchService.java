@@ -22,6 +22,7 @@ public class PrivateMatchService {
         return privateMatchRepository.findAll();
     }
 
+    // 38. Faisal - Get private match by id - Tested
     public PrivateMatch getPrivateMatchById(Integer id) {
         PrivateMatch match = privateMatchRepository.findPrivateMatchById(id);
         if (match == null)
@@ -45,7 +46,7 @@ public class PrivateMatchService {
         privateMatchRepository.delete(match);
     }
 
-    // Faisal - Choose a field and create a private match
+    // 39. Faisal - Choose a field and create a private match - Tested
     public void createPrivateMatchWithField(Integer userId, Integer fieldId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)

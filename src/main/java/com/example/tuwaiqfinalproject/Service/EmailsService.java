@@ -23,6 +23,7 @@ public class EmailsService {
     private final PrivateMatchRepository privateMatchRepository;
     private final PlayerRepository playerRepository;
 
+    // 53. Faisal - Add email to private match - Tested
     public void addEmailToPrivateMatch(Integer privateMatchId, Emails email) {
         PrivateMatch privateMatch = privateMatchRepository.findPrivateMatchById(privateMatchId);
         if (privateMatch == null) {
@@ -47,7 +48,7 @@ public class EmailsService {
         emailsRepository.delete(email);
     }
 
-    // 29. Faisal - Send invites - Tested
+    // 54. Faisal - Send invites - Tested
     public void sendInvites(Integer userId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
@@ -73,7 +74,7 @@ public class EmailsService {
         privateMatchRepository.save(match);
     }
 
-    // 30. Faisal - Email notification - Tested
+    // 55. Faisal - Email notification - Tested
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("faisal.a.m.2012@gmail.com");

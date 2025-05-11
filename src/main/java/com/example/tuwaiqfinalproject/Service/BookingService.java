@@ -25,6 +25,7 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
+    // 51. Faisal - Get booking by id - Tested
     public Booking getBookingById(Integer bookingId) {
         Booking booking = bookingRepository.findBookingById(bookingId);
         if (booking == null)
@@ -32,7 +33,7 @@ public class BookingService {
         return booking;
     }
 
-    // 31. Faisal - Get all my bookings - Tested
+    // 37. Faisal - Get all my bookings - Tested
     public List<Booking> getMyBookings(Integer userId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
@@ -53,10 +54,6 @@ public class BookingService {
         return result;
     }
 
-//    public void addBooking(Booking booking) {
-//        bookingRepository.save(booking);
-//    }
-
     public void updateBooking(Integer bookingId, Booking updatedBooking) {
         Booking existing = bookingRepository.findBookingById(bookingId);
         if (existing == null)
@@ -73,6 +70,7 @@ public class BookingService {
         bookingRepository.delete(booking);
     }
 
+    // 52. Faisal - Book private match - Tested
     public void bookPrivateMatch(Integer userId, List<Integer> slotIds) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
@@ -125,7 +123,8 @@ public class BookingService {
         match.setStatus("PENDING");
         privateMatchRepository.save(match);
     }
-//9. Eatzaz - Public match booking
+
+    // 36. Eatzaz - Public match booking - Need testing
     public void bookPublicMatch(Integer userId, List<Integer> slotIds) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
@@ -174,7 +173,6 @@ public class BookingService {
         booking.setStatus("PENDING");
         booking.setIs_paid(false);
         booking.setTotal_amount(totalPrice);
-
 
         match.getBookings().add(booking);
         bookingRepository.save(booking);
