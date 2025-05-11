@@ -71,10 +71,10 @@ public class PublicMatchController {
 
     }
 
-    @GetMapping("/getTeams/{publicMatchId}")
-    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
-        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
-    }
+//    @GetMapping("/getTeams/{publicMatchId}")
+//    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+//        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
+//    }
 
     @PutMapping("/selectTeam/{sportId}/{fieldId}/{matchId}/{teamId}")
     public ResponseEntity<?> selectTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable Integer matchId, @PathVariable Integer teamId) {

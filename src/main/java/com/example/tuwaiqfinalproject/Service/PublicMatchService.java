@@ -146,6 +146,7 @@ public class PublicMatchService {
         return match.getTeam();
     }
 
+
     // 7- Eatzaz - Choose a team - tested
     public void PublicTeamSelection(Integer playerId, Integer sportId,Integer fieldId,Integer publicMatchId,Integer teamId) {
         Player player=playerRepository.findPlayerById(playerId);
