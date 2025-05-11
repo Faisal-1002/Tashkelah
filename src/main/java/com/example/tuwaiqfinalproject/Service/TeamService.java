@@ -38,7 +38,7 @@ public class TeamService {
 
     public void updateTame(PublicMatch publicMatch, Integer tameAId, Team team) {
 
-        Team oldTeam = teamRepository.findTeamAById(tameAId);
+        Team oldTeam = teamRepository.findTeamById(tameAId);
         if (oldTeam == null) {
             throw new ApiException("TeamA not found");
 
@@ -54,7 +54,7 @@ public class TeamService {
 
     public void deleteTeam(PublicMatch publicMatch, Integer teamAId){
 
-        Team team = teamRepository.findTeamAById(teamAId);
+        Team team = teamRepository.findTeamById(teamAId);
 
         if (team ==null){
             throw new ApiException("Team not found");

@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -27,8 +28,8 @@ public class Field {
     @Column(columnDefinition = "varchar(200) not null")
     private String description;
 
+
     @NotEmpty(message = "Photo must not be empty")
-    @Column(columnDefinition = "varchar(255) not null")
     private String photo;
 
     @Column(columnDefinition = "time not null")
@@ -55,7 +56,7 @@ public class Field {
     @ManyToOne
     @JsonIgnore
     private Organizer organizer;
-
+  
     @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<PublicMatch> public_matches;
@@ -67,5 +68,4 @@ public class Field {
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<TimeSlot> time_slots;
-
 }

@@ -41,5 +41,4 @@ public class PrivateMatch {
 
     @OneToMany(mappedBy = "private_match", cascade = CascadeType.ALL)
     private List<TimeSlot> time_slots;
-
 }
