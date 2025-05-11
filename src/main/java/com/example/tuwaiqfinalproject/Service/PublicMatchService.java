@@ -36,35 +36,38 @@ public class PublicMatchService {
         return match;
     }
 
-    // 19. Eatzaz + Taha - Create public match - Tested
-    public void addPublicMatch(Integer organizerId,PublicMatch match,Integer fieldId, List<Integer> timeSlotIds) {
-        Organizer organizer=organizerRepository.findOrganizerById(organizerId);
-        if(organizer==null){
-            throw new ApiException("organizer not found");
-        }
-        Field field=fieldRepository.findFieldById(fieldId);
-        if(field==null){
-            throw new ApiException("field not found");
-        }
-
-        // Book time slot and change its status
-        List<TimeSlot> timeSlots= timeSlotRepository.findAllById(timeSlotIds);
-        if(timeSlots.isEmpty()) {
-            throw new ApiException("TimeSlot not found");
-
-        }
-            for(TimeSlot slot : timeSlots){
-
-                slot.setStatus("BOOKED");
-            }
-            timeSlotRepository.saveAll(timeSlots);
-
-        match.setStatus("OPEN");
-        match.setOrganizer(organizer);
-        match.setField(field);
-        match.setTime_slots(timeSlots);
-        publicMatchRepository.save(match);
+// 3 - Eatzaz&taha - add Public match with Field - tested
+public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
+    Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+    if (organizer == null) {
+        throw new ApiException("Organizer not found");
     }
+
+    Field field = fieldRepository.findFieldById(fieldId);
+    if (field == null) {
+        throw new ApiException("Field not found");
+    }
+
+    List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
+    if (timeSlots.isEmpty()) {
+        throw new ApiException("TimeSlot not found");
+    }
+
+    match.setStatus("OPEN");
+    match.setOrganizer(organizer);
+    match.setField(field);
+
+    publicMatchRepository.save(match);
+
+    for (TimeSlot slot : timeSlots) {
+        slot.setStatus("BOOKED");
+        slot.setPublic_match(match);
+    }
+
+    timeSlotRepository.saveAll(timeSlots);
+
+}
+
 
     public void updatePublicMatch(Integer id, PublicMatch updatedMatch) {
         PublicMatch existing = publicMatchRepository.findPublicMatchById(id);
@@ -224,7 +227,7 @@ public class PublicMatchService {
     }
 
     // 33. Eatzaz - Notification that the payment process has been completed - Tested
-    public void Notifications(Integer playerId,Integer bookingId){
+    public String Notifications(Integer playerId,Integer bookingId){
         Player player=playerRepository.findPlayerById(playerId);
         if(player==null){
             throw new ApiException("Player Not Found");

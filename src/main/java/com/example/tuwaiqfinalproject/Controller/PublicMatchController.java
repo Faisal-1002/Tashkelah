@@ -59,7 +59,7 @@ public class PublicMatchController {
     @PutMapping("/PlayWithPublicTeam/{sportId}/{fieldId}")
     public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
         publicMatchService.PlayWithPublicMatch(sportId, fieldId, user.getId());
-        return ResponseEntity.status(200).body(new ApiResponse("You have entered the general team."));
+        return ResponseEntity.status(200).body(new ApiResponse("You have been entered into the public match."));
     }
 
     @GetMapping("/getMatchAndTeam/{sportId}/{fieldId}")
@@ -85,7 +85,7 @@ public class PublicMatchController {
     }
 
     @GetMapping("/not/{bookingId}")
-    public ResponseEntity no(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
+    public ResponseEntity Notifications(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
         return ResponseEntity.status(200).body(publicMatchService.Notifications(user.getId(),bookingId));
     }
 
