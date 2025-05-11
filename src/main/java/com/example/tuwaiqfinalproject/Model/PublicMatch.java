@@ -25,7 +25,7 @@ public class PublicMatch {
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    @Pattern(regexp = "PENDING|OPEN|FULL")
+    @Pattern(regexp = "PENDING|OPEN|FULL|SCHEDULED")
     private String status; // e.g. OPEN, FULL
 
     @ManyToOne
@@ -40,7 +40,7 @@ public class PublicMatch {
     private Team team;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
-    private Set<Player> players;
+    private List<Player> players;
 
     @ManyToOne
     @JsonIgnore

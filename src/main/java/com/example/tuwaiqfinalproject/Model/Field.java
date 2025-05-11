@@ -61,6 +61,7 @@ public class Field {
     private List<PrivateMatch> private_matches;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<TimeSlot> time_slots;
 
 }

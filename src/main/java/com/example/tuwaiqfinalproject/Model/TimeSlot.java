@@ -51,5 +51,4 @@ public class TimeSlot {
     @JsonIgnore
     private PublicMatch public_match;
 
-
 }

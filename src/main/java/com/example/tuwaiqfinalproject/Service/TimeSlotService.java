@@ -29,7 +29,7 @@ public class TimeSlotService {
         return timeSlot;
     }
 
-    public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
+    public void addTimeSlotWithPubicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
         PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
         if (publicMatch == null){
             throw new ApiException("TimeSlot not found");}

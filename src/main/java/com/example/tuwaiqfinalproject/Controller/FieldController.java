@@ -53,10 +53,10 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field deleted successfully"));
     }
 
-//    @GetMapping("/getBySportAndCity/{sportId}")
-//    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
-//        return ResponseEntity.status(200).body(fieldService.playerChoseAFieldForAPublicMatch(user.getId(), sportId););
-//    }
+    @GetMapping("/getBySportAndCity/{sportId}")
+    public ResponseEntity<?> getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
+        return ResponseEntity.status(200).body(fieldService.getFieldBySportAndCity(user.getId(), sportId));
+    }
 
     @PutMapping("/choseField/{fieldId}/{sportId}")
     public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable Integer sportId) {

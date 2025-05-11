@@ -62,18 +62,17 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(publicMatchService.getAllAvailableMatches(user.getId(), sportId, fieldId));
     }
 
-//    @GetMapping("/getTeams/{publicMatchId}")
-//    public ResponseEntity getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
-//        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
-//    }
-    @PutMapping("/selectTeam/{sportId}/{fieldId}/{teamName}")
-    public ResponseEntity selectTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable String teamName) {
-        publicMatchService.PublicTeamSelection(user.getId(), sportId, fieldId, teamName);
+    @GetMapping("/getTeams/{publicMatchId}")
+    public ResponseEntity getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
+    }
+    @PutMapping("/selectTeam/{sportId}/{fieldId}/{teamName}/{publicMatch}")
+    public ResponseEntity selectTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId,@PathVariable Integer publicMatch ,@PathVariable Integer fieldId, @PathVariable String teamName) {
+        publicMatchService.PublicTeamSelection(user.getId(), sportId, fieldId,publicMatch, teamName);
         return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
     @GetMapping("/chekout/{publicMatchId}")
-    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
-        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
+    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId));
     }
-
 }

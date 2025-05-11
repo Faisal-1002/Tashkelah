@@ -52,5 +52,10 @@ public class BookingController {
         bookingService.bookPrivateMatch(user.getId(), slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
     }
+    @PostMapping("/book/publicMatch")
+    public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
+        bookingService.bookPublicMatch(user.getId(), slotIds);
+        return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
+    }
 
 }

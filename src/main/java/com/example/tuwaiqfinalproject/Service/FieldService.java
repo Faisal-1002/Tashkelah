@@ -149,20 +149,20 @@ public class FieldService {
 
 
 //    // 1- Eatzaz - Show stadiums by sport type -tested
-//    public List<Field> getFieldBySportAndCity(Integer user_id, String sportName) {
-////        User user=authRepository.findUserById(user_id);
-//        if(user==null)
-//            throw new ApiException("User Not Found");
-//        Sport sport = sportRepository.findSportByName(sportName);
-//        if (sport == null)
-//            throw new ApiException("Sport not found");
-//
-//        List<Field> fields = fieldRepository.findAllBySportIdAndLocation(sportId, player.getUser().getAddress());
-//        if (fields.isEmpty())
-//            throw new ApiException("No fields found for this sport in your city");
-//
-//        return fields;
-//    }
+    public List<Field> getFieldBySportAndCity(Integer player_id, Integer sportId) {
+        Player player=playerRepository.findPlayerById(player_id);
+        if(player==null)
+            throw new ApiException("User Not Found");
+        Sport sport = sportRepository.findSportById(sportId);
+        if (sport == null)
+            throw new ApiException("Sport not found");
+
+        List<Field> fields = fieldRepository.findAllBySportIdAndLocation(sportId, player.getUser().getAddress());
+        if (fields.isEmpty())
+            throw new ApiException("No fields found for this sport in your city");
+
+        return fields;
+    }
     //2- Eatzaz - player Chose Field For Public Match - tested
     public void playerChoseAFieldForAPublicMatch(Integer sport_Id,Integer playerId, Integer field_Id) {
         Player player = playerRepository.findPlayerById(playerId);
