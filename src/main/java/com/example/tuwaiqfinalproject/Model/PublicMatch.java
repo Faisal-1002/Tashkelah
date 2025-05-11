@@ -19,7 +19,8 @@ public class PublicMatch {
 
     @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
-    @Pattern(regexp = "PENDING|OPEN|FULL")
+    
+    @Pattern(regexp = "PENDING|OPEN|FULL|SCHEDULED")
     private String status;
 
     @ManyToOne

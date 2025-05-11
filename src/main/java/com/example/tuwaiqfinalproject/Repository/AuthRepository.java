@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface AuthRepository extends JpaRepository<User, Integer> {
     User findUserByUsername(String username);
-    User findUserById(Integer id);
+    User findUserById(Integer userId);
 }

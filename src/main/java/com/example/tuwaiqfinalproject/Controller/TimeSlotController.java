@@ -35,7 +35,7 @@ public class TimeSlotController {
 
     @PostMapping("/add/{publicMatchId}/{fieldId}")
     public ResponseEntity<?> addSlot(@RequestBody @Valid TimeSlot timeSlot,@PathVariable Integer publicMatchId,@PathVariable Integer fieldId) {
-        timeSlotService.addTimeSlotWithPublicMatch(timeSlot,publicMatchId,fieldId);
+        timeSlotService.addTimeSlotWithPubicMatch(timeSlot,publicMatchId,fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("TimeSlot added successfully"));
     }
 

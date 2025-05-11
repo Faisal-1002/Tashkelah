@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class TeamController {
 
     private final TeamService teamService;
-
+    @GetMapping("getAllTeam")
+public ResponseEntity<?> getAllTeam(){
+    return ResponseEntity.status(200).body(teamService.getAllTeam());
+}
     @PostMapping("/add/{publicId}")
     public ResponseEntity addTeam(@PathVariable Integer publicId,
                                    @RequestBody Team team) {

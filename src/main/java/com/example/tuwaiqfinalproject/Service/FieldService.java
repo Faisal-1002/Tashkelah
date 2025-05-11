@@ -147,8 +147,8 @@ public class FieldService {
 
 
     // 1- Eatzaz - Show stadiums by sport type -tested
-    public List<Field> getFieldBySportAndCity(Integer user_id, Integer sportId) {
-        Player player=playerRepository.findPlayerById(user_id);
+    public List<Field> getFieldBySportAndCity(Integer player_id, Integer sportId) {
+        Player player=playerRepository.findPlayerById(player_id);
         if(player==null)
             throw new ApiException("User Not Found");
         Sport sport = sportRepository.findSportById(sportId);
