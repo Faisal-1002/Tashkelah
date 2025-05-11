@@ -275,9 +275,9 @@ public class FieldService {
         }
 
         // Filter time slots by the given date and sort them by start time
-        return field.getTimeSlots().stream()
+        return field.getTime_slots().stream()
                 .filter(ts -> ts.getDate().equals(date)) // Only slots on the requested date
-                .sorted(Comparator.comparing(TimeSlot::getStartTime)) // Sort by start time
+                .sorted(Comparator.comparing(TimeSlot::getStart_time)) // Sort by start time
                 .toList(); // Return as a list
     }
 
@@ -293,14 +293,14 @@ public class FieldService {
         }
 
         // Get the booked slots on the given date, sorted by start time
-        List<TimeSlot> bookedSlots = field.getTimeSlots().stream()
+        List<TimeSlot> bookedSlots = field.getTime_slots().stream()
                 .filter(ts -> ts.getDate().equals(date))
-                .sorted(Comparator.comparing(TimeSlot::getStartTime))
+                .sorted(Comparator.comparing(TimeSlot::getStart_time))
                 .toList();
 
         List<TimeSlot> availableSlots = new ArrayList<>();
-        LocalTime openTime = field.getOpenTime();
-        LocalTime closeTime = field.getCloseTime();
+        LocalTime openTime = field.getOpen_time();
+        LocalTime closeTime = field.getClose_time();
 
         // Handle cases where closing time is after midnight
         boolean crossesMidnight = closeTime.isBefore(openTime);
@@ -308,14 +308,14 @@ public class FieldService {
 
         // Loop through booked slots and find the gaps between them
         for (TimeSlot slot : bookedSlots) {
-            if (current.isBefore(slot.getStartTime())) {
+            if (current.isBefore(slot.getStart_time())) {
                 // Add a free slot before the current booked slot
                 availableSlots.add(new TimeSlot(
-                        null, date, current, slot.getStartTime(), null,
+                        null, date, current, slot.getStart_time(), null,
                         "AVAILABLE", field, null, null
                 ));
             }
-            current = slot.getEndTime(); // Move pointer forward
+            current = slot.getEnd_time(); // Move pointer forward
         }
 
         // Add the final available time after the last booked slot

@@ -57,7 +57,6 @@ public class TimeSlotService {
         timeSlotRepository.saveAll(timeSlots);
     }
 
-
     public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
         PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
         if (publicMatch == null){
