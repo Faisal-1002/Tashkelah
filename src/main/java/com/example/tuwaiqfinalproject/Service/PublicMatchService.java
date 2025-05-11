@@ -205,7 +205,7 @@ public class PublicMatchService {
         }
 
 
-    // 8- Eatzaz - Show player selections - need testing
+    // 8- Eatzaz - Show player selections - tested
     public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId,Integer teamId) {
         Player player = playerRepository.findPlayerById(playerId);
         PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
@@ -233,8 +233,8 @@ Team team=teamRepository.findTeamById(teamId);
                 publicMatch.getTime_slots()
         );
     }
-// 11. Eatzaz - Notification that the payment process has been completed
-    public void Notifications(Integer playerId,Integer bookingId){
+// 11. Eatzaz - Notification that the payment process has been completed -teted
+    public String Notifications(Integer playerId,Integer bookingId){
         Player player=playerRepository.findPlayerById(playerId);
         if(player==null){
             throw new ApiException("Player Not Found");
@@ -246,9 +246,11 @@ Team team=teamRepository.findTeamById(teamId);
         if(! booking.getPublic_match().equals(player.getPublic_match()) && booking.getIs_paid().equals(true)){
             throw new ApiException("valid");
         }
+        return changeStatusAfterCompleted(booking.getPublic_match().getId(),booking.getId());
+
     }
 //12 . Eatzaz - Change the match status after the number is complete
-public void changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
+public String changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
     PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
     if (publicMatch == null) {
         throw new ApiException("Public Match Not Found");
@@ -266,14 +268,12 @@ public void changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId)
     }
 
 
-    if (numberPlayer != publicMatch.getField().getCapacity()) {
-        throw new ApiException("Number of players does not match the field capacity");
+    if (numberPlayer == publicMatch.getField().getCapacity()) {
+        publicMatch.setStatus("FULL");
+        publicMatchRepository.save(publicMatch);
+        return "Match status updated to FULL";
     }
-
-    publicMatch.setStatus("FULL");
-
-    publicMatchRepository.save(publicMatch);
+    return "Booking successful, waiting for more players";
 }
-
 
 }
