@@ -41,7 +41,6 @@ public class OrganizerDTO {
     @NotEmpty(message = "License number must not be empty")
     private String licence_number;
 
-    @NotEmpty(message = "Status must not be empty")
     @Pattern(regexp = "^(ACTIVE|INACTIVE|PENDING)$", message = "Status must be ACTIVE, INACTIVE or PENDING")
     private String status;
 }

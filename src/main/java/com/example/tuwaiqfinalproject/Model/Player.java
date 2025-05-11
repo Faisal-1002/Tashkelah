@@ -27,7 +27,6 @@ public class Player {
     @JsonIgnore
     private User user;
 
-
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
     private PrivateMatch private_match;
 

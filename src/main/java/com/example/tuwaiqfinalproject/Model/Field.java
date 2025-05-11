@@ -2,10 +2,7 @@ package com.example.tuwaiqfinalproject.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -46,6 +43,11 @@ public class Field {
     @Column(columnDefinition = "int not null")
     private Integer capacity;
 
+    @NotNull
+    @PositiveOrZero
+    @Column(columnDefinition = "double not null")
+    private Double price;
+
     @ManyToOne
     @JsonIgnore
     private Sport sport;
@@ -55,9 +57,11 @@ public class Field {
     private Organizer organizer;
 
     @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PublicMatch> public_matches;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PrivateMatch> private_matches;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
