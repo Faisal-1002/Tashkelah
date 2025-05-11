@@ -56,10 +56,6 @@ public class Field {
     @ManyToOne
     @JsonIgnore
     private Organizer organizer;
-
-    @ManyToOne
-    @JsonIgnore
-    private Sport sport;
   
     @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
     @JsonIgnore
