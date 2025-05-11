@@ -27,7 +27,7 @@ public class TimeSlotController {
         return ResponseEntity.status(200).body(slots);
     }
 
-    @GetMapping("getById/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<?> getSlotById(@PathVariable Integer id) {
         TimeSlot slot = timeSlotService.getTimeSlotById(id);
         return ResponseEntity.status(200).body(slot);
