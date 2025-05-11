@@ -17,11 +17,11 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final PublicMatchRepository publicMatchRepository;
 
-public List<Team>getAllTeam(){
-    return teamRepository.findAll();
-}
+    public List<Team>getAllTeam(){
+        return teamRepository.findAll();
+    }
 
-    public void addTeamA(Integer publicMatchId, Team team){
+    public void addTeam(Integer publicMatchId, Team team){
         PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
         if(publicMatch== null){
             throw new ApiException("PublicMatch not found");
@@ -36,7 +36,7 @@ public List<Team>getAllTeam(){
         publicMatchRepository.save(publicMatch);
     }
 
-    public void updateTameA(PublicMatch publicMatch, Integer tameAId, Team team) {
+    public void updateTame(PublicMatch publicMatch, Integer tameAId, Team team) {
 
         Team oldTeam = teamRepository.findTeamAById(tameAId);
         if (oldTeam == null) {
@@ -52,7 +52,7 @@ public List<Team>getAllTeam(){
         teamRepository.save(oldTeam);
     }
 
-    public void deleteTeamA(PublicMatch publicMatch, Integer teamAId){
+    public void deleteTeam(PublicMatch publicMatch, Integer teamAId){
 
         Team team = teamRepository.findTeamAById(teamAId);
 

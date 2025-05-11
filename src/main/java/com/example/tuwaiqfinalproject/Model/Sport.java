@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Sport {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -83,17 +83,19 @@ public class OrganizerService {
 
     // Taha - Admin approve organizer
     public void approveOrganizer(Integer organizerId, Boolean isApproved) {
-        Organizer organizer = organizerRepository.findById(organizerId)
-                .orElseThrow(() -> new ApiException("Organizer not found"));
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
 
-        // Set the approval status
+        if (!isApproved){
+            organizer.setStatus("INACTIVE");
+            organizerRepository.save(organizer);
+            sendApprovalEmail(organizer, false);
+            throw new ApiException("Organizer not approved");
+        }
         organizer.setStatus("ACTIVE");
-
-        // Save the updated organizer entity to the database
         organizerRepository.save(organizer);
-
-        // Send an approval or rejection email to the organizer
-        sendApprovalEmail(organizer, isApproved);
+        sendApprovalEmail(organizer, true);
     }
 
     // Taha - Send approve notification to organizer - tested
