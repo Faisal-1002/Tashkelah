@@ -118,6 +118,7 @@ public class PaymentService {
 
         return response.getBody();
     }
+    //10. Eatzaz -Payment-  need test
     public ResponseEntity<String> PublicMatchPayment(Integer user_id, Payment paymentRequest) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
