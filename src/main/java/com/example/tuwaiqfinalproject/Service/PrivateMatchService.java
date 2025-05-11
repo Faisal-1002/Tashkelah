@@ -47,26 +47,23 @@ public class PrivateMatchService {
     }
 
     // 39. Faisal - Choose a field and create a private match - Tested
-    public void createPrivateMatchWithField(Integer userId, Integer fieldId) {
+    public void createPrivateMatch(Integer userId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
             throw new ApiException("Player not found");
 
-        if (player.getPrivate_match() != null)
-            throw new ApiException("Player already has a private match");
+        List<PrivateMatch> matches = privateMatchRepository.findPrivateMatchByPlayer(player);
+        boolean hasUnconfirmed = matches.stream()
+                .anyMatch(m -> !m.getStatus().equals("CONFIRMED"));
 
-        Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null)
-            throw new ApiException("Field not found");
-
-        if (!field.getAddress().equals(player.getUser().getAddress()))
-            throw new ApiException("Field is not in the same city as the player");
+        if (hasUnconfirmed)
+            throw new ApiException("You already have an active private match");
 
         PrivateMatch privateMatch = new PrivateMatch();
-        privateMatch.setField(field);
         privateMatch.setPlayer(player);
         privateMatch.setStatus("CREATED");
 
         privateMatchRepository.save(privateMatch);
     }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -19,6 +20,7 @@ public class TimeSlotService {
     private final PlayerRepository playerRepository;
     private final PublicMatchRepository publicMatchRepository;
     private final FieldRepository fieldRepository;
+    private final PrivateMatchRepository privateMatchRepository;
 
     public List<TimeSlot> getAllTimeSlots() {
         return timeSlotRepository.findAll();
@@ -87,25 +89,69 @@ public class TimeSlotService {
     }
 
     // 44. Faisal - Time slots for the assign filed - Tested
-    public List<TimeSlot> getTimeSlotsForPrivateMatchField(Integer userId, LocalDate date) {
+    public List<TimeSlot> getTimeSlotsForPrivateMatch(Integer userId, Integer privateMatchId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
             throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivate_match();
-        if (match == null || !match.getStatus().equals("CREATED"))
-            throw new ApiException("Private match not found or its status is not CREATED");
+        PrivateMatch match = privateMatchRepository.findPrivateMatchById(privateMatchId);
+        if (match == null || !match.getStatus().equals("FIELD_ASSIGNED"))
+            throw new ApiException("Private match not found or not in FIELD_ASSIGNED status");
+
+        if (!match.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("You are not the owner of this private match");
 
         Field field = match.getField();
         if (field == null)
             throw new ApiException("No field assigned to this match");
 
-        return timeSlotRepository.findValidSlotsByFieldAndDate(
-                field.getId(),
-                date,
-                field.getOpen_time(),
-                field.getClose_time()
-        );
+        return timeSlotRepository.findTimeSlotsByFieldAndStatus(field, "AVAILABLE");
+    }
+
+    // 58. Faisal - Assign time slots for private match - Tested
+    public void assignTimeSlotsToPrivateMatch(Integer userId, Integer matchId, List<Integer> slotIds) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null) throw new ApiException("Player not found");
+
+        PrivateMatch match = privateMatchRepository.findPrivateMatchById(matchId);
+        if (match == null || !match.getStatus().equals("FIELD_ASSIGNED"))
+            throw new ApiException("Match not found or not in FIELD_ASSIGNED status");
+
+        if (!match.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("You are not the owner of this private match");
+
+        Field field = match.getField();
+        if (field == null) throw new ApiException("No field assigned");
+
+        List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
+        if (slots.size() != slotIds.size())
+            throw new ApiException("One or more time slots not found");
+
+        for (TimeSlot slot : slots) {
+            if (!slot.getField().getId().equals(field.getId()))
+                throw new ApiException("One or more slots do not belong to the assigned field");
+            if (!slot.getStatus().equalsIgnoreCase("AVAILABLE"))
+                throw new ApiException("One or more slots are already booked");
+        }
+
+        // Ensure continuity
+        slots.sort(Comparator.comparing(TimeSlot::getStart_time));
+        for (int i = 1; i < slots.size(); i++) {
+            if (!slots.get(i - 1).getEnd_time().equals(slots.get(i).getStart_time())) {
+                throw new ApiException("Time slots must be continuous");
+            }
+        }
+
+        // Set the reverse mapping
+        for (TimeSlot slot : slots) {
+            slot.setPrivate_match(match);
+        }
+
+        // Save the slots and then the match
+        timeSlotRepository.saveAll(slots);
+        match.setTime_slots(slots);
+        match.setStatus("TIME_RESERVED");
+        privateMatchRepository.save(match);
     }
 
 }

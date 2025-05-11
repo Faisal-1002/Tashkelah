@@ -17,6 +17,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // ADMIN
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
         List<User> users = authService.getAllUsers();

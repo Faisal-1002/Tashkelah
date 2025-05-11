@@ -45,9 +45,9 @@ public class PrivateMatchController {
         return ResponseEntity.status(200).body(new ApiResponse("Private match deleted successfully"));
     }
 
-    @PostMapping("/create/{fieldId}")
-    public ResponseEntity<?> createPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
-        privateMatchService.createPrivateMatchWithField(user.getId(), fieldId);
+    @PostMapping("/create")
+    public ResponseEntity<?> createPrivateMatch(@AuthenticationPrincipal User user) {
+        privateMatchService.createPrivateMatch(2);
         return ResponseEntity.status(200).body(new ApiResponse("Private match created successfully"));
     }
 

@@ -1,8 +1,10 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
+import com.example.tuwaiqfinalproject.Model.PrivateMatch;
 import com.example.tuwaiqfinalproject.Model.TimeSlot;
 import com.example.tuwaiqfinalproject.Model.User;
+import com.example.tuwaiqfinalproject.Service.PrivateMatchService;
 import com.example.tuwaiqfinalproject.Service.TimeSlotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +53,16 @@ public class TimeSlotController {
         return ResponseEntity.status(200).body(new ApiResponse("TimeSlot deleted successfully"));
     }
 
-    @GetMapping("/private-match/slots/{date}")
-    public ResponseEntity<?> getAvailableTimeSlotsForPrivateMatch(@AuthenticationPrincipal User user, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<TimeSlot> slots = timeSlotService.getTimeSlotsForPrivateMatchField(user.getId(), date);
+    @GetMapping("/private-match/slots/{privateMatchId}")
+    public ResponseEntity<?> getAvailableTimeSlotsForPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
+        List<TimeSlot> slots = timeSlotService.getTimeSlotsForPrivateMatch(2, privateMatchId);
         return ResponseEntity.status(200).body(slots);
     }
 
+    @PostMapping("/private-match/{matchId}/assign-slots")
+    public ResponseEntity<?> assignTimeSlotsToPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer matchId, @RequestBody List<Integer> slotIds) {
+        timeSlotService.assignTimeSlotsToPrivateMatch(2,matchId,slotIds);
+        return ResponseEntity.status(200).body(new ApiResponse("Time slots assigned successfully"));
+    }
 
 }

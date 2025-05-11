@@ -19,39 +19,47 @@ public class BookingController {
 
     private final BookingService bookingService;
 
+    //ADMIN
     @GetMapping("/all")
     public ResponseEntity<?> getAllBookings() {
         return ResponseEntity.status(200).body(bookingService.getAllBookings());
     }
 
+    //ADMIN
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookingById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(bookingService.getBookingById(id));
     }
 
+    //PLAYER
     @GetMapping("/my")
     public ResponseEntity<?> getMyBookings(@AuthenticationPrincipal User user) {
         List<Booking> myBookings = bookingService.getMyBookings(user.getId());
         return ResponseEntity.status(200).body(myBookings);
     }
 
+    //PLAYER
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateBooking(@PathVariable Integer id, @RequestBody @Valid Booking booking) {
         bookingService.updateBooking(id, booking);
         return ResponseEntity.status(200).body(new ApiResponse("Booking updated successfully"));
     }
 
+    //ADMIN
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteBooking(@PathVariable Integer id) {
         bookingService.deleteBooking(id);
         return ResponseEntity.status(200).body(new ApiResponse("Booking deleted successfully"));
     }
 
-    @PostMapping("/book/private-match")
-    public ResponseEntity<?> bookPrivateMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
-        bookingService.bookPrivateMatch(user.getId(), slotIds);
+    //PLAYER
+    @PostMapping("/book/private-match/{privateMatchId}")
+    public ResponseEntity<?> bookPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
+        bookingService.bookPrivateMatch(2, privateMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
     }
+
+    //PLAYER
     @PostMapping("/book/publicMatch")
     public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
         bookingService.bookPublicMatch(user.getId(), slotIds);
