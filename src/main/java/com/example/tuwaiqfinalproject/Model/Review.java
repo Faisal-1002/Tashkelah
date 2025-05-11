@@ -1,32 +1,27 @@
 package com.example.tuwaiqfinalproject.Model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@Getter
+import java.util.List;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Team {
-
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String name;
-
-    private Integer playersCount;
-
-    private Integer max_players_count;
+    @NotEmpty
+    private String comment;
+    @NotNull
+    private double rating;
 
     @ManyToOne
-    @JsonIgnore
-    private PublicMatch public_match;
-
+    private Field field;
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -30,9 +31,8 @@ public class PublicMatch {
     @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
     private List<TimeSlot> time_slots;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "public_match")
-    @PrimaryKeyJoinColumn
-    private Team team;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
+    private List<Team> team;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
     private List<Player> players;
