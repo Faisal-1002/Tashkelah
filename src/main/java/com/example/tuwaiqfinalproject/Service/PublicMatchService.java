@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -151,7 +152,7 @@ public class PublicMatchService {
         Team_DTO teamADto = new Team_DTO(null,team.getName(),team.getPublic_match().getStatus(),team.getPlayersCount(),team.getMax_players_count());
         return new PublicMatchDTO(teamADto);
     }
-  
+
     // 7- Eatzaz - Choose a team - tested
     public void PublicTeamSelection(Integer playerId, Integer sportId,Integer fieldId,Integer publicMatchId,Integer teamId) {
         Player player=playerRepository.findPlayerById(playerId);
@@ -184,7 +185,7 @@ public class PublicMatchService {
 
 
     // 8- Eatzaz - Show player selections - need testing
-    public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId) {
+    public PlayerSelectionDTO getPlayerMatchSelection(Integer playerId,Integer publicMatchId,Integer teamId) {
         Player player = playerRepository.findPlayerById(playerId);
         PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
         if (player == null) {
@@ -193,9 +194,11 @@ public class PublicMatchService {
         if (publicMatch == null) {
             throw new ApiException("public Match Not Found");
         }
+
+Team team=teamRepository.findTeamAById(teamId);
         String selectedTeamName = null;
         if (publicMatch.getTeam() != null && publicMatch.getPlayers().contains(player)) {
-            selectedTeamName = publicMatch.getTeam().getName();
+            selectedTeamName = team.getName();
         }
 
         List<TimeSlot> timeSlots = publicMatch.getTime_slots();

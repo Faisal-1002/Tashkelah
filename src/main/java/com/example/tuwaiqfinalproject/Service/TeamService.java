@@ -32,7 +32,7 @@ public class TeamService {
         team.setMax_players_count(publicMatch.getField().getCapacity()/2);
         team.setPublic_match(publicMatch);
         teamRepository.save(team);
-        publicMatch.setTeam(team);
+//        publicMatch.setTeam();
         publicMatchRepository.save(publicMatch);
     }
 
