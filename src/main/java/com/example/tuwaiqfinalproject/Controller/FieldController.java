@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,9 +42,14 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
+
+
     @PutMapping("/update/{fieldId}")
-    public ResponseEntity<?> updateField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestBody FieldDTO fieldDTO) {
-        fieldService.updateField(user.getId(), fieldId, fieldDTO);
+    public ResponseEntity<?> updateField(@AuthenticationPrincipal User user,@PathVariable Integer fieldId,
+            @ModelAttribute FieldDTO fieldDTO,
+            @RequestPart(required = false) MultipartFile photoFile) {
+
+        fieldService.updateField(user.getId(), fieldId, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field updated successfully"));
     }
 
@@ -60,7 +66,7 @@ public class FieldController {
 
     @PutMapping("/choseField/{fieldId}/{sportName}")
     public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable String sportName) {
-        fieldService.playerChoseAField(sportName, user.getId(), fieldId);
+        fieldService.playerChoseAFieldForPrivateMatch( user.getId(), fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("The stadium has been successfully selected"));
     }
 
@@ -70,7 +76,7 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field assigned successfully"));
     }
 
-    //Taha - get photo
+    //Taha ------------------- get photo -- test (6)
     @GetMapping("/images/{filename:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) throws IOException {
         Path imagePath = Paths.get("uploads", filename);
@@ -98,6 +104,21 @@ public class FieldController {
     public ResponseEntity getOrganizerFields(@AuthenticationPrincipal User user) {
        List<Field> fields = fieldService.getAllOrganizerFields(user.getId());
         return ResponseEntity.status(200).body(fields);
+    }
+
+
+
+
+    // Taha
+    @GetMapping("/booked-slots/{fieldId}")
+    public ResponseEntity<?> getBookedTimeSlots(@PathVariable Integer fieldId, @RequestParam String date) {
+        return ResponseEntity.status(200).body(fieldService.getBookedTimeSlots(fieldId, LocalDate.parse(date)));
+    }
+
+    // Taha
+    @GetMapping("/available-slots/{fieldId}")
+    public ResponseEntity<?> getAvailableTimeSlots(@PathVariable Integer fieldId, @RequestParam String date) {
+        return ResponseEntity.status(200).body(fieldService.getAvailableTimeSlots(fieldId, LocalDate.parse(date)));
     }
 
 }

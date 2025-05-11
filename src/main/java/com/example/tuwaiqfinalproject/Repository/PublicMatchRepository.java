@@ -12,5 +12,4 @@ import java.util.List;
 public interface PublicMatchRepository extends JpaRepository<PublicMatch, Integer> {
     PublicMatch findPublicMatchById(Integer id);
     List<PublicMatch> findByField_Id(Integer fieldId);
-    PublicMatch findBySportAndFieldAndStatus(Sport sport, Field field,String Status);
 }

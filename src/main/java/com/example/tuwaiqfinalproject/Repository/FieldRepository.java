@@ -14,7 +14,10 @@ import java.util.List;
 
 @Repository
 public interface FieldRepository extends JpaRepository<Field, Integer> {
+
+    @Query("SELECT f FROM Field f JOIN FETCH f.organizer WHERE f.id = :id")
     Field findFieldById(Integer id);
+
     @Query("SELECT f FROM Field f WHERE f.organizer.id = :organizerId")
     List<Field> findFieldByOrganizer_Id(Integer organizerId);
     List<Field> findFieldByLocation(String location);

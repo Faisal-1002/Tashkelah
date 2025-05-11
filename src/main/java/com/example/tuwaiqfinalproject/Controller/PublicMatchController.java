@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -35,11 +37,8 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(match);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addPublicMatch(@RequestBody @Valid PublicMatch match) {
-        publicMatchService.addPublicMatch(match);
-        return ResponseEntity.status(200).body(new ApiResponse("Public match added successfully"));
-    }
+
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updatePublicMatch(@PathVariable Integer id, @RequestBody @Valid PublicMatch updatedMatch) {
@@ -60,15 +59,16 @@ public class PublicMatchController {
         return ResponseEntity.ok(publicMatchService.showFieldMatches(fieldId, user.getId()));
     }
 
-    @PutMapping("PlayWithPublicTeam/{sportId}/{fieldId}")
-    public ResponseEntity PlayWithPublicTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
-        publicMatchService.PlayWithPublicTeam(sportId, fieldId, player.getId());
-        return ResponseEntity.status(200).body(new ApiResponse("You have entered the general team."));
-    }
+//
+//    @PutMapping("PlayWithPublicTeam/{sportId}/{fieldId}")
+//    public ResponseEntity PlayWithPublicTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+//        publicMatchService.PlayWithPublicTeam(sportId, fieldId, player.getId());
+//        return ResponseEntity.status(200).body(new ApiResponse("You have entered the general team."));
+//    }
 
     @GetMapping("getMatchAndTeam/{sportId}/{fieldId}/{publicMatchId}")
     public ResponseEntity getMatchAndTeam(@AuthenticationPrincipal Player player, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
-        return ResponseEntity.status(200).body(publicMatchService.getAllAvailableMatches(player.getId(), sportId, fieldId));
+        return ResponseEntity.status(200).body(publicMatchService.getAllPublicMatches());
     }
 
     @GetMapping("getTeams/{publicMatchId}")
@@ -80,9 +80,9 @@ public class PublicMatchController {
         publicMatchService.PublicTeamSelection(player.getId(), sportId, fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
-    @GetMapping("chekout/{publicMatchId}")
-    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
-        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
-    }
+//    @GetMapping("chekout/{publicMatchId}")
+//    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
+//        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
+//    }
 
 }

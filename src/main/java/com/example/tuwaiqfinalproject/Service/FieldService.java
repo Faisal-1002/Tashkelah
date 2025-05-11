@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +31,7 @@ public class FieldService {
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
 
+
     public List<Field> getAllFields(){
         return fieldRepository.findAll();
     }
@@ -34,7 +39,7 @@ public class FieldService {
 
 
 
-    // Taha-----------------
+    // Taha----------------- test-- (3)
 // Private method to save an uploaded image file
     private String saveImage(MultipartFile file) {
         // Check if the uploaded file is empty
@@ -76,7 +81,7 @@ public class FieldService {
         }
     }
 
-    //Taha--------------
+    //Taha-------------- test-(4)
     // Public method to allow an approved organizer to add a new field with an image
     public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
         Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
@@ -93,33 +98,72 @@ public class FieldService {
         }
 
         String photo = saveImage(photoFile);
-        Field field = new Field(null, fieldDTO.getName(), fieldDTO.getLocation(), fieldDTO.getDescription(), photo, fieldDTO.getOpenTime(), fieldDTO.getCloseTime(), fieldDTO.getCapacity(), organizer, sport, null, null, null);
+        Field field = new Field(null,fieldDTO.getName(),fieldDTO.getLocation(),fieldDTO.getDescription(),photo,fieldDTO.getOpenTime(),fieldDTO.getCloseTime(),
+                fieldDTO.getCapacity(),organizer,null,sport,null,null);
         fieldRepository.save(field);
     }
 
 
+    //Taha---------------//test (9)
 
-    public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO){
-        Field field= fieldRepository.findFieldById(fieldId);
+    // Allows an organizer to update an existing field's information and photo
+    public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO, MultipartFile photoFile) {
+        // Fetch the field from the database using its ID
+        Field field = fieldRepository.findFieldById(fieldId);
 
-        if(field == null){
-            throw new ApiException("Filed not found");
-
+        // If the field doesn't exist, throw an error
+        if (field == null) {
+            throw new ApiException("Field not found");
         }
-        if(!field.getOrganizer().getId().equals(organizer_id)){
+
+        // Check that the field belongs to the organizer who's trying to update it
+        if (!field.getOrganizer().getId().equals(organizer_id)) {
             throw new ApiException("You are not allowed to update another organizer's data");
-
         }
 
+        // Update field's basic information from the DTO (name, description, etc.)
         field.setName(fieldDTO.getName());
         field.setDescription(fieldDTO.getDescription());
-//        field.setPhoto(field.getPhoto());
         field.setLocation(fieldDTO.getLocation());
         field.setOpenTime(fieldDTO.getOpenTime());
         field.setCloseTime(fieldDTO.getCloseTime());
 
+        // If a new photo was uploaded
+        if (photoFile != null && !photoFile.isEmpty()) {
+            // Delete the old photo file from disk
+            deleteImage(field.getPhoto());
+
+            // Save the new image to disk and set its filename on the field
+            String newPhoto = saveImage(photoFile);
+            field.setPhoto(newPhoto);
+        }
+
+        // Save the updated field object to the database
         fieldRepository.save(field);
     }
+
+
+
+    //Taha---------------// (10)
+    // Deletes an image file from the "uploads" directory
+    private void deleteImage(String fileName) {
+        try {
+            // Build the full path to the file using the uploads folder and the file name
+            Path filePath = Paths.get("uploads", fileName);
+
+            // Check if the file actually exists
+            if (Files.exists(filePath)) {
+                // Delete the file from the file system
+                Files.delete(filePath);
+            }
+        } catch (IOException e) {
+            // If something goes wrong, print the stack trace and throw an API error
+            e.printStackTrace();
+            throw new ApiException("Failed to delete old image");
+        }
+    }
+
+
 
     public void deleteField(Integer organizer_id, Integer fieldId){
 
@@ -136,24 +180,24 @@ public class FieldService {
 
         fieldRepository.delete(field);
     }
-    // اظهار الملاعب للكل على حسب المدينه + الرياضه
-//    public List<Field> getFieldBySportAndCity(String location,String sportName){
-//        Sport sport=sportRepository.findSportByName(sportName);
-//        List<Field> field=fieldRepository.findFieldByLocation(location);
-//        if(sport==null){
-//            throw new ApiException("Sport Not Found");
-//        }
-//        if(field==null){
-//            throw new ApiException("Field Not Found");
-//        }
-//        for(Field f:field){
-//            if( f.getLocation().equals(location) && f.getSport().getName().equals(sportName)){
-////            throw new ApiException("There is no stadium for this sport in your city at the moment.");
-//                return field;
-//            }
-//        }
-//        return null;
-//    }
+   //  اظهار الملاعب للكل على حسب المدينه + الرياضه
+    public List<Field> getFieldBySportAndCity(String location,String sportName){
+        Sport sport=sportRepository.findSportByName(sportName);
+        List<Field> field=fieldRepository.findFieldByLocation(location);
+        if(sport==null){
+            throw new ApiException("Sport Not Found");
+        }
+        if(field==null){
+            throw new ApiException("Field Not Found");
+        }
+        for(Field f:field){
+            if( f.getLocation().equals(location) && f.getSport().getName().equals(sportName)){
+//            throw new ApiException("There is no stadium for this sport in your city at the moment.");
+                return field;
+            }
+        }
+        return null;
+    }
 
     // اظهار الملاعب للكل على حسب المدينه + الرياضه
     public List<Field> getFieldBySportAndCity(Integer user_id, String sportName) {
@@ -169,31 +213,31 @@ public class FieldService {
         return fields;
     }
 
-    //اختيار ملعب
-    public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
-        User user=authRepository.findUserById(playerId);
-        Field field= fieldRepository.findFieldById(fieldId);
-        Sport sport=sportRepository.findSportByName(sportName);
-      
-        if(user==null){
-            throw new ApiException("Player Not Found");
-        }
-
-        if (field == null) {
-            throw new ApiException("Field Not Found");
-        }
-        if (sport == null) {
-            throw new ApiException("Field Not Found");
-        }
-
-        if (!field.getLocation().equals(player.getUser().getCity()) ||
-                !field.getSport().getName().equals(sportName)) {
-            throw new ApiException("Field does not match player's city or sport");
-        }
-        PublicMatch publicMatch = new PublicMatch();
-        publicMatch.setField(field);
-        publicMatch.setPlayer(player);
-    }
+//    //اختيار ملعب
+//    public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
+//        User user=authRepository.findUserById(playerId);
+//        Field field= fieldRepository.findFieldById(fieldId);
+//        Sport sport=sportRepository.findSportByName(sportName);
+//
+//        if(user==null){
+//            throw new ApiException("Player Not Found");
+//        }
+//
+//        if (field == null) {
+//            throw new ApiException("Field Not Found");
+//        }
+//        if (sport == null) {
+//            throw new ApiException("Field Not Found");
+//        }
+//
+//        if (!field.getLocation().equals(player.getUser().getCity()) ||
+//                !field.getSport().getName().equals(sportName)) {
+//            throw new ApiException("Field does not match player's city or sport");
+//        }
+//        PublicMatch publicMatch = new PublicMatch();
+//        publicMatch.setField(field);
+//        publicMatch.setPlayer(player);
+//    }
 
     // 24. Faisal - Assign field for private match - Tested
     public void playerChoseAFieldForPrivateMatch(Integer user_id, Integer fieldId) {
@@ -220,7 +264,7 @@ public class FieldService {
         privateMatchRepository.save(privateMatch);
     }
 
-    //Taha----------------------------------
+    //Taha----------------------------------(5)
     public List<Field> getAllOrganizerFields(Integer userId) {
        Organizer organizer= organizerRepository.findOrganizerById(userId);
         if (organizer==null) {
@@ -229,5 +273,90 @@ public class FieldService {
 
         return fieldRepository.findFieldByOrganizer_Id(organizer.getId());
     }
+
+
+
+
+    // Taha - (7)Get booked time slots for a field on a specific date
+    // Returns a list of booked time slots for the specified field and date
+    public List<TimeSlot> getBookedTimeSlots(Integer fieldId, LocalDate date) {
+        // Get the field from the database
+        Field field = fieldRepository.findFieldById(fieldId);
+        if (field == null) {
+            throw new ApiException("Field not found");
+        }
+
+        // Filter time slots by the given date and sort them by start time
+        return field.getTimeSlots().stream()
+                .filter(ts -> ts.getDate().equals(date)) // Only slots on the requested date
+                .sorted(Comparator.comparing(TimeSlot::getStartTime)) // Sort by start time
+                .toList(); // Return as a list
+    }
+
+
+
+
+    // Taha -(8) Get available time slots for a field on a specific date
+    // Returns available (free) time slots for a field on the specified date
+    public List<TimeSlot> getAvailableTimeSlots(Integer fieldId, LocalDate date) {
+        Field field = fieldRepository.findFieldById(fieldId);
+        if (field == null) {
+            throw new ApiException("Field not found");
+        }
+
+        // Get the booked slots on the given date, sorted by start time
+        List<TimeSlot> bookedSlots = field.getTimeSlots().stream()
+                .filter(ts -> ts.getDate().equals(date))
+                .sorted(Comparator.comparing(TimeSlot::getStartTime))
+                .toList();
+
+        List<TimeSlot> availableSlots = new ArrayList<>();
+        LocalTime openTime = field.getOpenTime();
+        LocalTime closeTime = field.getCloseTime();
+
+        // Handle cases where closing time is after midnight
+        boolean crossesMidnight = closeTime.isBefore(openTime);
+        LocalTime current = openTime;
+
+        // Loop through booked slots and find the gaps between them
+        for (TimeSlot slot : bookedSlots) {
+            if (current.isBefore(slot.getStartTime())) {
+                // Add a free slot before the current booked slot
+                availableSlots.add(new TimeSlot(
+                        null, date, current, slot.getStartTime(), null,
+                        "AVAILABLE", field, null, null
+                ));
+            }
+            current = slot.getEndTime(); // Move pointer forward
+        }
+
+        // Add the final available time after the last booked slot
+        if (crossesMidnight) {
+            // Add slot before midnight
+            if (current.isBefore(LocalTime.MIDNIGHT)) {
+                availableSlots.add(new TimeSlot(
+                        null, date, current, LocalTime.MIDNIGHT, null,
+                        "AVAILABLE", field, null, null
+                ));
+            }
+            // Add slot after midnight on the next day
+            if (LocalTime.MIN.isBefore(closeTime)) {
+                availableSlots.add(new TimeSlot(null, date.plusDays(1), LocalTime.MIN, closeTime, null,
+                        "AVAILABLE", field, null, null
+                ));
+            }
+        } else {
+            // Normal case: add final slot before closing time
+            if (current.isBefore(closeTime)) {
+                availableSlots.add(new TimeSlot(null, date, current, closeTime, null,
+                        "AVAILABLE", field, null, null
+                ));
+            }
+        }
+
+        return availableSlots;
+    }
+
+
 
 }

@@ -45,4 +45,11 @@ public class PublicMatch {
 
     @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
     private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "publicMatch", cascade = CascadeType.ALL)
+    private List<TimeSlot> timeSlots;
+
+
+
+
 }

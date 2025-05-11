@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -32,7 +33,6 @@ public class Field {
     private String description;
 
     @NotEmpty(message = "Photo URL must not be empty")
-    @Column(columnDefinition = "varchar(255) not null")
     private String photo;
 
     @Column(columnDefinition = "time not null")
@@ -42,7 +42,6 @@ public class Field {
     private LocalTime closeTime;
 
     @NotNull(message = "capacity must not be empty")
-    @Column(columnDefinition = "int not null")
     @Min(value = 2)
     @Max(value = 22)
     @Column(name = "capacity")
@@ -56,6 +55,7 @@ public class Field {
     private List<PublicMatch> publicMatches;
 
     @ManyToOne
+    @JsonIgnore
     private Sport sport;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
@@ -64,6 +64,6 @@ public class Field {
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<PrivateMatch> privateMatches;
 
-    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
-    private List<PublicMatch> publicMatches;
+
+
 }
