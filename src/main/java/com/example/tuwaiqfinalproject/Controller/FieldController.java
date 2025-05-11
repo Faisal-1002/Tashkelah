@@ -115,5 +115,10 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field assigned to private match successfully."));
     }
 
+    @GetMapping("/field/{id}")
+    public ResponseEntity<?> getFieldById(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(fieldService.getFieldById(id));
+    }
+
 }
 

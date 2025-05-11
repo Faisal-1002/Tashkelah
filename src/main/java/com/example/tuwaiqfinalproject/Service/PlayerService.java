@@ -25,6 +25,7 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
+    // 22. Faisal - Get my info as a player - Tested
     public Player getPlayer(Integer userId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
@@ -32,6 +33,7 @@ public class PlayerService {
         return player;
     }
 
+    // 23. Faisal - Get player info by id - Tested
     public Player getPlayerById(Integer player_id) {
         Player player = playerRepository.findPlayerById(player_id);
         if (player == null)
@@ -39,6 +41,7 @@ public class PlayerService {
         return player;
     }
 
+    // 24. Eatzaz + Faisal - Register Player - Tested
     public void registerPlayer(PlayerDTO dto) {
         dto.setRole("PLAYER");
         String hashPassword = new BCryptPasswordEncoder().encode(dto.getPassword());

@@ -27,7 +27,7 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(matches);
     }
 
-    @GetMapping("getById/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<?> getPublicMatchById(@PathVariable Integer id) {
         PublicMatch match = publicMatchService.getPublicMatchById(id);
         return ResponseEntity.status(200).body(match);
@@ -51,12 +51,10 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
 
-    //Taha
     @GetMapping("/field/{fieldId}/matches")
     public ResponseEntity<?> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
         return ResponseEntity.status(200).body(publicMatchService.showFieldMatches(fieldId, user.getId()));
     }
-
 
     @PutMapping("/PlayWithPublicTeam/{sportId}/{fieldId}")
     public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
@@ -80,13 +78,21 @@ public class PublicMatchController {
         publicMatchService.PublicTeamSelection(user.getId(), sportId, fieldId, matchId, teamId);
         return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
+
     @GetMapping("/chekout/{publicMatchId}/{teamId}")
     public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }
-    @GetMapping("not/{bookingId}")
+
+    @GetMapping("/not/{bookingId}")
     public ResponseEntity no(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
         return ResponseEntity.status(200).body(publicMatchService.Notifications(user.getId(),bookingId));
+    }
+
+    @PutMapping("/changeStatus/{publicMatchId}")
+    public ResponseEntity changeStatusAfterCompleted(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+        publicMatchService.changeStatusAfterCompleted(user.getId(),publicMatchId);
+        return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
     }
 
 }
