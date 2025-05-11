@@ -32,7 +32,7 @@ public class PublicMatch {
     private List<TimeSlot> time_slots;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
-    private Set<Team> team;
+    private List<Team> team;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
     private List<Player> players;

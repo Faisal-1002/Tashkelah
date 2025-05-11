@@ -85,4 +85,16 @@ public class PublicMatchController {
     public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }
+    @GetMapping("not/{bookingId}")
+    public ResponseEntity no(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
+        publicMatchService.Notifications(user.getId(),bookingId);
+        return ResponseEntity.status(200).body(new ApiResponse("تم تسجيلك في المباراة!\n" +
+                "بيوصلك التأكيد على البريد الإلكتروني\n" +
+                "خلك جاهز. "));
+    }
+    @PutMapping("changeStatus/{publicMatchId}")
+    public ResponseEntity changeStatusAfterCompleted(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+        publicMatchService.changeStatusAfterCompleted(user.getId(),publicMatchId);
+        return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
+    }
 }

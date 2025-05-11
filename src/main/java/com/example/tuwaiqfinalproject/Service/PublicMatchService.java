@@ -25,6 +25,7 @@ public class PublicMatchService {
     private final TeamRepository teamRepository;
     private final OrganizerRepository organizerRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final BookingRepository bookingRepository;
 
     public List<PublicMatch> getAllPublicMatches() {
         return publicMatchRepository.findAll();
@@ -128,30 +129,23 @@ public class PublicMatchService {
     }
 
 
-//    // 6. Eatzaz - Get teams for public match -tested
-//    public PublicMatchDTO getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
-//        Player player=playerRepository.findPlayerById(PlayerId);
-//        if(player==null){
-//            throw new ApiException("player match not found");
-//        }
-//        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
-//        if(match==null){
-//        throw new ApiException("Public match not found");
-//        }
-//        Field field=fieldRepository.findFieldById(match.getField().getId());
-//        if(field==null){
-//            throw new ApiException("Field match not found");
-//        }
-//        Team team = match.getTeam();
-//        if (team == null) {
-//            throw new ApiException("No team assigned to this match");
-//        }
-//        if (team.getPublic_match() == null) {
-//            throw new ApiException("Public match data missing in team");
-//        }
-//        Team_DTO teamADto = new Team_DTO(null,team.getName(),team.getPublic_match().getStatus(),team.getPlayersCount(),team.getMax_players_count());
-//        return new PublicMatchDTO(teamADto);
-//    }
+    // 6. Eatzaz - Get teams for public match -tested
+    public List<Team> getTeamsForPublicMatch(Integer PlayerId,Integer publicMatchId) {
+        Player player = playerRepository.findPlayerById(PlayerId);
+        if (player == null) {
+            throw new ApiException("player match not found");
+        }
+        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (match == null) {
+            throw new ApiException("Public match not found");
+        }
+        Field field = fieldRepository.findFieldById(match.getField().getId());
+        if (field == null) {
+            throw new ApiException("Field match not found");
+        }
+        return match.getTeam();
+    }
+
 
     // 7- Eatzaz - Choose a team - tested
     public void PublicTeamSelection(Integer playerId, Integer sportId,Integer fieldId,Integer publicMatchId,Integer teamId) {
@@ -212,6 +206,47 @@ Team team=teamRepository.findTeamById(teamId);
                 publicMatch.getTime_slots()
         );
     }
+// 11. Eatzaz - Notification that the payment process has been completed
+    public void Notifications(Integer playerId,Integer bookingId){
+        Player player=playerRepository.findPlayerById(playerId);
+        if(player==null){
+            throw new ApiException("Player Not Found");
+        }
+        Booking booking=bookingRepository.findBookingById(bookingId);
+        if(booking==null){
+            throw new ApiException("Booking Not Found");
+        }
+        if(! booking.getPublic_match().equals(player.getPublic_match()) && booking.getIs_paid().equals(true)){
+            throw new ApiException("valid");
+        }
+    }
+//12 . Eatzaz - Change the match status after the number is complete
+public void changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
+    PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
+    if (publicMatch == null) {
+        throw new ApiException("Public Match Not Found");
+    }
+
+    Booking booking = bookingRepository.findBookingById(bookingId);
+    if (booking == null) {
+        throw new ApiException("Booking Not Found");
+    }
+
+    List<Team> teams = publicMatch.getTeam();
+    int numberPlayer = 0;
+    for (Team team : teams) {
+        numberPlayer += team.getPlayersCount();
+    }
+
+
+    if (numberPlayer != publicMatch.getField().getCapacity()) {
+        throw new ApiException("Number of players does not match the field capacity");
+    }
+
+    publicMatch.setStatus("FULL");
+
+    publicMatchRepository.save(publicMatch);
+}
 
 
 }
