@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor

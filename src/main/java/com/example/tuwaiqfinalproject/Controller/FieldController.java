@@ -42,8 +42,6 @@ public class FieldController {
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
-
-
     @PutMapping("/update/{fieldId}")
     public ResponseEntity<?> updateField(@AuthenticationPrincipal User user,@PathVariable Integer fieldId,
             @ModelAttribute FieldDTO fieldDTO,
