@@ -1,14 +1,12 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
-import com.example.tuwaiqfinalproject.Model.Organizer;
-import com.example.tuwaiqfinalproject.Model.Player;
-import com.example.tuwaiqfinalproject.Model.PublicMatch;
-import com.example.tuwaiqfinalproject.Model.User;
+import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Service.PublicMatchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +33,9 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(match);
     }
 
-    @PostMapping("/addPublicMatch/{fieldId}")
-    public ResponseEntity<?> addPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer fieldId, @RequestBody @Valid PublicMatch match) {
-        publicMatchService.addPublicMatch(user.getId(),match,fieldId);
+    @PostMapping("/addPublicMatch/{fieldId}/{timeSlotId}")
+    public ResponseEntity<?> addPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestParam List<Integer> timeSlotId, @RequestBody @Valid PublicMatch match) {
+        publicMatchService.addPublicMatch(user.getId(),match,fieldId,timeSlotId);
         return ResponseEntity.status(200).body(new ApiResponse("Public match added successfully"));
     }
 
@@ -55,9 +53,10 @@ public class PublicMatchController {
 
     //Taha
     @GetMapping("/field/{fieldId}/matches")
-    public ResponseEntity<List<PublicMatch>> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId){
-        return ResponseEntity.ok(publicMatchService.showFieldMatches(fieldId, user.getId()));
+    public ResponseEntity<?> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(publicMatchService.showFieldMatches(fieldId, user.getId()));
     }
+
 
     @PutMapping("/PlayWithPublicTeam/{sportId}/{fieldId}")
     public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {

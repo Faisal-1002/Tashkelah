@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class PublicMatchService {
     private final TeamRepository teamRepository;
     private final OrganizerRepository organizerRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final PrivateMatchRepository privateMatchRepository;
     private final BookingRepository bookingRepository;
 
     public List<PublicMatch> getAllPublicMatches() {
@@ -39,18 +41,35 @@ public class PublicMatchService {
     }
 
 // 3 - Eatzaz - add Public match with Field - tested
-    public void addPublicMatch(Integer organizerId,PublicMatch match,Integer fieldId) {
+    // اضف تايم سلوت
+    public void addPublicMatch(Integer organizerId,PublicMatch match,Integer fieldId, List<Integer> timeSlotIds) {
         Organizer organizer=organizerRepository.findOrganizerById(organizerId);
         if(organizer==null){
             throw new ApiException("organizer not found");
         }
         Field field=fieldRepository.findFieldById(fieldId);
         if(field==null){
-            throw new ApiException("organizer not found");
+            throw new ApiException("field not found");
         }
+
+        // Book time slot and change its status
+        List<TimeSlot> timeSlots= timeSlotRepository.findAllById(timeSlotIds);
+        if(timeSlots.isEmpty()) {
+            throw new ApiException("TimeSlot not found");
+
+        }
+            for(TimeSlot slot : timeSlots){
+
+                slot.setStatus("BOOKED");
+            }
+            timeSlotRepository.saveAll(timeSlots);
+
+
+
         match.setStatus("OPEN");
         match.setOrganizer(organizer);
         match.setField(field);
+        match.setTime_slots(timeSlots);
         publicMatchRepository.save(match);
     }
 
@@ -71,7 +90,7 @@ public class PublicMatchService {
     }
 
     //Taha --------- (1)
-    public List<PublicMatch> showFieldMatches(Integer fieldId, Integer userId) {
+    public List<?> showFieldMatches(Integer fieldId, Integer userId) {
 
         Organizer organizer = organizerRepository.findById(userId)
                 .orElseThrow(() -> new ApiException("Organizer not found"));
@@ -79,11 +98,19 @@ public class PublicMatchService {
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
 
+        List<PublicMatch> publicMatches= publicMatchRepository.findPublicMatchesByField(field);
+        List<PrivateMatch> privateMatches =privateMatchRepository.findPrivateMatchByField(field);
+
         if (!field.getOrganizer().getId().equals(organizer.getId())) {
             throw new ApiException("You are not authorized to view matches for this field");
         }
 
-        return publicMatchRepository.findPublicMatchesByField(field);
+
+        List<Object> allMatches = new ArrayList<>();
+        allMatches.addAll(publicMatches);
+        allMatches.addAll(privateMatches);
+
+        return allMatches;
     }
 
     //4. Eatzaz- Play with a public match -tested
