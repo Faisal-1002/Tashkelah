@@ -236,27 +236,35 @@ public class PublicMatchService {
         if(! booking.getPublic_match().equals(player.getPublic_match()) && booking.getIs_paid().equals(true)){
             throw new ApiException("valid");
         }
+        return changeStatusAfterCompleted(booking.getPublic_match().getId(),booking.getId());
+
     }
 
-    //34 . Eatzaz - Change the match status after the number is complete - Tested
-    public void changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
+    // 34 . Eatzaz - Change the match status after the number is complete
+    public String changeStatusAfterCompleted(Integer publicMatchId, Integer bookingId) {
         PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
         if (publicMatch == null) {
             throw new ApiException("Public Match Not Found");
         }
+
         Booking booking = bookingRepository.findBookingById(bookingId);
         if (booking == null) {
             throw new ApiException("Booking Not Found");
         }
+
         List<Team> teams = publicMatch.getTeam();
         int numberPlayer = 0;
         for (Team team : teams) {
             numberPlayer += team.getPlayersCount();
         }
-        if (numberPlayer != publicMatch.getField().getCapacity()) {
-            throw new ApiException("Number of players does not match the field capacity");
+
+
+        if (numberPlayer == publicMatch.getField().getCapacity()) {
+            publicMatch.setStatus("FULL");
+            publicMatchRepository.save(publicMatch);
+            return "Match status updated to FULL";
         }
-        publicMatch.setStatus("FULL");
-        publicMatchRepository.save(publicMatch);
+        return "Booking successful, waiting for more players";
     }
+
 }

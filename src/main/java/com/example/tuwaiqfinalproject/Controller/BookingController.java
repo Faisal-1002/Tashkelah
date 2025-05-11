@@ -58,4 +58,9 @@ public class BookingController {
         return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
     }
 
+    @GetMapping("getBookingPublicMatch")
+    public ResponseEntity getMyBookingForPublicMatch(@AuthenticationPrincipal User user){
+        return ResponseEntity.status(200).body(bookingService.getMyBookingForPublicMatch(user.getId()));
+    }
+
 }

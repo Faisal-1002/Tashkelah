@@ -127,13 +127,14 @@ public class BookingService {
     // 36. Eatzaz - Public match booking - Need testing
     public void bookPublicMatch(Integer userId, List<Integer> slotIds) {
         Player player = playerRepository.findPlayerById(userId);
-        if (player == null) throw new ApiException("Player not found");
+        if (player == null)
+            throw new ApiException("Player not found");
         PublicMatch match = player.getPublic_match();
         if (match == null ) {
             throw new ApiException("Match not found ");
         }
         if(!match.getStatus().equals("SCHEDULED")){
-            throw new ApiException("Match not found or not scheduled");
+            throw new ApiException("Match not scheduled");
         }
 
         Field field = match.getField();
@@ -180,5 +181,17 @@ public class BookingService {
         match.setStatus("PENDING");
         publicMatchRepository.save(match);
     }
+    //13. Eatzaz - get Player My Booking - tested
+public List<Booking> getMyBookingForPublicMatch(Integer playerId){
+        Player player=playerRepository.findPlayerById(playerId);
+        if(player==null){
+            throw new ApiException("Player Not Found !");
+        }
+      List<Booking>myBookings=bookingRepository.findBookingsByPlayerInPublicMatch(player);
+    if (myBookings.isEmpty()) {
+        throw new ApiException("You have no bookings in public matches.");
+    }
 
+        return myBookings;
+}
 }
