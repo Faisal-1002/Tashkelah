@@ -1,5 +1,7 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -16,31 +18,27 @@ public class PrivateMatch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "Match name must not be empty")
-    @Column(columnDefinition = "varchar(50) not null")
-    private String name;
-
     @NotEmpty(message = "Status must not be empty")
     @Pattern(
-            regexp = "PENDING|SCHEDULED|CONFIRMED",
-            message = "Status must be one of: PENDING, SCHEDULED, CONFIRMED"
+            regexp = "CREATED|PENDING|SCHEDULED|CONFIRMED",
+            message = "Status must be one of: CREATED, PENDING, SCHEDULED, CONFIRMED"
     )
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
 
-    @OneToOne(mappedBy = "privateMatch", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "private_match", cascade = CascadeType.ALL)
     private Booking booking;
 
-    @OneToMany(mappedBy = "privateMatch", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "private_match", cascade = CascadeType.ALL)
     private List<Emails> emails;
 
     @OneToOne
     private Player player;
 
     @ManyToOne
+    @JsonIgnore
     private Field field;
 
-    @OneToMany(mappedBy = "privateMatch", cascade = CascadeType.ALL)
-    private List<TimeSlot> timeSlots;
-
+    @OneToMany(mappedBy = "private_match", cascade = CascadeType.ALL)
+    private List<TimeSlot> time_slots;
 }

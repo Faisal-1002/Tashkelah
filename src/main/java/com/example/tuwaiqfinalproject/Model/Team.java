@@ -2,9 +2,7 @@ package com.example.tuwaiqfinalproject.Model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,17 +13,20 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class TeamA {
+public class Team {
 
     @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String teamName;
+    private String name;
 
     private Integer playersCount;
 
+    private Integer max_players_count;
+
     @OneToOne
     @JsonIgnore
-    private PublicMatch publicMatch;
+    private PublicMatch public_match;
 
 }

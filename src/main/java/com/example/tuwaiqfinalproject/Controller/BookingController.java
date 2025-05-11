@@ -35,12 +35,6 @@ public class BookingController {
         return ResponseEntity.status(200).body(myBookings);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addBooking(@RequestBody @Valid Booking booking) {
-        bookingService.addBooking(booking);
-        return ResponseEntity.status(200).body(new ApiResponse("Booking created successfully"));
-    }
-
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateBooking(@PathVariable Integer id, @RequestBody @Valid Booking booking) {
         bookingService.updateBooking(id, booking);
@@ -51,6 +45,17 @@ public class BookingController {
     public ResponseEntity<?> deleteBooking(@PathVariable Integer id) {
         bookingService.deleteBooking(id);
         return ResponseEntity.status(200).body(new ApiResponse("Booking deleted successfully"));
+    }
+
+    @PostMapping("/book/private-match")
+    public ResponseEntity<?> bookPrivateMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
+        bookingService.bookPrivateMatch(user.getId(), slotIds);
+        return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
+    }
+    @PostMapping("/book/publicMatch")
+    public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
+        bookingService.bookPublicMatch(user.getId(), slotIds);
+        return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
     }
 
 }

@@ -23,11 +23,11 @@ public class TimeSlot {
 
     @NotNull(message = "Start time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime startTime;
+    private LocalTime start_time;
 
     @NotNull(message = "End time must not be null")
     @Column(columnDefinition = "time not null")
-    private LocalTime endTime;
+    private LocalTime end_time;
 
     @NotNull(message = "Price must not be null")
     @Min(value = 0, message = "Price must be non-negative")
@@ -39,15 +39,14 @@ public class TimeSlot {
     private String status;
 
     @ManyToOne
+    @JsonIgnore
     private Field field;
 
     @ManyToOne
     @JsonIgnore
-    private PublicMatch publicMatch;
+    private PrivateMatch private_match;
 
     @ManyToOne
     @JsonIgnore
-    private PrivateMatch privateMatch;
-
-
+    private PublicMatch public_match;
 }

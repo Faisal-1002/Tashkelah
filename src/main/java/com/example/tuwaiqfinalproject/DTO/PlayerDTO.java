@@ -27,7 +27,6 @@ public class PlayerDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @Column(nullable = false)
     @Pattern(regexp = "ORGANIZER|PLAYER|ADMIN",message = "Role must be ORGANIZER, PLAYER, or ADMIN")
     private String role;
 
@@ -38,12 +37,14 @@ public class PlayerDTO {
     @Pattern(regexp = "^(05)[0-9]{8}$", message = "Phone number must start with 05 and be 10 digits")
     private String phone;
 
-    @NotEmpty(message = "City must not be empty")
-    private String city;
+    @NotEmpty(message = "Address must not be empty")
+    private String address;
 
     @NotEmpty(message = "Gender must not be empty")
+    @Pattern(regexp = "^(MALE|FEMALE)$", message = "Gender must MALE or FEMALE")
     private String gender;
 
     @Past(message = "Birth date must be in the past")
-    private LocalDate birthDate;
+    private LocalDate birth_date;
+
 }

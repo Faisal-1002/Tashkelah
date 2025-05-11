@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -39,17 +40,19 @@ public class User implements UserDetails {
     private String phone;
 
     @Column(columnDefinition = "varchar(20) not null")
-    private String city;
+    private String address;
 
     @Column(columnDefinition = "varchar(100) not null unique")
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
+    @JsonIgnore
     private Player player;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
+    @JsonIgnore
     private Organizer organizer;
 
     @Override

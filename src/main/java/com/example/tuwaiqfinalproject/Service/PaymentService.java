@@ -1,10 +1,7 @@
 package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
-import com.example.tuwaiqfinalproject.Model.Booking;
-import com.example.tuwaiqfinalproject.Model.Payment;
-import com.example.tuwaiqfinalproject.Model.Player;
-import com.example.tuwaiqfinalproject.Model.PrivateMatch;
+import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.BookingRepository;
 import com.example.tuwaiqfinalproject.Repository.PaymentRepository;
 import com.example.tuwaiqfinalproject.Repository.PlayerRepository;
@@ -15,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class PaymentService {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivateMatch();
+        PrivateMatch match = player.getPrivate_match();
         if (match == null || match.getBooking() == null)
             throw new ApiException("No booking found for this match");
 
@@ -44,7 +44,7 @@ public class PaymentService {
         String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments"; // Replace with your real callback
 
         paymentRequest.setName(player.getUser().getName());
-        paymentRequest.setAmount(booking.getTotalAmount());
+        paymentRequest.setAmount(booking.getTotal_amount());
         paymentRequest.setCurrency("SAR");
 
         // 🔒 Moyasar requires amount in the smallest currency unit (e.g. halalas)
@@ -85,7 +85,7 @@ public class PaymentService {
         if (player == null)
             throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivateMatch();
+        PrivateMatch match = player.getPrivate_match();
         if (match == null || match.getBooking() == null)
             throw new ApiException("No booking found for this match");
 
@@ -111,12 +111,67 @@ public class PaymentService {
                 String.class
         );
 
-        booking.setIsPaid(true);
+        booking.setIs_paid(true);
         booking.setStatus("CONFIRMED");
         booking.setPayment(payment);
         bookingRepository.save(booking);
 
         return response.getBody();
     }
-
+//    public ResponseEntity<String> PublicMatchPayMnt(Integer user_id, Payment paymentRequest) {
+//        Player player = playerRepository.findPlayerById(user_id);
+//        if (player == null) throw new ApiException("Player not found");
+//
+//        PublicMatch match = player.getPublic_match();
+//        if (match == null || match.getBookings() == null || match.getBookings().isEmpty())
+//            throw new ApiException("No booking found for this match");
+//
+//        List<Booking> pendingBookings = match.getBookings().stream()
+//                .filter(b -> "PENDING".equals(b.getStatus()))
+//                .collect(Collectors.toList());
+//
+//        if (pendingBookings.isEmpty()) {
+//            throw new ApiException("No pending bookings found for this match");
+//        }
+//        String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments";
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBasicAuth(apiKey, "");
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//
+//        ResponseEntity<String> response = null;
+//
+//        for (Booking booking : pendingBookings) {
+//            double amount = booking.getTotal_amount();
+//
+//            String requestBody = String.format(
+//                    "source[type]=card&source[name]=%s&source[number]=%s&source[cvc]=%s" +
+//                            "&source[month]=%s&source[year]=%s&amount=%d&currency=%s&callback_url=%s",
+//                    paymentRequest.getName(),
+//                    paymentRequest.getNumber(),
+//                    paymentRequest.getCvc(),
+//                    paymentRequest.getMonth(),
+//                    paymentRequest.getYear(),
+//                    (int) (amount * 100), // إلى هللة
+//                    "SAR",
+//                    callbackUrl
+//            );
+//
+//            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+//            response = restTemplate.exchange(MOYASAR_API_URL, HttpMethod.POST, entity, String.class);
+//
+//            // حفظ كل دفعه
+//            Payment newPayment = new Payment();
+//            newPayment.setBooking(booking);
+//            newPayment.setName(player.getUser().getName());
+//            newPayment.setAmount(amount);
+//            newPayment.setCurrency("SAR");
+//            newPayment.setPayment_date(LocalDateTime.now());
+//
+//            paymentRepository.save(newPayment);
+//        }
+//        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+//    }
 }

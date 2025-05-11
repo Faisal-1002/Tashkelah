@@ -1,5 +1,4 @@
 package com.example.tuwaiqfinalproject.Service;
-
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.DTO.FieldDTO;
 import com.example.tuwaiqfinalproject.Model.*;
@@ -26,18 +25,14 @@ public class FieldService {
     private final FieldRepository fieldRepository;
     private final OrganizerRepository organizerRepository;
     private final SportRepository sportRepository;
-    private final PublicMatchRepository publicMatchRepository;
-    private final AuthRepository authRepository;
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
+    private final TimeSlotService timeSlotService;
 
 
     public List<Field> getAllFields(){
         return fieldRepository.findAll();
     }
-
-
-
 
     // Taha----------------- test-- (3)
 // Private method to save an uploaded image file
@@ -88,7 +83,7 @@ public class FieldService {
         if (organizer == null) {
             throw new ApiException("Organizer not found");
         }
-        if (!organizer.getStatus()) {
+        if (!organizer.getStatus().equals("ACTIVE")) {
             throw new ApiException("Your account is not yet approved");
         }
 
@@ -98,19 +93,30 @@ public class FieldService {
         }
 
         String photo = saveImage(photoFile);
-        Field field = new Field(null,fieldDTO.getName(),fieldDTO.getLocation(),fieldDTO.getDescription(),photo,fieldDTO.getOpenTime(),fieldDTO.getCloseTime(),
-                fieldDTO.getCapacity(),organizer,null,sport,null,null);
+        Field field = new Field(
+                null,
+                fieldDTO.getName(),
+                fieldDTO.getAddress(),
+                fieldDTO.getDescription(),
+                photo,
+                fieldDTO.getOpen_time(),
+                fieldDTO.getClose_time(),
+                fieldDTO.getCapacity(),
+                fieldDTO.getPrice(),
+                sport,
+                organizer,
+                null,
+                null,
+                null);
         fieldRepository.save(field);
+        timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());
     }
-
-
     //Taha---------------//test (9)
 
     // Allows an organizer to update an existing field's information and photo
     public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO, MultipartFile photoFile) {
         // Fetch the field from the database using its ID
         Field field = fieldRepository.findFieldById(fieldId);
-
         // If the field doesn't exist, throw an error
         if (field == null) {
             throw new ApiException("Field not found");
@@ -124,9 +130,10 @@ public class FieldService {
         // Update field's basic information from the DTO (name, description, etc.)
         field.setName(fieldDTO.getName());
         field.setDescription(fieldDTO.getDescription());
-        field.setLocation(fieldDTO.getLocation());
-        field.setOpenTime(fieldDTO.getOpenTime());
-        field.setCloseTime(fieldDTO.getCloseTime());
+        field.setPhoto(field.getPhoto());
+        field.setAddress(fieldDTO.getAddress());
+        field.setOpen_time(fieldDTO.getOpen_time());
+        field.setClose_time(fieldDTO.getClose_time());
 
         // If a new photo was uploaded
         if (photoFile != null && !photoFile.isEmpty()) {
@@ -163,8 +170,6 @@ public class FieldService {
         }
     }
 
-
-
     public void deleteField(Integer organizer_id, Integer fieldId){
 
         Field field= fieldRepository.findFieldById(fieldId);
@@ -180,71 +185,55 @@ public class FieldService {
 
         fieldRepository.delete(field);
     }
-   //  اظهار الملاعب للكل على حسب المدينه + الرياضه
-    public List<Field> getFieldBySportAndCity(String location,String sportName){
-        Sport sport=sportRepository.findSportByName(sportName);
-        List<Field> field=fieldRepository.findFieldByLocation(location);
-        if(sport==null){
-            throw new ApiException("Sport Not Found");
-        }
-        if(field==null){
-            throw new ApiException("Field Not Found");
-        }
-        for(Field f:field){
-            if( f.getLocation().equals(location) && f.getSport().getName().equals(sportName)){
-//            throw new ApiException("There is no stadium for this sport in your city at the moment.");
-                return field;
-            }
-        }
-        return null;
-    }
 
-    // اظهار الملاعب للكل على حسب المدينه + الرياضه
-    public List<Field> getFieldBySportAndCity(Integer user_id, String sportName) {
-        User user=authRepository.findUserById(user_id);
-        if(user==null)
+    // 1- Eatzaz - Show stadiums by sport type -tested
+    public List<Field> getFieldBySportAndCity(Integer player_id, Integer sportId) {
+        Player player=playerRepository.findPlayerById(player_id);
+        if(player==null)
             throw new ApiException("User Not Found");
-        Sport sport = sportRepository.findSportByName(sportName);
+        Sport sport = sportRepository.findSportById(sportId);
         if (sport == null)
             throw new ApiException("Sport not found");
-        List<Field> fields = fieldRepository.findAllBySportNameAndCity(sportName, user.getCity());
+
+        List<Field> fields = fieldRepository.findAllBySportIdAndLocation(sportId, player.getUser().getAddress());
         if (fields.isEmpty())
             throw new ApiException("No fields found for this sport in your city");
         return fields;
     }
 
-//    //اختيار ملعب
-//    public void playerChoseAField(String sportName,Integer playerId, Integer fieldId){
-//        User user=authRepository.findUserById(playerId);
-//        Field field= fieldRepository.findFieldById(fieldId);
-//        Sport sport=sportRepository.findSportByName(sportName);
-//
-//        if(user==null){
-//            throw new ApiException("Player Not Found");
-//        }
-//
-//        if (field == null) {
-//            throw new ApiException("Field Not Found");
-//        }
-//        if (sport == null) {
-//            throw new ApiException("Field Not Found");
-//        }
-//
-//        if (!field.getLocation().equals(player.getUser().getCity()) ||
-//                !field.getSport().getName().equals(sportName)) {
-//            throw new ApiException("Field does not match player's city or sport");
-//        }
-//        PublicMatch publicMatch = new PublicMatch();
-//        publicMatch.setField(field);
-//        publicMatch.setPlayer(player);
-//    }
+    //2- Eatzaz - player Chose Field For Public Match - tested
+    public void playerChoseAFieldForAPublicMatch(Integer sport_Id,Integer playerId, Integer field_Id) {
+        Player player = playerRepository.findPlayerById(playerId);
+
+        if (player == null) {
+            throw new ApiException("Player Not Found");
+        }
+        Field field = fieldRepository.findFieldById(field_Id);
+        if (field == null) {
+            throw new ApiException("Field Not Found");
+        }
+        Sport sport = sportRepository.findSportById(sport_Id);
+        if (sport == null) {
+            throw new ApiException("Sport Not Found");
+        }
+
+        if (!field.getAddress().equals(player.getUser().getAddress()) ||
+                !field.getSport().getName().equals(sport.getName())) {
+            if (!field.getAddress().equals(player.getUser().getAddress()) ||
+                    !field.getSport().getId().equals(sport_Id))
+                throw new ApiException("Field does not match player's city or sport");
+            PublicMatch publicMatch = new PublicMatch();
+            publicMatch.setField(field);
+        }
+    }
+
 
     // 24. Faisal - Assign field for private match - Tested
-    public void playerChoseAFieldForPrivateMatch(Integer user_id, Integer fieldId) {
+    public void playerChoseAFieldForPrivateMatch (Integer user_id, Integer fieldId){
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("User not found or incorrect role");
 
-        PrivateMatch privateMatch = player.getPrivateMatch();
+        PrivateMatch privateMatch = player.getPrivate_match();
         if (privateMatch == null)
             throw new ApiException("Private match not found");
 
@@ -255,8 +244,8 @@ public class FieldService {
         if (field == null) throw new ApiException("Field not found");
 
         // Use player's city directly (from User inside Player)
-        String playerCity = player.getUser().getCity();
-        if (!field.getLocation().equals(playerCity))
+        String playerCity = player.getUser().getAddress();
+        if (!field.getAddress().equals(playerCity))
             throw new ApiException("Field is not in the same city as the player");
 
         privateMatch.setField(field);
@@ -270,7 +259,6 @@ public class FieldService {
         if (organizer==null) {
             throw new ApiException("You are not allowed to view another organizer's fields");
         }
-
         return fieldRepository.findFieldByOrganizer_Id(organizer.getId());
     }
 
@@ -360,3 +348,4 @@ public class FieldService {
 
 
 }
+

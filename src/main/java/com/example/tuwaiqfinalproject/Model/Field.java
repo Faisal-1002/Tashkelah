@@ -2,10 +2,7 @@ package com.example.tuwaiqfinalproject.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -18,7 +15,6 @@ import java.util.Set;
 @Entity
 public class Field {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,43 +23,53 @@ public class Field {
     private String name;
 
     @Column(columnDefinition = "varchar(100) not null")
-    private String location;
+    private String address;
 
     @Column(columnDefinition = "varchar(200) not null")
     private String description;
 
-    @NotEmpty(message = "Photo URL must not be empty")
+
+    @NotEmpty(message = "Photo must not be empty")
     private String photo;
 
     @Column(columnDefinition = "time not null")
-    private LocalTime openTime;
+    private LocalTime open_time;
 
     @Column(columnDefinition = "time not null")
-    private LocalTime closeTime;
+    private LocalTime close_time;
 
     @NotNull(message = "capacity must not be empty")
     @Min(value = 2)
     @Max(value = 22)
-    @Column(name = "capacity")
+    @Column(columnDefinition = "int not null")
     private Integer capacity;
 
-    @ManyToOne
-    @JsonIgnore
-    private Organizer organizer;
-
-    @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
-    private List<PublicMatch> publicMatches;
+    @NotNull
+    @PositiveOrZero
+    @Column(columnDefinition = "double not null")
+    private Double price;
 
     @ManyToOne
     @JsonIgnore
     private Sport sport;
 
-    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
-    private List<TimeSlot> timeSlots;
+    @ManyToOne
+    @JsonIgnore
+    private Organizer organizer;
+
+    @ManyToOne
+    @JsonIgnore
+    private Sport sport;
+  
+    @OneToMany(mappedBy = "field",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<PublicMatch> public_matches;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
-    private List<PrivateMatch> privateMatches;
+    @JsonIgnore
+    private List<PrivateMatch> private_matches;
 
-
-
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<TimeSlot> time_slots;
 }
