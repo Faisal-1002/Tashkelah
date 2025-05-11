@@ -1,6 +1,7 @@
 package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
+import com.example.tuwaiqfinalproject.DTO.MatchSlotRequestDTO;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Service.PublicMatchService;
 import jakarta.validation.Valid;
@@ -33,11 +34,20 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(match);
     }
 
-    @PostMapping("/addPublicMatch/{fieldId}/{timeSlotId}")
-    public ResponseEntity<?> addPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestParam List<Integer> timeSlotId, @RequestBody @Valid PublicMatch match) {
-        publicMatchService.addPublicMatch(user.getId(),match,fieldId,timeSlotId);
-        return ResponseEntity.status(200).body(new ApiResponse("Public match added successfully"));
+
+
+    @PostMapping("/addPublicMatch/{organizerId}/{fieldId}")
+    public ResponseEntity<?> addPublicMatch(
+            @PathVariable Integer organizerId,
+            @PathVariable Integer fieldId,
+            @RequestParam List<Integer> timeSlotId,
+            @RequestBody @Valid PublicMatch match
+    ) {
+        publicMatchService.addPublicMatch(organizerId, match, fieldId, timeSlotId);
+        return ResponseEntity.ok(new ApiResponse("Public match added successfully \uD83D\uDCAA\uD83C\uDFFC"));
     }
+
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updatePublicMatch(@PathVariable Integer id, @RequestBody @Valid PublicMatch updatedMatch) {
@@ -86,4 +96,18 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
 
     }
+
+
+
+    // Create a public match by providing only the fieldId as path variable
+    @PostMapping("/matches/{fieldId}/slots/{slotIds}")
+    public ResponseEntity<?> createMatchFromSlots(
+            @PathVariable Integer fieldId,
+            @PathVariable List<Integer> slotIds) {
+
+        publicMatchService.createMatchFromTimeSlots(fieldId, slotIds);
+        return ResponseEntity.status(200).body(new ApiResponse("Match created successfully"));
+    }
 }
+
+

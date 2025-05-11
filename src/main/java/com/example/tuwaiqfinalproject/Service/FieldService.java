@@ -28,6 +28,7 @@ public class FieldService {
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final TimeSlotService timeSlotService;
+    private final TimeSlotRepository timeSlotRepository;
 
 
     public List<Field> getAllFields(){
@@ -80,6 +81,7 @@ public class FieldService {
     // Public method to allow an approved organizer to add a new field with an image
     public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
         Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
+
         if (organizer == null) {
             throw new ApiException("Organizer not found");
         }
@@ -110,6 +112,8 @@ public class FieldService {
                 null);
         fieldRepository.save(field);
         timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());
+
+
     }
     //Taha---------------//test (9)
 
@@ -280,6 +284,7 @@ public class FieldService {
                 .sorted(Comparator.comparing(TimeSlot::getStart_time)) // Sort by start time
                 .toList(); // Return as a list
     }
+
 
 
 

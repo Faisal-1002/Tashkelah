@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Controller;
 
+import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
 import com.example.tuwaiqfinalproject.Model.TimeSlot;
 import com.example.tuwaiqfinalproject.Model.User;
@@ -20,6 +21,7 @@ import java.util.List;
 public class TimeSlotController {
 
     private final TimeSlotService timeSlotService;
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllSlots() {
@@ -57,5 +59,20 @@ public class TimeSlotController {
         return ResponseEntity.status(200).body(slots);
     }
 
+
+
+
+
+
+
+
+
+    @PostMapping("/generate/{fieldId}")
+    public ResponseEntity<?> generateTimeSlots(@PathVariable Integer fieldId) {
+            timeSlotService.generateTimeSlotsForFieldOnDate(fieldId, LocalDate.now());
+
+            return ResponseEntity.status(200).body("Time slots generated successfully for the field.");
+
+    }
 
 }
