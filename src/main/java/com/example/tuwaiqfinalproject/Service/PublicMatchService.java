@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -65,6 +66,22 @@ public class PublicMatchService {
         if (match == null)
             throw new ApiException("Public match not found");
         publicMatchRepository.delete(match);
+    }
+
+    //Taha --------- (1)
+    public List<PublicMatch> showFieldMatches(Integer fieldId, Integer userId) {
+
+        Organizer organizer = organizerRepository.findById(userId)
+                .orElseThrow(() -> new ApiException("Organizer not found"));
+
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ApiException("Field not found"));
+
+        if (!field.getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("You are not authorized to view matches for this field");
+        }
+
+        return publicMatchRepository.findByField_Id(fieldId);
     }
 
     //4. Eatzaz- Play with a public match -tested
@@ -168,7 +185,6 @@ public class PublicMatchService {
         if (team.getPublic_match() == null || !team.getPublic_match().getId().equals(publicMatch.getId())) {
             throw new ApiException("This team does not belong to the selected match");
         }
-
             team.setPlayersCount(team.getPlayersCount()+1);
             teamRepository.save(team);
         }

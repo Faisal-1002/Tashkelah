@@ -81,7 +81,7 @@ public class OrganizerService {
         organizerRepository.delete(organizer);
     }
 
-    // Taha - Admin approve organizer
+    // 2. Taha - Admin approve organizer
     public void approveOrganizer(Integer organizerId, Boolean isApproved) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
@@ -98,24 +98,34 @@ public class OrganizerService {
         sendApprovalEmail(organizer, true);
     }
 
-    // Taha - Send approve notification to organizer - tested
+    // 3. Taha - Send approve notification to organizer - tested
     private void sendApprovalEmail(Organizer organizer, Boolean isApproved) {
-        // Set the email subject
+        // Email subject
         String subject = "License Approval Notification";
 
-        // Set the email body message based on the approval status "falls reject", "true approved"
-        String message = isApproved ? "Your license has been approved." : "Your license has been rejected.";
+        // Email body based on approval status
+        String message;
+        if (isApproved) {
+            message = "Congratulations! 🎉\n\n" +
+                    "Your license has been approved successfully.\n" +
+                    "You can now start adding your fields and managing your activities. Great job, champ! 💪\n\n" +
+                    "Best of luck on your journey!";
+        } else {
+            message = "We’re sorry to inform you that your license has been rejected. 😔\n\n" +
+                    "Please make sure all your information is correct and try again.\n" +
+                    "If you need help, feel free to reach out to us.\n\n" +
+                    "We’re here to support you!";
+        }
 
-        // Get the organizer's email address from their associated user account
+        // Get the organizer's email
         String recipientEmail = organizer.getUser().getEmail();
 
-        // Create the email message
+        // Create and send the email
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(recipientEmail);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);
 
-        // Send the email
         mailSender.send(mailMessage);
     }
 

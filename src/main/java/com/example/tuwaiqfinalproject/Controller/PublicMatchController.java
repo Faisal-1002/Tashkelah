@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -51,6 +53,12 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
 
+    //Taha
+    @GetMapping("/field/{fieldId}/matches")
+    public ResponseEntity<List<PublicMatch>> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId){
+        return ResponseEntity.ok(publicMatchService.showFieldMatches(fieldId, user.getId()));
+    }
+
     @PutMapping("/PlayWithPublicTeam/{sportId}/{fieldId}")
     public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
         publicMatchService.PlayWithPublicMatch(sportId, fieldId, user.getId());
@@ -60,6 +68,7 @@ public class PublicMatchController {
     @GetMapping("/getMatchAndTeam/{sportId}/{fieldId}")
     public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
         return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), sportId, fieldId));
+
     }
 
     @GetMapping("/getTeams/{publicMatchId}")
