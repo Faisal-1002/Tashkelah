@@ -85,7 +85,7 @@ public class PublicMatchController {
     }
 
     @GetMapping("/not/{bookingId}")
-    public ResponseEntity no(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
+    public ResponseEntity Notifications(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
         return ResponseEntity.status(200).body(publicMatchService.Notifications(user.getId(),bookingId));
     }
 

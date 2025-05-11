@@ -36,7 +36,7 @@ public class PublicMatchService {
         return match;
     }
 
-// 3 - Eatzaz - add Public match with Field - tested
+// 3 - Eatzaz&taha - add Public match with Field - tested
 public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
     Organizer organizer = organizerRepository.findOrganizerById(organizerId);
     if (organizer == null) {
@@ -227,7 +227,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
     }
 
     // 33. Eatzaz - Notification that the payment process has been completed - Tested
-    public void Notifications(Integer playerId,Integer bookingId){
+    public String Notifications(Integer playerId,Integer bookingId){
         Player player=playerRepository.findPlayerById(playerId);
         if(player==null){
             throw new ApiException("Player Not Found");
