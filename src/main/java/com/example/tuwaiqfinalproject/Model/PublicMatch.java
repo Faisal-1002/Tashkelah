@@ -35,9 +35,8 @@ public class PublicMatch {
     @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)
     private List<TimeSlot> time_slots;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "public_match")
-    @PrimaryKeyJoinColumn
-    private Team team;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
+    private Set<Team> team;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
     private List<Player> players;

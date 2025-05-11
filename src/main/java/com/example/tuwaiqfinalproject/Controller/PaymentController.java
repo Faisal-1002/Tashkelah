@@ -25,8 +25,8 @@ public class PaymentController {
     public ResponseEntity<?> getPaymentStatus(@AuthenticationPrincipal User user, @PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK).body(paymentService.getPaymentStatusAndConfirm(user.getId(), id));
     }
-//    @PostMapping("/puy")
-//    public ResponseEntity<?> paymnt(@AuthenticationPrincipal User user, @RequestBody Payment paymentRequest) {
-//        return ResponseEntity.status(200).body(paymentService.(user.getId(), paymentRequest));
-//    }
+    @PostMapping("/puy")
+    public ResponseEntity<?> PublicMatchPayment(@AuthenticationPrincipal User user, @RequestBody Payment paymentRequest) {
+        return ResponseEntity.status(200).body(paymentService.PublicMatchPayment(user.getId(), paymentRequest));
+    }
 }

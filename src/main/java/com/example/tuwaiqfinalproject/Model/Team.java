@@ -16,7 +16,7 @@ import lombok.Setter;
 public class Team {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
@@ -25,7 +25,7 @@ public class Team {
 
     private Integer max_players_count;
 
-    @OneToOne
+    @ManyToOne
     @JsonIgnore
     private PublicMatch public_match;
 
