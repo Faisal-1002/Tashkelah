@@ -33,6 +33,7 @@ public class Booking {
     private Double total_amount;
 
     @OneToOne
+    @JsonIgnore
     private PrivateMatch private_match;
 
     @ManyToOne

@@ -35,9 +35,9 @@ public class EmailsController {
         return ResponseEntity.status(200).body(new ApiResponse("Email deleted successfully"));
     }
 
-    @PostMapping("/private-match/send-invites")
-    public ResponseEntity<?> sendInvites(@AuthenticationPrincipal User user) {
-        emailsService.sendInvites(user.getId());
+    @PostMapping("/private-match/send-invites/{privateMatchId}")
+    public ResponseEntity<?> sendInvites(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
+        emailsService.sendInvites(2, privateMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("Invites sent successfully."));
     }
 

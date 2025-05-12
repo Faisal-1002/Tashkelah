@@ -5,9 +5,13 @@ import com.example.tuwaiqfinalproject.DTO.PlayerSelectionDTO;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -36,38 +40,35 @@ public class PublicMatchService {
         return match;
     }
 
-// 19 - Eatzaz + taha - add Public match with Field - tested
-public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
-    Organizer organizer = organizerRepository.findOrganizerById(organizerId);
-    if (organizer == null) {
-        throw new ApiException("Organizer not found");
-    }
+    // 19. Eatzaz + Taha - add Public match with Field - Tested
+    public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null) {
+            throw new ApiException("Organizer not found");
+        }
 
-    Field field = fieldRepository.findFieldById(fieldId);
-    if (field == null) {
-        throw new ApiException("Field not found");
-    }
+        Field field = fieldRepository.findFieldById(fieldId);
+        if (field == null) {
+            throw new ApiException("Field not found");
+        }
 
-    List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
-    if (timeSlots.isEmpty()) {
-        throw new ApiException("TimeSlot not found");
-    }
+        List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
+        if (timeSlots.isEmpty()) {
+            throw new ApiException("TimeSlot not found");
+        }
 
-    match.setStatus("OPEN");
-    match.setOrganizer(organizer);
-    match.setField(field);
-
-    publicMatchRepository.save(match);
+        match.setStatus("OPEN");
+        match.setOrganizer(organizer);
+        match.setField(field);
 
     for (TimeSlot slot : timeSlots) {
         slot.setStatus("PENDING");
         slot.setPublic_match(match);
     }
+        publicMatchRepository.save(match);
+        timeSlotRepository.saveAll(timeSlots);
 
-    timeSlotRepository.saveAll(timeSlots);
-
-}
-
+    }
 
     public void updatePublicMatch(Integer id, PublicMatch updatedMatch) {
         PublicMatch existing = publicMatchRepository.findPublicMatchById(id);
@@ -268,6 +269,64 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
             return "Match status updated to FULL";
         }
         return "Booking successful, waiting for more players";
+    }
+
+    // Taha ---------------------------  createMatchFromTimeSlots
+    public void createMatchFromTimeSlots(Integer fieldId, List<Integer> slotIds) {
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ApiException("Field not found"));
+
+        List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
+
+        if (slots.isEmpty())
+            throw new ApiException("No slots found for the given IDs");
+
+        // Validate all slots belong to same field and same day and are available
+        LocalDate date = slots.get(0).getDate();
+        for (TimeSlot slot : slots) {
+            if (!slot.getField().getId().equals(fieldId))
+                throw new ApiException("All slots must belong to the same field");
+            if (!slot.getDate().equals(date))
+                throw new ApiException("All slots must be on the same day");
+            if (!slot.getStatus().equals("AVAILABLE"))
+                throw new ApiException("One or more slots are not available");
+        }
+
+        // Ensure the slots are continuous
+        slots.sort(Comparator.comparing(TimeSlot::getStart_time));
+        for (int i = 0; i < slots.size() - 1; i++) {
+            if (!slots.get(i).getEnd_time().equals(slots.get(i + 1).getStart_time()))
+                throw new ApiException("Selected slots must be continuous");
+        }
+
+        // Create the match
+        PublicMatch match = new PublicMatch();
+        match.setStatus("PENDING");
+        match.setField(field);
+        publicMatchRepository.save(match);
+
+        // Link slots to match
+        for (TimeSlot slot : slots) {
+            slot.setStatus("BOOKED");
+            slot.setPublic_match(match);
+        }
+        timeSlotRepository.saveAll(slots);
+
+        // Create two teams and assign to match
+        Team teamA = new Team();
+        teamA.setName("Team A");
+        teamA.setPlayersCount(0);
+        teamA.setMax_players_count(field.getCapacity() / 2);
+        teamA.setPublic_match(match);
+
+        Team teamB = new Team();
+        teamB.setName("Team B");
+        teamB.setPlayersCount(0);
+        teamB.setMax_players_count(field.getCapacity() / 2);
+        teamB.setPublic_match(match);
+
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
     }
 
 }

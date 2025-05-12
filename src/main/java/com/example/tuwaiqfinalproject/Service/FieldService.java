@@ -29,6 +29,7 @@ public class FieldService {
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final TimeSlotService timeSlotService;
+    private final TimeSlotRepository timeSlotRepository;
 
     public List<Field> getAllFields(){
         return fieldRepository.findAll();
@@ -252,27 +253,28 @@ public List<NameCityFieldDTO> getFieldBySportAndCity(Integer player_id, Integer 
     }
 
     // 41. Faisal - Assign field for private match - Tested
-    public void playerChoseAFieldForPrivateMatch (Integer user_id, Integer fieldId){
-        Player player = playerRepository.findPlayerById(user_id);
-        if (player == null) throw new ApiException("User not found or incorrect role");
+    public void playerChoseAFieldForPrivateMatch(Integer userId, Integer privateMatchId, Integer fieldId) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("User not found or incorrect role");
 
-        PrivateMatch privateMatch = player.getPrivate_match();
-        if (privateMatch == null)
-            throw new ApiException("Private match not found");
+        PrivateMatch privateMatch = privateMatchRepository.findPrivateMatchById(privateMatchId);
+        if (privateMatch == null || !privateMatch.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("Private match not found or does not belong to this player");
 
-        if (!privateMatch.getStatus().equals("PENDING"))
-            throw new ApiException("You can only assign a field when the match is in PENDING status");
+        if (!privateMatch.getStatus().equals("CREATED"))
+            throw new ApiException("You can only assign a field when the match is in CREATED status");
 
         Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null) throw new ApiException("Field not found");
+        if (field == null)
+            throw new ApiException("Field not found");
 
-        // Use player's city directly (from User inside Player)
         String playerCity = player.getUser().getAddress();
         if (!field.getAddress().equals(playerCity))
             throw new ApiException("Field is not in the same city as the player");
 
         privateMatch.setField(field);
-        privateMatch.setStatus("SCHEDULED");
+        privateMatch.setStatus("FIELD_ASSIGNED");
         privateMatchRepository.save(privateMatch);
     }
 

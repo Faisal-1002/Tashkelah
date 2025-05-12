@@ -20,6 +20,7 @@ public class BookingService {
     private final TimeSlotRepository timeSlotRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final PublicMatchRepository publicMatchRepository;
+    private final TimeSlotService timeSlotService;
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
@@ -41,10 +42,12 @@ public class BookingService {
 
         List<Booking> result = new ArrayList<>();
 
-        // 1. Private match booking
-        PrivateMatch privateMatch = player.getPrivate_match();
-        if (privateMatch != null && privateMatch.getBooking() != null) {
-            result.add(privateMatch.getBooking());
+        // 1. Private match bookings
+        List<PrivateMatch> privateMatches = privateMatchRepository.findPrivateMatchByPlayer(player);
+        for (PrivateMatch match : privateMatches) {
+            if (match.getBooking() != null) {
+                result.add(match.getBooking());
+            }
         }
 
         // 2. Public match bookings
@@ -71,39 +74,24 @@ public class BookingService {
     }
 
     // 52. Faisal - Book private match - Tested
-    public void bookPrivateMatch(Integer userId, List<Integer> slotIds) {
+    public void bookPrivateMatch(Integer userId, Integer matchId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
 
-        PrivateMatch match = player.getPrivate_match();
-        if (match == null || !match.getStatus().equals("SCHEDULED"))
-            throw new ApiException("Match not found or not scheduled");
+        PrivateMatch match = privateMatchRepository.findPrivateMatchById(matchId);
+        if (match == null || !match.getStatus().equals("TIME_RESERVED"))
+            throw new ApiException("Match not found or not in TIME_RESERVED status");
 
-        Field field = match.getField();
-        if (field == null)
-            throw new ApiException("No field assigned to this match");
+        if (!match.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("Unauthorized access to this match");
 
-        List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
-        if (slots.size() != slotIds.size())
-            throw new ApiException("One or more time slots are invalid");
+        List<TimeSlot> slots = match.getTime_slots();
+        if (slots == null || slots.isEmpty())
+            throw new ApiException("No time slots assigned to this match");
 
         for (TimeSlot slot : slots) {
-            if (!slot.getField().getId().equals(field.getId()))
-                throw new ApiException("TimeSlot does not belong to the assigned field");
-            if (! slot.getStatus().equalsIgnoreCase("AVAILABLE"))
-                throw new ApiException("One or more time slots are already booked");
-        }
-
-        // Check if time slots are back-to-back
-        slots.sort(Comparator.comparing(TimeSlot::getStart_time));
-        for (int i = 1; i < slots.size(); i++) {
-            if (!slots.get(i - 1).getEnd_time().equals(slots.get(i).getStart_time())) {
-                throw new ApiException("Time slots must be back-to-back");
-            }
-        }
-
-        // Book the slots
-        for (TimeSlot slot : slots) {
+            if (!slot.getStatus().equalsIgnoreCase("AVAILABLE"))
+                throw new ApiException("One or more slots have already been booked");
             slot.setStatus("BOOKED");
         }
 
@@ -120,7 +108,7 @@ public class BookingService {
         timeSlotRepository.saveAll(slots);
 
         match.setBooking(booking);
-        match.setStatus("PENDING");
+        match.setStatus("AWAITING_PAYMENT");
         privateMatchRepository.save(match);
     }
 
