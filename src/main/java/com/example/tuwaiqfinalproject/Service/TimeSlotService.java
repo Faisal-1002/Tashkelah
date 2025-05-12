@@ -4,7 +4,10 @@ import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,6 +24,7 @@ public class TimeSlotService {
     private final PublicMatchRepository publicMatchRepository;
     private final FieldRepository fieldRepository;
     private final PrivateMatchRepository privateMatchRepository;
+
 
     public List<TimeSlot> getAllTimeSlots() {
         return timeSlotRepository.findAll();
@@ -152,6 +156,8 @@ public class TimeSlotService {
         match.setTime_slots(slots);
         match.setStatus("TIME_RESERVED");
         privateMatchRepository.save(match);
+    }
+        timeSlotRepository.saveAll(timeSlots);
     }
 
 }

@@ -28,6 +28,7 @@ public class FieldService {
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final TimeSlotService timeSlotService;
+    private final TimeSlotRepository timeSlotRepository;
 
     public List<Field> getAllFields(){
         return fieldRepository.findAll();

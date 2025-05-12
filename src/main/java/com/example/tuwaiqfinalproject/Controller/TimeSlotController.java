@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Controller;
 
+import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
 import com.example.tuwaiqfinalproject.Model.PrivateMatch;
 import com.example.tuwaiqfinalproject.Model.TimeSlot;
@@ -22,6 +23,7 @@ import java.util.List;
 public class TimeSlotController {
 
     private final TimeSlotService timeSlotService;
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllSlots() {
@@ -63,6 +65,17 @@ public class TimeSlotController {
     public ResponseEntity<?> assignTimeSlotsToPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer matchId, @RequestBody List<Integer> slotIds) {
         timeSlotService.assignTimeSlotsToPrivateMatch(2,matchId,slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Time slots assigned successfully"));
+    }
+
+
+
+
+    @PostMapping("/generate/{fieldId}")
+    public ResponseEntity<?> generateTimeSlots(@PathVariable Integer fieldId) {
+            timeSlotService.generateTimeSlotsForFieldOnDate(fieldId, LocalDate.now());
+
+            return ResponseEntity.status(200).body("Time slots generated successfully for the field.");
+
     }
 
 }
