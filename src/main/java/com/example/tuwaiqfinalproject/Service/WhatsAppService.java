@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Service;
 
+import com.example.tuwaiqfinalproject.Api.ApiException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -49,9 +50,8 @@ private String apiUrl;
 
                 return responseBody;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "خطأ في الاتصال: " + e.getMessage();
+        } catch (Exception e) {
+            throw new ApiException("WhatsApp Error: " + e.getMessage());
         }
     }
 }

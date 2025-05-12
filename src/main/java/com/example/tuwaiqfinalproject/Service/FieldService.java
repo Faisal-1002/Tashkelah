@@ -70,7 +70,6 @@ public class FieldService {
                 organizer,
                 null,
                 null,
-                null,
                 null);
         fieldRepository.save(field);
         timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());

@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganizerDTO {
-
     private Integer id;
 
     @NotEmpty(message = "Username must not be empty")
@@ -25,9 +24,6 @@ public class OrganizerDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @Pattern(regexp = "ORGANIZER|PLAYER|ADMIN",message = "Role must be ORGANIZER, PLAYER, or ADMIN")
-    private String role;
-
     @NotEmpty(message = "Name must not be empty")
     private String name;
 
@@ -41,6 +37,4 @@ public class OrganizerDTO {
     @NotEmpty(message = "License number must not be empty")
     private String licence_number;
 
-    @Pattern(regexp = "^(ACTIVE|INACTIVE|PENDING)$", message = "Status must be ACTIVE, INACTIVE or PENDING")
-    private String status;
 }

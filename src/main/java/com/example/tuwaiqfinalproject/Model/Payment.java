@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 public class Payment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -52,5 +51,4 @@ public class Payment {
     @OneToOne
     @JsonIgnore
     private Booking booking;
-
 }

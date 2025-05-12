@@ -22,9 +22,6 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final AuthRepository authRepository;
-    private final FieldRepository fieldRepository;
-    @Autowired
-    private WhatsAppService whatsAppService;
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -48,9 +45,8 @@ public class PlayerService {
 
     // 24. Eatzaz + Faisal - Register Player - Tested
     public void registerPlayer(PlayerDTO dto) {
-        dto.setRole("PLAYER");
         String hashPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
-        User user = new User(null, dto.getUsername(),hashPassword,dto.getRole(),dto.getName(),dto.getPhone(),dto.getAddress(),dto.getEmail(), null, null);
+        User user = new User(null, dto.getUsername(),hashPassword,"PLAYER",dto.getName(),dto.getPhone(),dto.getAddress(),dto.getEmail(), null, null);
         Player player = new Player(null, dto.getGender(), dto.getBirth_date(),user,null,null);
 
         authRepository.save(user);

@@ -13,7 +13,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 public class Player {
-
     @Id
     private Integer id;
 

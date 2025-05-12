@@ -35,6 +35,7 @@ public class TimeSlot {
     private Double price;
 
     @NotEmpty(message = "Status must not be empty")
+    @Pattern(regexp = "^(AVAILABLE|BOOKED|PENDING)$", message = "Status must be AVAILABLE, BOOKED or PENDING")
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
 

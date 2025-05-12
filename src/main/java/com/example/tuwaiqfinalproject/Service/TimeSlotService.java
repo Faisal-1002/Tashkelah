@@ -64,17 +64,17 @@ public class TimeSlotService {
         timeSlotRepository.saveAll(timeSlots);
     }
 
-    public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
-        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
-        if (publicMatch == null){
-            throw new ApiException("TimeSlot not found");}
-        Field field=fieldRepository.findFieldById(fieldId);
-        if (field == null){
-            throw new ApiException("TimeSlot not found");}
-        timeSlot.setField(field);
-        timeSlot.setPublic_match(publicMatch);
-        timeSlotRepository.save(timeSlot);
-    }
+//    public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
+//        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
+//        if (publicMatch == null){
+//            throw new ApiException("TimeSlot not found");}
+//        Field field=fieldRepository.findFieldById(fieldId);
+//        if (field == null){
+//            throw new ApiException("TimeSlot not found");}
+//        timeSlot.setField(field);
+//        timeSlot.setPublic_match(publicMatch);
+//        timeSlotRepository.save(timeSlot);
+//    }
 
     public void updateTimeSlot(Integer id, TimeSlot updatedSlot) {
         TimeSlot existing = timeSlotRepository.findTimeSlotById(id);

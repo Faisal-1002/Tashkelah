@@ -1,8 +1,6 @@
 package com.example.tuwaiqfinalproject.DTO;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,7 +9,6 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 public class FieldDTO {
-
     @NotEmpty(message = "Field name must not be empty")
     private String name;
 
@@ -28,10 +25,11 @@ public class FieldDTO {
     private LocalTime close_time;
 
     @NotNull(message = "capacity must not be empty")
+    @Min(value = 2)
+    @Max(value = 22)
     private Integer capacity;
 
     @NotNull
     @PositiveOrZero
     private Double price;
-
 }
