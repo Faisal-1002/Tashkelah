@@ -36,38 +36,37 @@ public class PublicMatchService {
         return match;
     }
 
-// 3 - Eatzaz&taha - add Public match with Field - tested
-public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
-    Organizer organizer = organizerRepository.findOrganizerById(organizerId);
-    if (organizer == null) {
-        throw new ApiException("Organizer not found");
+    // 19. Eatzaz + Taha - add Public match with Field - Tested
+    public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null) {
+            throw new ApiException("Organizer not found");
+        }
+
+        Field field = fieldRepository.findFieldById(fieldId);
+        if (field == null) {
+            throw new ApiException("Field not found");
+        }
+
+        List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
+        if (timeSlots.isEmpty()) {
+            throw new ApiException("TimeSlot not found");
+        }
+
+        match.setStatus("OPEN");
+        match.setOrganizer(organizer);
+        match.setField(field);
+
+        publicMatchRepository.save(match);
+
+        for (TimeSlot slot : timeSlots) {
+            slot.setStatus("BOOKED");
+            slot.setPublic_match(match);
+        }
+
+        timeSlotRepository.saveAll(timeSlots);
+
     }
-
-    Field field = fieldRepository.findFieldById(fieldId);
-    if (field == null) {
-        throw new ApiException("Field not found");
-    }
-
-    List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
-    if (timeSlots.isEmpty()) {
-        throw new ApiException("TimeSlot not found");
-    }
-
-    match.setStatus("OPEN");
-    match.setOrganizer(organizer);
-    match.setField(field);
-
-    publicMatchRepository.save(match);
-
-    for (TimeSlot slot : timeSlots) {
-        slot.setStatus("BOOKED");
-        slot.setPublic_match(match);
-    }
-
-    timeSlotRepository.saveAll(timeSlots);
-
-}
-
 
     public void updatePublicMatch(Integer id, PublicMatch updatedMatch) {
         PublicMatch existing = publicMatchRepository.findPublicMatchById(id);

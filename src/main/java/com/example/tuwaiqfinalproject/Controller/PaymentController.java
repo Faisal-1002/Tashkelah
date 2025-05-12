@@ -21,12 +21,12 @@ public class PaymentController {
         return ResponseEntity.status(200).body(paymentService.processPayment(2, privateMatchId, paymentRequest));
     }
 
-    @GetMapping("/get-status/{id}/{privateMatchId}")
+    @GetMapping("/get-status/{privateMatchId}")
     public ResponseEntity<?> getPaymentStatus(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
         return ResponseEntity.status(HttpStatus.OK).body(paymentService.getPaymentStatusAndConfirm(2, privateMatchId));
     }
-    @PostMapping("/puy")
+    @PostMapping("/buy")
     public ResponseEntity<?> PublicMatchPayment(@AuthenticationPrincipal User user, @RequestBody Payment paymentRequest) {
-        return ResponseEntity.status(200).body(paymentService.PublicMatchPayment(user.getId(), paymentRequest));
+        return ResponseEntity.status(200).body(paymentService.PublicMatchPayment(2, paymentRequest));
     }
 }
