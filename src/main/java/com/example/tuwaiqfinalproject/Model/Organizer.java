@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Organizer {
-
     @Id
     private Integer id;
 

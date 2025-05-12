@@ -37,11 +37,11 @@ public class TimeSlotController {
         return ResponseEntity.status(200).body(slot);
     }
 
-    @PostMapping("/add/{publicMatchId}/{fieldId}")
-    public ResponseEntity<?> addSlot(@RequestBody @Valid TimeSlot timeSlot,@PathVariable Integer publicMatchId,@PathVariable Integer fieldId) {
-        timeSlotService.addTimeSlotWithPublicMatch(timeSlot,publicMatchId,fieldId);
-        return ResponseEntity.status(200).body(new ApiResponse("TimeSlot added successfully"));
-    }
+//    @PostMapping("/add/{publicMatchId}/{fieldId}")
+//    public ResponseEntity<?> addSlot(@RequestBody @Valid TimeSlot timeSlot,@PathVariable Integer publicMatchId,@PathVariable Integer fieldId) {
+//        timeSlotService.addTimeSlotWithPublicMatch(timeSlot,publicMatchId,fieldId);
+//        return ResponseEntity.status(200).body(new ApiResponse("TimeSlot added successfully"));
+//    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateSlot(@PathVariable Integer id, @RequestBody @Valid TimeSlot updatedSlot) {

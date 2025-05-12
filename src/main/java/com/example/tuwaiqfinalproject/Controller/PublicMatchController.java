@@ -32,18 +32,16 @@ public class PublicMatchController {
     }
 
 
-
-    @PostMapping("/addPublicMatch/{organizerId}/{fieldId}")
-    public ResponseEntity<?> addPublicMatch(
-            @PathVariable Integer organizerId,
-            @PathVariable Integer fieldId,
-            @RequestParam List<Integer> timeSlotId,
-            @RequestBody @Valid PublicMatch match
-    ) {
-        publicMatchService.addPublicMatch(organizerId, match, fieldId, timeSlotId);
-        return ResponseEntity.ok(new ApiResponse("Public match added successfully \uD83D\uDCAA\uD83C\uDFFC"));
-    }
-
+//    @PostMapping("/addPublicMatch/{organizerId}/{fieldId}")
+//    public ResponseEntity<?> addPublicMatch(
+//            @PathVariable Integer organizerId,
+//            @PathVariable Integer fieldId,
+//            @RequestParam List<Integer> timeSlotId,
+//            @RequestBody @Valid PublicMatch match
+//    ) {
+//        publicMatchService.addPublicMatch(organizerId, match, fieldId, timeSlotId);
+//        return ResponseEntity.ok(new ApiResponse("Public match added successfully \uD83D\uDCAA\uD83C\uDFFC"));
+//    }
 
 
     @PutMapping("/update/{id}")
@@ -104,11 +102,8 @@ public class PublicMatchController {
 
     // Create a public match by providing only the fieldId as path variable
     @PostMapping("/matches/{fieldId}/slots/{slotIds}")
-    public ResponseEntity<?> createMatchFromSlots(@AuthenticationPrincipal User user,
-            @PathVariable Integer fieldId,
-            @PathVariable List<Integer> slotIds) {
-
-        publicMatchService.createMatchFromTimeSlots(user.getId(),fieldId, slotIds);
+    public ResponseEntity<?> createMatchFromSlots(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable List<Integer> slotIds) {
+        publicMatchService.createMatchFromTimeSlots(user.getId(), fieldId, slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Match created successfully"));
     }
 

@@ -17,12 +17,7 @@ import java.util.List;
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
     TimeSlot findTimeSlotById(Integer id);
     List<TimeSlot> findTimeSlotsByFieldAndStatus(Field field, String status);
-
-
     List<TimeSlot> findByFieldAndStatus(Field field, String status);
-
-
-
 }
 
 

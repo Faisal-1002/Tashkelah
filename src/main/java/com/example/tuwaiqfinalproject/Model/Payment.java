@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 public class Payment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,7 +31,7 @@ public class Payment {
     private String year;
 
     @Column(columnDefinition = "double")
-    private double amount;
+    private Double amount;
 
     @Column(columnDefinition = "varchar(20)")
     private String currency;
@@ -52,5 +51,4 @@ public class Payment {
     @OneToOne
     @JsonIgnore
     private Booking booking;
-
 }

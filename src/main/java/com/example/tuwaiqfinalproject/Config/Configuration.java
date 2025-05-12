@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 
 @org.springframework.context.annotation.Configuration
 @EnableWebSecurity
@@ -25,7 +26,10 @@ public class Configuration {
 
         return authenticationProvider;
     }
-
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf().disable()
@@ -34,6 +38,69 @@ public class Configuration {
                 .and()
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests()
+                
+//                 .requestMatchers(
+//                         "/api/v1/auth/register",
+//                         "/api/v1/auth/login",
+//                         "/api/v1/sports/all",
+//                         "/api/v1/sports/{id}",
+//                         "/api/v1/field/all",
+//                         "/api/v1/field/images/**",
+//                         "/api/v1/field/field/{id}",
+//                         "/api/v1/organizer/register",
+//                         "/api/v1/player/register"
+//                 ).permitAll()
+
+//                 // Admin-only endpoints
+//                 .requestMatchers(
+//                         "/api/v1/auth/users",
+//                         "/api/v1/auth/register/admin",
+//                         "/api/v1/auth/update/admin/{id}",
+//                         "/api/v1/auth/delete/admin/{id}",
+//                         "/api/v1/organizer/all",
+//                         "/api/v1/organizer/approve/{organizerId}/{isApproved}",
+//                         "/api/v1/organizer/reject/{organizerId}",
+//                         "/api/v1/organizer/block/{organizerId}",
+//                         "/api/v1/sports/add",
+//                         "/api/v1/sports/update/{id}",
+//                         "/api/v1/booking/all",
+//                         "/api/v1/booking/{id}",
+//                         "/api/v1/sports/delete/{id}"
+//                 ).hasAuthority("ADMIN")
+
+//                 // Organizer-only endpoints
+//                 .requestMatchers(
+//                         "/api/v1/organizer/info",
+//                         "/api/v1/organizer/update",
+//                         "/api/v1/organizer/delete",
+//                         "/api/v1/field/add/{sport_id}",
+//                         "/api/v1/field/update/{fieldId}",
+//                         "/api/v1/field/delete/{fieldId}",
+//                         "/api/v1/field/organizer-fields",
+//                         "/api/v1/field/booked-slots/{fieldId}",
+//                         "/api/v1/field/available-slots/{fieldId}",
+//                         "/api/v1/public-match/addPublicMatch/{fieldId}/{timeSlotId}",
+//                         "/api/v1/public-match/update/{id}",
+//                         "/api/v1/public-match/delete/{id}",
+//                         "/api/v1/public-match/field/{fieldId}/matches",
+//                         "/api/v1/public-match/changeStatus/{publicMatchId}"
+//                 ).hasAuthority("ORGANIZER")
+//                 // Player-only endpoints
+//                 .requestMatchers("/api/v1/player/info",
+//                         "/api/v1/player/update",
+//                         "/api/v1/player/delete",
+//                         "/api/v1/field/getBySportAndCity/{sportId}",
+//                         "/api/v1/field/getByDetailsSportAndCity/{sportId}",
+//                         "/api/v1/field//choseField/{fieldId}/{sportId}",
+//                         "/api/v1/field/private-match/assign-field/{fieldId}",
+//                         "/api/v1/public-match/PlayWithPublicTeam/{sportId}/{fieldId}",
+//                         "/api/v1/public-match/getMatchAndTeam/{sportId}/{fieldId}",
+//                         "/api/v1/public-match/getTeams/{publicMatchId}",
+//                         "/api/v1/public-match/selectTeam/{sportId}/{fieldId}/{matchId}/{teamId}",
+//                         "/api/v1/public-match/chekout/{publicMatchId}/{teamId}",
+//                         "/api/v1/public-match/not/{bookingId}",
+//                 "/api/v1/booking/getBookingPublicMatch")
+//                 .hasAuthority("PLAYER")
 
                 // All
                 .requestMatchers("**").permitAll()
@@ -133,6 +200,7 @@ public class Configuration {
 //                        "/api/v1/emails/match/{privateMatchId}",
 //                        "/api/v1/emails/delete/{emailId}"
 //                ).hasAnyAuthority("PLAYER", "ORGANIZER")
+
 
                 .anyRequest().authenticated()
                 .and()
