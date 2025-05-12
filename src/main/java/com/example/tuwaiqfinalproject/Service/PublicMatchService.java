@@ -36,7 +36,7 @@ public class PublicMatchService {
         return match;
     }
 
-// 3 - Eatzaz&taha - add Public match with Field - tested
+// 19 - Eatzaz + taha - add Public match with Field - tested
 public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
     Organizer organizer = organizerRepository.findOrganizerById(organizerId);
     if (organizer == null) {
@@ -60,7 +60,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
     publicMatchRepository.save(match);
 
     for (TimeSlot slot : timeSlots) {
-        slot.setStatus("BOOKED");
+        slot.setStatus("PENDING");
         slot.setPublic_match(match);
     }
 
@@ -160,6 +160,7 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         if (match == null) {
             throw new ApiException("Public match not found");
         }
+
         Field field = fieldRepository.findFieldById(match.getField().getId());
         if (field == null) {
             throw new ApiException("Field match not found");
@@ -260,7 +261,6 @@ public void addPublicMatch(Integer organizerId, PublicMatch match, Integer field
         for (Team team : teams) {
             numberPlayer += team.getPlayersCount();
         }
-
 
         if (numberPlayer == publicMatch.getField().getCapacity()) {
             publicMatch.setStatus("FULL");

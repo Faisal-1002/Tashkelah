@@ -1,6 +1,7 @@
 package com.example.tuwaiqfinalproject.Service;
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.DTO.FieldDTO;
+import com.example.tuwaiqfinalproject.DTO.NameCityFieldDTO;
 import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
@@ -180,8 +181,37 @@ public class FieldService {
         fieldRepository.delete(field);
     }
 
-    // 25. Eatzaz - Show stadiums by sport type - Tested
-    public List<Field> getFieldBySportAndCity(Integer player_id, Integer sportId) {
+// Eatzaz -Show Details stadiums by sport type - Tested
+public List<NameCityFieldDTO> getFieldBySportAndCity(Integer player_id, Integer sportId){
+    Player player = playerRepository.findPlayerById(player_id);
+    if (player == null) {
+        throw new ApiException("User Not Found");
+    }
+
+    Sport sport = sportRepository.findSportById(sportId);
+    if (sport == null) {
+        throw new ApiException("Sport not found");
+    }
+
+    List<Field> fields = fieldRepository.findAllBySportIdAndLocation(sportId, player.getUser().getAddress());
+    if (fields.isEmpty()) {
+        throw new ApiException("No fields found for this sport in your city");
+    }
+
+    List<NameCityFieldDTO> nameCityFieldDTOList = new ArrayList<>();
+
+    for (Field field : fields) {
+        NameCityFieldDTO dto = new NameCityFieldDTO();
+        dto.setName(field.getName());
+        dto.setAddress(field.getAddress());
+        dto.setPhoto(field.getPhoto());
+
+        nameCityFieldDTOList.add(dto);
+    }
+    return nameCityFieldDTOList;
+}
+    // 25. Eatzaz - Show Details stadiums by sport type - Tested
+    public List<Field> getDetailsFieldBySportAndCity(Integer player_id, Integer sportId) {
         Player player=playerRepository.findPlayerById(player_id);
         if(player==null)
             throw new ApiException("User Not Found");

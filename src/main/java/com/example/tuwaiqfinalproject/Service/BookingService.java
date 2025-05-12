@@ -107,7 +107,7 @@ public class BookingService {
             slot.setStatus("BOOKED");
         }
 
-        double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
+        Double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
 
         Booking booking = new Booking();
         booking.setPrivate_match(match);
@@ -165,7 +165,7 @@ public class BookingService {
             slot.setStatus("BOOKED");
         }
 
-        double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
+        Double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
 
         Booking booking = new Booking();
         match.getBookings().add(booking);

@@ -5,6 +5,7 @@ import com.example.tuwaiqfinalproject.Model.*;
 import com.example.tuwaiqfinalproject.Repository.BookingRepository;
 import com.example.tuwaiqfinalproject.Repository.PaymentRepository;
 import com.example.tuwaiqfinalproject.Repository.PlayerRepository;
+import com.example.tuwaiqfinalproject.Repository.PublicMatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -23,6 +24,7 @@ public class PaymentService {
     private final PlayerRepository playerRepository;
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
+    private final PublicMatchRepository publicMatchRepository;
 
     @Value("${moyasar.api.key}")
     private String apiKey;
@@ -120,21 +122,21 @@ public class PaymentService {
     }
 
     // 35. Eatzaz - Payment - need testing
-    public ResponseEntity<String> PublicMatchPayment(Integer user_id, Payment paymentRequest) {
+    public ResponseEntity<String> PublicMatchPayment(Integer user_id, Integer matchId, Payment paymentRequest) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
 
-        PublicMatch match = player.getPublic_match();
+        PublicMatch match = publicMatchRepository.findPublicMatchById(matchId);
         if (match == null || match.getBookings() == null || match.getBookings().isEmpty())
             throw new ApiException("No booking found for this match");
 
-        List<Booking> pendingBookings = match.getBookings().stream()
-                .filter(b -> "PENDING".equals(b.getStatus()))
-                .collect(Collectors.toList());
+        List<Booking> bookings = match.getBookings();
+//        if (!booking.getStatus().equals("PENDING"))
+//            throw new ApiException("Booking is already confirmed or invalid");
 
-        if (pendingBookings.isEmpty()) {
-            throw new ApiException("No pending bookings found for this match");
-        }
+//        if (pendingBookings.isEmpty()) {
+//            throw new ApiException("No pending bookings found for this match");
+//        }
         String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments";
 
         RestTemplate restTemplate = new RestTemplate();
@@ -145,9 +147,15 @@ public class PaymentService {
 
         ResponseEntity<String> response = null;
 
-        for (Booking booking : pendingBookings) {
-            double amount = booking.getTotal_amount();
+        //for (Booking booking : pendingBookings) {
+            Double amount = bookings.get(0).getTotal_amount();
+            // تحويل المبلغ إلى هللة (عدد صحيح)
+            int amountInCents = (int) (amount * 100);  // ضرب المبلغ في 100 للحصول على هللة
 
+            // التحقق من أن المبلغ لا يقل عن 100 ريال سعودي (10000 هللة)
+            if (amountInCents < 10000) {
+                throw new ApiException("The minimum amount required is 100 SAR.");
+            }
             String requestBody = String.format(
                     "source[type]=card&source[name]=%s&source[number]=%s&source[cvc]=%s" +
                             "&source[month]=%s&source[year]=%s&amount=%d&currency=%s&callback_url=%s",
@@ -156,7 +164,7 @@ public class PaymentService {
                     paymentRequest.getCvc(),
                     paymentRequest.getMonth(),
                     paymentRequest.getYear(),
-                    (int) (amount * 100), // إلى هللة
+                    100000, // إرسال المبلغ كعدد صحيح بالهللة
                     "SAR",
                     callbackUrl
             );
@@ -166,14 +174,14 @@ public class PaymentService {
 
             // حفظ كل دفعه
             Payment newPayment = new Payment();
-            newPayment.setBooking(booking);
+            newPayment.setBooking(bookings.get(0));
             newPayment.setName(player.getUser().getName());
             newPayment.setAmount(amount);
             newPayment.setCurrency("SAR");
             newPayment.setPayment_date(LocalDateTime.now());
 
             paymentRepository.save(newPayment);
-        }
+        //}
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 }
