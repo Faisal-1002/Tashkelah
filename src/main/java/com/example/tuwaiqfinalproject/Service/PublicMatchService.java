@@ -100,12 +100,12 @@ public class PublicMatchService {
         if(sport==null){
             throw new ApiException("Sport Not Found");
         }
-        Team selectedTeam = publicMatch.getTeam().stream()
+        Team selectedTeam = publicMatch.getTeams().stream()
                 .filter(t -> t.getId().equals(teamId))
                 .findFirst()
                 .orElseThrow(() -> new ApiException("Team Not Found in this match"));
 
-        boolean alreadyInTeam=publicMatch.getTeam().stream()
+        boolean alreadyInTeam=publicMatch.getTeams().stream()
                         .anyMatch(team -> publicMatch.getPlayers().contains(player));
         if(alreadyInTeam){
             throw new ApiException("Player already joined a team in this match");
@@ -216,7 +216,7 @@ public class PublicMatchService {
             throw new ApiException("Public Match Not Found");
         }
 
-        List<Team> teams = publicMatch.getTeam();
+        List<Team> teams = publicMatch.getTeams();
         int numberPlayer = 0;
         for (Team team : teams) {
             numberPlayer += team.getPlayersCount();
@@ -233,23 +233,16 @@ public class PublicMatchService {
     public void createMatchFromTimeSlots(Integer userId, Integer fieldId, List<Integer> slotIds) {
         Organizer organizer=organizerRepository.findOrganizerById(userId);
         if(organizer==null)
+
             throw new ApiException("Organizer Not Found");
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
-
-        Organizer organizer = organizerRepository.findOrganizerById(userId);
-
-        if (organizer== null){
-            throw new ApiException("Organizer not found");
-        }
 
         if (!field.getOrganizer().getId().equals(organizer.getId())){
             throw new ApiException("Unauthorized access");
         }
 
-
         List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
-
         if (slots.isEmpty())
             throw new ApiException("No slots found for the given IDs");
 
