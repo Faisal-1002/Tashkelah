@@ -12,9 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -30,12 +28,12 @@ public class FieldService {
     private final TimeSlotService timeSlotService;
     private final TimeSlotRepository timeSlotRepository;
 
-    public List<Field> getAllFields(){
+    public List<Field> getAllFields() {
         return fieldRepository.findAll();
     }
 
     // 40. Faisal - Get field by id - Tested
-    public Field getFieldById(Integer id){
+    public Field getFieldById(Integer id) {
         return fieldRepository.findFieldById(id);
     }
 
@@ -170,21 +168,21 @@ public class FieldService {
         }
     }
 
-    public void deleteField(Integer organizer_id, Integer fieldId){
-        Field field= fieldRepository.findFieldById(fieldId);
-        if (field== null){
+    public void deleteField(Integer organizer_id, Integer fieldId) {
+        Field field = fieldRepository.findFieldById(fieldId);
+        if (field == null) {
             throw new ApiException("Field not found");
         }
-        if (!field.getOrganizer().getId().equals(organizer_id)){
-        throw new ApiException("You are not allowed to delete another organizer's data");
+        if (!field.getOrganizer().getId().equals(organizer_id)) {
+            throw new ApiException("You are not allowed to delete another organizer's data");
         }
         fieldRepository.delete(field);
     }
 
     // 25. Eatzaz - Show stadiums by sport type - Tested
     public List<Field> getFieldBySportAndCity(Integer player_id, Integer sportId) {
-        Player player=playerRepository.findPlayerById(player_id);
-        if(player==null)
+        Player player = playerRepository.findPlayerById(player_id);
+        if (player == null)
             throw new ApiException("User Not Found");
         Sport sport = sportRepository.findSportById(sportId);
         if (sport == null)
@@ -197,7 +195,7 @@ public class FieldService {
     }
 
     // 27. Eatzaz - Player Chose Field For Public Match - Tested
-    public void playerChoseAFieldForAPublicMatch(Integer sport_Id,Integer playerId, Integer field_Id) {
+    public void playerChoseAFieldForAPublicMatch(Integer sport_Id, Integer playerId, Integer field_Id) {
         Player player = playerRepository.findPlayerById(playerId);
 
         if (player == null) {
@@ -250,86 +248,52 @@ public class FieldService {
 
     // 14. Taha - Get Fields for an organizer - Tested
     public List<Field> getAllOrganizerFields(Integer userId) {
-       Organizer organizer= organizerRepository.findOrganizerById(userId);
-        if (organizer==null) {
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null) {
             throw new ApiException("You are not allowed to view another organizer's fields");
         }
         return fieldRepository.findFieldByOrganizer_Id(organizer.getId());
     }
 
     // 15. Taha - Returns a list of booked time slots for the specified field and date - Tested
-    public List<TimeSlot> getBookedTimeSlots(Integer fieldId, LocalDate date) {
-        // Get the field from the database
-        Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null) {
-            throw new ApiException("Field not found");
+    public List<TimeSlot> getBookedTimeSlotsForField(Integer userId, Integer fieldId) {
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ApiException("Field not found"));
+
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null) {
+            throw new ApiException("Organizer not fond");
+
         }
 
-        // Filter time slots by the given date and sort them by start time
-        return field.getTime_slots().stream()
-                .filter(ts -> ts.getDate().equals(date)) // Only slots on the requested date
-                .sorted(Comparator.comparing(TimeSlot::getStart_time)) // Sort by start time
-                .toList(); // Return as a list
+        if (!field.getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("Unauthorized access");
+        }
+
+        List<TimeSlot> bookedSlots = timeSlotRepository.findByFieldAndStatus(field, "BOOKED");
+        if (bookedSlots.isEmpty()) {
+            throw new ApiException("No booked slots found for the given field");
+        }
+
+        return bookedSlots;
     }
 
+
     // 16 - Taha - Returns available (free) time slots for a field on the specified date - Tested
-    public List<TimeSlot> getAvailableTimeSlots(Integer fieldId, LocalDate date) {
-        Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null) {
-            throw new ApiException("Field not found");
+    public List<TimeSlot> getAvailableTimeSlots(Integer fieldId) {
+
+        // Get the field by ID
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ApiException("Field not found"));
+
+        // Fetch all booked time slots for the given field
+        List<TimeSlot> availableSlots = timeSlotRepository.findByFieldAndStatus(field, "AVAILABLE");
+
+        if (availableSlots.isEmpty()) {
+            throw new ApiException("No AVAILABLE slots found for the given field, Creat new Time ");
         }
 
-        // Get the booked slots on the given date, sorted by start time
-        List<TimeSlot> bookedSlots = field.getTime_slots().stream()
-                .filter(ts -> ts.getDate().equals(date))
-                .sorted(Comparator.comparing(TimeSlot::getStart_time))
-                .toList();
-
-        List<TimeSlot> availableSlots = new ArrayList<>();
-        LocalTime openTime = field.getOpen_time();
-        LocalTime closeTime = field.getClose_time();
-
-        // Handle cases where closing time is after midnight
-        boolean crossesMidnight = closeTime.isBefore(openTime);
-        LocalTime current = openTime;
-
-        // Loop through booked slots and find the gaps between them
-        for (TimeSlot slot : bookedSlots) {
-            if (current.isBefore(slot.getStart_time())) {
-                // Add a free slot before the current booked slot
-                availableSlots.add(new TimeSlot(
-                        null, date, current, slot.getStart_time(), null,
-                        "AVAILABLE", field, null, null
-                ));
-            }
-            current = slot.getEnd_time(); // Move pointer forward
-        }
-
-        // Add the final available time after the last booked slot
-        if (crossesMidnight) {
-            // Add slot before midnight
-            if (current.isBefore(LocalTime.MIDNIGHT)) {
-                availableSlots.add(new TimeSlot(
-                        null, date, current, LocalTime.MIDNIGHT, null,
-                        "AVAILABLE", field, null, null
-                ));
-            }
-            // Add slot after midnight on the next day
-            if (LocalTime.MIN.isBefore(closeTime)) {
-                availableSlots.add(new TimeSlot(null, date.plusDays(1), LocalTime.MIN, closeTime, null,
-                        "AVAILABLE", field, null, null
-                ));
-            }
-        } else {
-            // Normal case: add final slot before closing time
-            if (current.isBefore(closeTime)) {
-                availableSlots.add(new TimeSlot(null, date, current, closeTime, null,
-                        "AVAILABLE", field, null, null
-                ));
-            }
-        }
         return availableSlots;
     }
 
 }
-

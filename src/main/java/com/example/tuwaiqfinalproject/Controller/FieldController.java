@@ -38,7 +38,7 @@ public class FieldController {
 
     @PostMapping("/add/{sport_id}")
     public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-        fieldService.addField(1, sport_id, fieldDTO, photoFile);
+        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
@@ -90,20 +90,20 @@ public class FieldController {
     //Taha
     @GetMapping("/organizer-fields")
     public ResponseEntity getOrganizerFields(@AuthenticationPrincipal User user) {
-       List<Field> fields = fieldService.getAllOrganizerFields(1);
+       List<Field> fields = fieldService.getAllOrganizerFields(user.getId());
         return ResponseEntity.status(200).body(fields);
     }
 
     // Taha
     @GetMapping("/booked-slots/{fieldId}")
-    public ResponseEntity<?> getBookedTimeSlots(@PathVariable Integer fieldId, @RequestParam String date) {
-        return ResponseEntity.status(200).body(fieldService.getBookedTimeSlots(fieldId, LocalDate.parse(date)));
+    public ResponseEntity<?> getBookedTimeSlots(@AuthenticationPrincipal User user,@PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(fieldService.getBookedTimeSlotsForField(user.getId(), fieldId));
     }
 
     // Taha
     @GetMapping("/available-slots/{fieldId}")
-    public ResponseEntity<?> getAvailableTimeSlots(@PathVariable Integer fieldId, @RequestParam String date) {
-        return ResponseEntity.status(200).body(fieldService.getAvailableTimeSlots(fieldId, LocalDate.parse(date)));
+    public ResponseEntity<?> getAvailableTimeSlots(@PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(fieldService.getAvailableTimeSlots(fieldId));
     }
 
     @PostMapping("/private-match/{privateMatchId}/assign-field/{fieldId}")
