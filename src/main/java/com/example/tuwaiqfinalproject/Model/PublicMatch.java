@@ -23,7 +23,6 @@ public class PublicMatch {
     private String status;
 
     @ManyToOne
-    @JsonIgnore
     private Field field;
 
     @OneToMany(mappedBy = "public_match", cascade = CascadeType.ALL)

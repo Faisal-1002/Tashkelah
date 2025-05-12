@@ -215,15 +215,15 @@ public class FieldService {
     }
   
     // 25. Eatzaz - Show Details stadiums by sport type - Tested
-    public List<Field> getDetailsFieldBySportAndCity(Integer player_id, Integer sportId) {
+    public List<Field> getDetailsFieldBySportAndCity(Integer player_id, Integer fieldId) {
         Player player=playerRepository.findPlayerById(player_id);
         if(player==null)
             throw new ApiException("User Not Found");
-        Sport sport = sportRepository.findSportById(sportId);
-        if (sport == null)
-            throw new ApiException("Sport not found");
+Field field=fieldRepository.findFieldById(fieldId);
+    if (field == null)
+            throw new ApiException("Field not found");
 
-        List<Field> fields = fieldRepository.findAllBySportIdAndLocation(sportId, player.getUser().getAddress());
+        List<Field> fields = fieldRepository.findAllBySportIdAndLocation(field.getSport().getId(), player.getUser().getAddress());
         if (fields.isEmpty())
             throw new ApiException("No fields found for this sport in your city");
         return fields;

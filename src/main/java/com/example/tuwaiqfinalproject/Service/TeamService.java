@@ -30,22 +30,6 @@ public class TeamService {
         return teamRepository.findTeamById(id);
     }
 
-//    // 21. Eatzaz - Add team for a public match - Tested
-//    public void addTeam(Integer publicMatchId, Team team){
-//        PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
-//        if(publicMatch== null){
-//            throw new ApiException("PublicMatch not found");
-//        }
-//        if (publicMatch.getField() == null) {
-//            throw new ApiException("Field not assigned to this PublicMatch");
-//        }
-//        team.setMax_players_count(publicMatch.getField().getCapacity()/2);
-//        team.setPublic_match(publicMatch);
-//        teamRepository.save(team);
-//        publicMatch.getTeam().add(team);
-//        publicMatchRepository.save(publicMatch);
-//    }
-
     // 21. Taha - Add team for a public match - Tested
     public void addTeamsForPublicMatch(Integer userId, Integer publicMatchId){
         Organizer organizer = organizerRepository.findOrganizerById(userId);
