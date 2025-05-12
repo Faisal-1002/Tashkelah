@@ -67,15 +67,4 @@ public class TimeSlotController {
         return ResponseEntity.status(200).body(new ApiResponse("Time slots assigned successfully"));
     }
 
-
-
-
-    @PostMapping("/generate/{fieldId}")
-    public ResponseEntity<?> generateTimeSlots(@PathVariable Integer fieldId) {
-            timeSlotService.generateTimeSlotsForFieldOnDate(fieldId, LocalDate.now());
-
-            return ResponseEntity.status(200).body("Time slots generated successfully for the field.");
-
-    }
-
 }
