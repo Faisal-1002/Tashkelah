@@ -165,35 +165,56 @@ public class TimeSlotService {
 
 
 
-    //Taha --------------------------------------------
+    //Taha Generate Time Slots For Field On Date --------------------------------------------
+    // Generate time slots for a specific field on a given date based on open/close time
     public void generateTimeSlotsForFieldOnDate(Integer fieldId, LocalDate date) {
-        // Get the field by ID
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
 
-        // Generate time slots for that field on the given date (Here we generate for every hour)
-        List<TimeSlot> timeSlots = new ArrayList<>();
-        LocalTime startTime = LocalTime.of(0, 0); // Start from midnight
-        LocalTime endTime = startTime.plusHours(1); // Each slot is 1 hour
-
-        // Create slots from midnight till the end of the day (24 hours)
-        for (int i = 0; i < 24; i++) {
-            TimeSlot slot = new TimeSlot();
-            slot.setField(field);
-            slot.setDate(date);
-            slot.setStart_time(startTime);
-            slot.setEnd_time(endTime);
-            slot.setStatus("AVAILABLE");
-            slot.setPrice(100.0); // Example price, you can customize it
-
-            timeSlots.add(slot);
-
-            // Move to the next hour
-            startTime = startTime.plusHours(1);
-            endTime = endTime.plusHours(1);
+        // Check if slots already exist for this field and date
+        List<TimeSlot> existing = timeSlotRepository.findByFieldAndDate(field, date);
+        if (!existing.isEmpty()) {
+            throw new ApiException("Time slots already exist for this date");
         }
 
-        // Save all generated time slots in the database
+        LocalTime openTime = field.getOpen_time();
+        LocalTime closeTime = field.getClose_time();
+
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        LocalTime startTime = openTime;
+
+        if (openTime.isBefore(closeTime)) {
+            while (startTime.plusHours(1).isBefore(closeTime) || startTime.plusHours(1).equals(closeTime)) {
+                TimeSlot slot = new TimeSlot();
+                slot.setField(field);
+                slot.setDate(date);
+                slot.setStart_time(startTime);
+                slot.setEnd_time(startTime.plusHours(1));
+                slot.setStatus("AVAILABLE");
+                slot.setPrice(field.getPrice());
+                timeSlots.add(slot);
+
+                startTime = startTime.plusHours(1);
+            }
+        } else {
+            // If open after close (extends to next day)
+            while (!startTime.equals(closeTime)) {
+                TimeSlot slot = new TimeSlot();
+                slot.setField(field);
+                slot.setDate(date);
+                slot.setStart_time(startTime);
+                slot.setEnd_time(startTime.plusHours(1));
+                slot.setStatus("AVAILABLE");
+                slot.setPrice(field.getPrice());
+                timeSlots.add(slot);
+
+                startTime = startTime.plusHours(1);
+                if (startTime.equals(LocalTime.MIDNIGHT)) {
+                    date = date.plusDays(1); // next day
+                }
+            }
+        }
+
         timeSlotRepository.saveAll(timeSlots);
     }
 }

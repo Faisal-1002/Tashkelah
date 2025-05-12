@@ -255,7 +255,7 @@ public class PublicMatchService {
         if (slots.isEmpty())
             throw new ApiException("No slots found for the given IDs");
 
-        // Get date from the first slot and validate field & date consistency
+        // Validate all slots belong to same field and same day and are available
         LocalDate date = slots.get(0).getDate();
         for (TimeSlot slot : slots) {
             if (!slot.getField().getId().equals(fieldId))
@@ -266,14 +266,14 @@ public class PublicMatchService {
                 throw new ApiException("One or more slots are not available");
         }
 
-        // Sort slots and ensure continuity
+        // Ensure the slots are continuous
         slots.sort(Comparator.comparing(TimeSlot::getStart_time));
         for (int i = 0; i < slots.size() - 1; i++) {
             if (!slots.get(i).getEnd_time().equals(slots.get(i + 1).getStart_time()))
                 throw new ApiException("Selected slots must be continuous");
         }
 
-        // Create match
+        // Create the match
         PublicMatch match = new PublicMatch();
         match.setStatus("PENDING");
         match.setField(field);
@@ -285,17 +285,22 @@ public class PublicMatchService {
             slot.setPublic_match(match);
         }
         timeSlotRepository.saveAll(slots);
-    }
 
+        // Create two teams and assign to match
+        Team teamA = new Team();
+        teamA.setName("Team A");
+        teamA.setPlayersCount(0);
+        teamA.setMax_players_count(field.getCapacity() / 2);
+        teamA.setPublic_match(match);
 
+        Team teamB = new Team();
+        teamB.setName("Team B");
+        teamB.setPlayersCount(0);
+        teamB.setMax_players_count(field.getCapacity() / 2);
+        teamB.setPublic_match(match);
 
-
-    // Scheduled task to delete old time slots (older than yesterday)
-    @Scheduled(cron = "0 10 0 * * *")
-    public void deleteOldTimeSlots() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        List<TimeSlot> oldSlots = timeSlotRepository.findByDateBefore(yesterday);
-        timeSlotRepository.deleteAll(oldSlots);
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
     }
 
 }

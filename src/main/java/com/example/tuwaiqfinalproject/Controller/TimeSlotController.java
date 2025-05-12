@@ -63,10 +63,6 @@ public class TimeSlotController {
 
 
 
-
-
-
-
     @PostMapping("/generate/{fieldId}")
     public ResponseEntity<?> generateTimeSlots(@PathVariable Integer fieldId) {
             timeSlotService.generateTimeSlotsForFieldOnDate(fieldId, LocalDate.now());
