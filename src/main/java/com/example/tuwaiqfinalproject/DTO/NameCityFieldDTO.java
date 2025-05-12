@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class NameCityFieldDTO {
     @NotEmpty(message = "Field name must not be empty")
     private String name;
-
     @NotEmpty(message = "Address must not be empty")
     private String address;
     @NotEmpty(message = "Photo must not be empty")

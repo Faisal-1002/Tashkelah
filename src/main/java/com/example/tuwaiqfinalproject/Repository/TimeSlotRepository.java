@@ -16,17 +16,6 @@ import java.util.List;
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
     TimeSlot findTimeSlotById(Integer id);
     List<TimeSlot> findTimeSlotsByFieldAndStatus(Field field, String status);
-
-
-
-
-
-
-
-//    boolean existsByFieldAndDateAndStart_time(Field field, LocalDate date, LocalTime start_time);
-    List<TimeSlot> findByDateBefore(LocalDate date);
-
-    List<TimeSlot> findByFieldAndDate(Field field,LocalDate date);
 }
 
 

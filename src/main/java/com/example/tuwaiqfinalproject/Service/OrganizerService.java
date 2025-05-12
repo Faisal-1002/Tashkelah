@@ -44,10 +44,8 @@ public class OrganizerService {
 
     // 1. Taha - Register organizer - Tested
     public void registerOrganizer(OrganizerDTO dto) {
-        dto.setRole("ORGANIZER");
         String hashedPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
-
-        User user = new User(null, dto.getUsername(), hashedPassword, dto.getRole(),
+        User user = new User(null, dto.getUsername(), hashedPassword, "ORGANIZER",
                 dto.getName(), dto.getPhone(), dto.getAddress(), dto.getEmail(), null, null);
         Organizer organizer = new Organizer(null, dto.getLicence_number(), "INACTIVE", user, null, null);
 
@@ -67,9 +65,7 @@ public class OrganizerService {
         user.setName(dto.getName());
         user.setPhone(dto.getPhone());
         user.setAddress(dto.getAddress());
-
         organizer.setLicence_number(dto.getLicence_number());
-        organizer.setStatus(dto.getStatus());
 
         authRepository.save(user);
         organizerRepository.save(organizer);

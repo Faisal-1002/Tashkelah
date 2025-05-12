@@ -27,6 +27,7 @@ public class PublicMatchService {
     private final TimeSlotRepository timeSlotRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final BookingRepository bookingRepository;
+    private final TeamService teamService;
 
     public List<PublicMatch> getAllPublicMatches() {
         return publicMatchRepository.findAll();
@@ -40,35 +41,34 @@ public class PublicMatchService {
         return match;
     }
 
-    // 19. Eatzaz + Taha - add Public match with Field - Tested
-    public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
-        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
-        if (organizer == null) {
-            throw new ApiException("Organizer not found");
-        }
-
-        Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null) {
-            throw new ApiException("Field not found");
-        }
-
-        List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
-        if (timeSlots.isEmpty()) {
-            throw new ApiException("TimeSlot not found");
-        }
-
-        match.setStatus("OPEN");
-        match.setOrganizer(organizer);
-        match.setField(field);
-
-    for (TimeSlot slot : timeSlots) {
-        slot.setStatus("PENDING");
-        slot.setPublic_match(match);
-    }
-        publicMatchRepository.save(match);
-        timeSlotRepository.saveAll(timeSlots);
-
-    }
+//    // 19. Eatzaz + Taha - add Public match with Field - Tested
+//    public void addPublicMatch(Integer organizerId, PublicMatch match, Integer fieldId, List<Integer> timeSlotIds) {
+//        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+//        if (organizer == null) {
+//            throw new ApiException("Organizer not found");
+//        }
+//
+//        Field field = fieldRepository.findFieldById(fieldId);
+//        if (field == null) {
+//            throw new ApiException("Field not found");
+//        }
+//
+//        List<TimeSlot> timeSlots = timeSlotRepository.findAllById(timeSlotIds);
+//        if (timeSlots.isEmpty()) {
+//            throw new ApiException("TimeSlot not found");
+//        }
+//
+//        match.setStatus("OPEN");
+//        match.setOrganizer(organizer);
+//        match.setField(field);
+//
+//        for (TimeSlot slot : timeSlots) {
+//            slot.setStatus("PENDING");
+//            slot.setPublic_match(match);
+//        }
+//        publicMatchRepository.save(match);
+//        timeSlotRepository.saveAll(timeSlots);
+//    }
 
     public void updatePublicMatch(Integer id, PublicMatch updatedMatch) {
         PublicMatch existing = publicMatchRepository.findPublicMatchById(id);
@@ -166,7 +166,7 @@ public class PublicMatchService {
         if (field == null) {
             throw new ApiException("Field match not found");
         }
-        return match.getTeam();
+        return match.getTeams();
     }
 
     // 31. Eatzaz - Choose a team - Tested
@@ -212,7 +212,7 @@ public class PublicMatchService {
 
         Team team=teamRepository.findTeamById(teamId);
         String selectedTeamName = null;
-        if (publicMatch.getTeam() != null && publicMatch.getPlayers().contains(player)) {
+        if (publicMatch.getTeams() != null && publicMatch.getPlayers().contains(player)) {
             selectedTeamName = team.getName();
         }
 
@@ -257,7 +257,7 @@ public class PublicMatchService {
             throw new ApiException("Booking Not Found");
         }
 
-        List<Team> teams = publicMatch.getTeam();
+        List<Team> teams = publicMatch.getTeams();
         int numberPlayer = 0;
         for (Team team : teams) {
             numberPlayer += team.getPlayersCount();
@@ -271,8 +271,12 @@ public class PublicMatchService {
         return "Booking successful, waiting for more players";
     }
 
-    // Taha ---------------------------  createMatchFromTimeSlots
-    public void createMatchFromTimeSlots(Integer fieldId, List<Integer> slotIds) {
+    // 19. Taha - Create public match - Tested
+    public void createMatchFromTimeSlots(Integer userId, Integer fieldId, List<Integer> slotIds) {
+        Organizer organizer=organizerRepository.findOrganizerById(userId);
+        if(organizer==null)
+            throw new ApiException("Organizer Not Found");
+
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
 
@@ -310,23 +314,10 @@ public class PublicMatchService {
             slot.setStatus("BOOKED");
             slot.setPublic_match(match);
         }
+
         timeSlotRepository.saveAll(slots);
+        teamService.addTeamsForPublicMatch(userId, match.getId());
 
-        // Create two teams and assign to match
-        Team teamA = new Team();
-        teamA.setName("Team A");
-        teamA.setPlayersCount(0);
-        teamA.setMax_players_count(field.getCapacity() / 2);
-        teamA.setPublic_match(match);
-
-        Team teamB = new Team();
-        teamB.setName("Team B");
-        teamB.setPlayersCount(0);
-        teamB.setMax_players_count(field.getCapacity() / 2);
-        teamB.setPublic_match(match);
-
-        teamRepository.save(teamA);
-        teamRepository.save(teamB);
     }
 
 }

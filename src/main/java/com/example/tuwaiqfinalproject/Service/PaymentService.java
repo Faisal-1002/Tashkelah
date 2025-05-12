@@ -49,7 +49,7 @@ public class PaymentService {
             throw new ApiException("Booking is already paid or invalid");
 
         String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments"; // Replace with your real callback
-
+        //String call = "http://localhost:8080/api/v1/payments/get-status/{{privateMatchId}}";
         paymentRequest.setName(player.getUser().getName());
         paymentRequest.setAmount(booking.getTotal_amount());
         paymentRequest.setCurrency("SAR");

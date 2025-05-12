@@ -27,9 +27,6 @@ public class PlayerDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @Pattern(regexp = "ORGANIZER|PLAYER|ADMIN",message = "Role must be ORGANIZER, PLAYER, or ADMIN")
-    private String role;
-
     @NotEmpty(message = "Name must not be empty")
     private String name;
 
@@ -44,6 +41,7 @@ public class PlayerDTO {
     @Pattern(regexp = "^(MALE|FEMALE)$", message = "Gender must MALE or FEMALE")
     private String gender;
 
+    @NotNull(message = "Birth date must not be null")
     @Past(message = "Birth date must be in the past")
     private LocalDate birth_date;
 

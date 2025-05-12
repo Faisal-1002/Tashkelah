@@ -2,6 +2,7 @@ package com.example.tuwaiqfinalproject.Controller;
 
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
 import com.example.tuwaiqfinalproject.Model.Team;
+import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/teama")
+@RequestMapping("/api/v1/team")
 @RequiredArgsConstructor
 public class TeamController {
 
@@ -20,11 +21,11 @@ public class TeamController {
         return ResponseEntity.status(200).body(teamService.getAllTeam());
     }
 
-    @PostMapping("/add/{publicId}")
-    public ResponseEntity addTeam(@PathVariable Integer publicId, @RequestBody Team team) {
-        teamService.addTeam(publicId, team);
-        return ResponseEntity.status(200).body("TeamA added successfully");
-    }
+//    @PostMapping("/add/{publicId}")
+//    public ResponseEntity addTeam(@PathVariable Integer publicId, @RequestBody Team team) {
+//        teamService.addTeam(publicId, team);
+//        return ResponseEntity.status(200).body("TeamA added successfully");
+//    }
 
     @PutMapping("/update/{teamId}")
     public ResponseEntity updateTeam(@AuthenticationPrincipal PublicMatch publicMatch, @PathVariable Integer teamId, @RequestBody Team team) {
@@ -36,5 +37,16 @@ public class TeamController {
     public ResponseEntity deleteTeam(@AuthenticationPrincipal PublicMatch publicMatch, @PathVariable Integer teamId) {
         teamService.deleteTeam(publicMatch, teamId);
         return ResponseEntity.status(200).body("TeamA deleted successfully");
+    }
+
+    @PostMapping("/addTeamsForPublicMatch/{matchId}")
+    public ResponseEntity addTeamsForPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer matchId) {
+        teamService.addTeamsForPublicMatch(user.getId(), matchId);
+        return ResponseEntity.status(200).body("Team A and Team B added successfully");
+    }
+
+    @GetMapping("/get-by-id/{id}")
+    public ResponseEntity<?> getTeamById(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(teamService.getTeamById(id));
     }
 }
