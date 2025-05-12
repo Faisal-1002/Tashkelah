@@ -80,21 +80,31 @@ public class PublicMatchController {
 
     }
 
-    @GetMapping("/getTeams/{publicMatchId}")
-    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
-        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
-    }
+//    @GetMapping("/getTeams/{publicMatchId}")
+//    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+//        return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
+//    }
 
     @PutMapping("/selectTeam/{sportId}/{fieldId}/{matchId}/{teamId}")
     public ResponseEntity<?> selectTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable Integer matchId, @PathVariable Integer teamId) {
         publicMatchService.PublicTeamSelection(user.getId(), sportId, fieldId, matchId, teamId);
         return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
     }
-  
-    @GetMapping("/chekout/{publicMatchId}")
-    public ResponseEntity<?> getPlayerMatchSelection(@AuthenticationPrincipal Player player,@PathVariable Integer publicMatchId){
-        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(player.getId(),publicMatchId));
-
+    @GetMapping("/chekout/{publicMatchId}/{teamId}")
+    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
+        return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
+    }
+    @GetMapping("not/{bookingId}")
+    public ResponseEntity no(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
+        publicMatchService.Notifications(user.getId(),bookingId);
+        return ResponseEntity.status(200).body(new ApiResponse("تم تسجيلك في المباراة!\n" +
+                "بيوصلك التأكيد على البريد الإلكتروني\n" +
+                "خلك جاهز. "));
+    }
+    @PutMapping("changeStatus/{publicMatchId}")
+    public ResponseEntity changeStatusAfterCompleted(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+        publicMatchService.changeStatusAfterCompleted(user.getId(),publicMatchId);
+        return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
     }
 
 

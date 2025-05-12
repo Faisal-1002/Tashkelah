@@ -38,11 +38,9 @@ public class FieldController {
 
     @PostMapping("/add/{sport_id}")
     public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-        fieldService.addField(1, sport_id, fieldDTO, photoFile);
+        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
-
-
 
     @PutMapping("/update/{fieldId}")
     public ResponseEntity<?> updateField(@AuthenticationPrincipal User user,@PathVariable Integer fieldId,
