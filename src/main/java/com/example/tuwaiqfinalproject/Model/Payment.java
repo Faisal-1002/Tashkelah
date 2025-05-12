@@ -1,5 +1,6 @@
 package com.example.tuwaiqfinalproject.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,10 +43,14 @@ public class Payment {
     @Column(columnDefinition = "varchar(255)")
     private String callbackUrl;
 
+    @Column(columnDefinition = "varchar(255)")
+    private String transactionId;
+
     @Column(columnDefinition = "time")
     private LocalDateTime payment_date;
 
     @OneToOne
+    @JsonIgnore
     private Booking booking;
 
 }

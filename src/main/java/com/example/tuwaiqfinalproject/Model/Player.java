@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -27,8 +28,9 @@ public class Player {
     @JsonIgnore
     private User user;
 
-    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
-    private PrivateMatch private_match;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "player")
+    @JsonIgnore
+    private List<PrivateMatch> private_matches;
 
     @ManyToOne
     @JsonIgnore

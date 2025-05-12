@@ -30,13 +30,52 @@ public class FieldService {
     private final TimeSlotService timeSlotService;
     private final TimeSlotRepository timeSlotRepository;
 
-
     public List<Field> getAllFields(){
         return fieldRepository.findAll();
     }
 
-    // Taha----------------- test-- (2)
-// Private method to save an uploaded image file
+    // 40. Faisal - Get field by id - Tested
+    public Field getFieldById(Integer id){
+        return fieldRepository.findFieldById(id);
+    }
+
+    // 10. Taha - Public method to allow an approved organizer to add a new field with an image - Tested
+    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
+        if (organizer == null) {
+            throw new ApiException("Organizer not found");
+        }
+        if (!organizer.getStatus().equals("ACTIVE")) {
+            throw new ApiException("Your account is not yet approved");
+        }
+
+        Sport sport = sportRepository.findSportById(sport_id);
+        if (sport == null) {
+            throw new ApiException("Sport not found");
+        }
+
+        String photo = saveImage(photoFile);
+        Field field = new Field(
+                null,
+                fieldDTO.getName(),
+                fieldDTO.getAddress(),
+                fieldDTO.getDescription(),
+                photo,
+                fieldDTO.getOpen_time(),
+                fieldDTO.getClose_time(),
+                fieldDTO.getCapacity(),
+                fieldDTO.getPrice(),
+                sport,
+                organizer,
+                null,
+                null,
+                null,
+                null);
+        fieldRepository.save(field);
+        timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());
+    }
+
+    // 11. Taha - Private method to save an uploaded image file - Tested
     private String saveImage(MultipartFile file) {
         // Check if the uploaded file is empty
         if (file.isEmpty()) {
@@ -77,48 +116,7 @@ public class FieldService {
         }
     }
 
-    //Taha-------------- test-(1)
-    // Public method to allow an approved organizer to add a new field with an image
-    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
-        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
-
-        if (organizer == null) {
-            throw new ApiException("Organizer not found");
-        }
-        if (!organizer.getStatus().equals("ACTIVE")) {
-            throw new ApiException("Your account is not yet approved");
-        }
-
-        Sport sport = sportRepository.findSportById(sport_id);
-        if (sport == null) {
-            throw new ApiException("Sport not found");
-        }
-
-        String photo = saveImage(photoFile);
-        Field field = new Field(
-                null,
-                fieldDTO.getName(),
-                fieldDTO.getAddress(),
-                fieldDTO.getDescription(),
-                photo,
-                fieldDTO.getOpen_time(),
-                fieldDTO.getClose_time(),
-                fieldDTO.getCapacity(),
-                fieldDTO.getPrice(),
-                sport,
-                organizer,
-                null,
-                null,
-                null,
-                null);
-        fieldRepository.save(field);
-        timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());
-
-
-    }
-    //Taha---------------//test (9)
-
-    // Allows an organizer to update an existing field's information and photo
+    // 12. Taha - Allows an organizer to update an existing field's information and photo - Tested
     public void updateField(Integer organizer_id, Integer fieldId, FieldDTO fieldDTO, MultipartFile photoFile) {
         // Fetch the field from the database using its ID
         Field field = fieldRepository.findFieldById(fieldId);
@@ -154,10 +152,7 @@ public class FieldService {
         fieldRepository.save(field);
     }
 
-
-
-    //Taha---------------// (10)
-    // Deletes an image file from the "uploads" directory
+    // 13. Taha - Deletes an image file from the "uploads" directory - Tested
     private void deleteImage(String fileName) {
         try {
             // Build the full path to the file using the uploads folder and the file name
@@ -176,22 +171,17 @@ public class FieldService {
     }
 
     public void deleteField(Integer organizer_id, Integer fieldId){
-
         Field field= fieldRepository.findFieldById(fieldId);
-
         if (field== null){
             throw new ApiException("Field not found");
         }
-
         if (!field.getOrganizer().getId().equals(organizer_id)){
-
         throw new ApiException("You are not allowed to delete another organizer's data");
-    }
-
+        }
         fieldRepository.delete(field);
     }
 
-    // 1- Eatzaz - Show stadiums by sport type -tested
+    // 25. Eatzaz - Show stadiums by sport type - Tested
     public List<Field> getFieldBySportAndCity(Integer player_id, Integer sportId) {
         Player player=playerRepository.findPlayerById(player_id);
         if(player==null)
@@ -206,7 +196,7 @@ public class FieldService {
         return fields;
     }
 
-    //2- Eatzaz - player Chose Field For Public Match - tested
+    // 27. Eatzaz - Player Chose Field For Public Match - Tested
     public void playerChoseAFieldForAPublicMatch(Integer sport_Id,Integer playerId, Integer field_Id) {
         Player player = playerRepository.findPlayerById(playerId);
 
@@ -232,33 +222,33 @@ public class FieldService {
         }
     }
 
+    // 41. Faisal - Assign field for private match - Tested
+    public void playerChoseAFieldForPrivateMatch(Integer userId, Integer privateMatchId, Integer fieldId) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("User not found or incorrect role");
 
-    // 24. Faisal - Assign field for private match - Tested
-    public void playerChoseAFieldForPrivateMatch (Integer user_id, Integer fieldId){
-        Player player = playerRepository.findPlayerById(user_id);
-        if (player == null) throw new ApiException("User not found or incorrect role");
+        PrivateMatch privateMatch = privateMatchRepository.findPrivateMatchById(privateMatchId);
+        if (privateMatch == null || !privateMatch.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("Private match not found or does not belong to this player");
 
-        PrivateMatch privateMatch = player.getPrivate_match();
-        if (privateMatch == null)
-            throw new ApiException("Private match not found");
-
-        if (!privateMatch.getStatus().equals("PENDING"))
-            throw new ApiException("You can only assign a field when the match is in PENDING status");
+        if (!privateMatch.getStatus().equals("CREATED"))
+            throw new ApiException("You can only assign a field when the match is in CREATED status");
 
         Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null) throw new ApiException("Field not found");
+        if (field == null)
+            throw new ApiException("Field not found");
 
-        // Use player's city directly (from User inside Player)
         String playerCity = player.getUser().getAddress();
         if (!field.getAddress().equals(playerCity))
             throw new ApiException("Field is not in the same city as the player");
 
         privateMatch.setField(field);
-        privateMatch.setStatus("SCHEDULED");
+        privateMatch.setStatus("FIELD_ASSIGNED");
         privateMatchRepository.save(privateMatch);
     }
 
-    //Taha----------------------------------(5)
+    // 14. Taha - Get Fields for an organizer - Tested
     public List<Field> getAllOrganizerFields(Integer userId) {
        Organizer organizer= organizerRepository.findOrganizerById(userId);
         if (organizer==null) {
@@ -267,11 +257,7 @@ public class FieldService {
         return fieldRepository.findFieldByOrganizer_Id(organizer.getId());
     }
 
-
-
-
-    // Taha - (7)Get booked time slots for a field on a specific date
-    // Returns a list of booked time slots for the specified field and date
+    // 15. Taha - Returns a list of booked time slots for the specified field and date - Tested
     public List<TimeSlot> getBookedTimeSlots(Integer fieldId, LocalDate date) {
         // Get the field from the database
         Field field = fieldRepository.findFieldById(fieldId);
@@ -286,12 +272,7 @@ public class FieldService {
                 .toList(); // Return as a list
     }
 
-
-
-
-
-    // Taha -(8) Get available time slots for a field on a specific date
-    // Returns available (free) time slots for a field on the specified date
+    // 16 - Taha - Returns available (free) time slots for a field on the specified date - Tested
     public List<TimeSlot> getAvailableTimeSlots(Integer fieldId, LocalDate date) {
         Field field = fieldRepository.findFieldById(fieldId);
         if (field == null) {
@@ -347,11 +328,8 @@ public class FieldService {
                 ));
             }
         }
-
         return availableSlots;
     }
-
-
 
 }
 

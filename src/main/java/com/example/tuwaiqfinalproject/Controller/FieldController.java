@@ -38,15 +38,12 @@ public class FieldController {
 
     @PostMapping("/add/{sport_id}")
     public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
+        fieldService.addField(1, sport_id, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
     @PutMapping("/update/{fieldId}")
-    public ResponseEntity<?> updateField(@AuthenticationPrincipal User user,@PathVariable Integer fieldId,
-            @ModelAttribute FieldDTO fieldDTO,
-            @RequestPart(required = false) MultipartFile photoFile) {
-
+    public ResponseEntity<?> updateField(@AuthenticationPrincipal User user,@PathVariable Integer fieldId, @ModelAttribute FieldDTO fieldDTO, @RequestPart(required = false) MultipartFile photoFile) {
         fieldService.updateField(user.getId(), fieldId, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field updated successfully"));
     }
@@ -109,10 +106,15 @@ public class FieldController {
         return ResponseEntity.status(200).body(fieldService.getAvailableTimeSlots(fieldId, LocalDate.parse(date)));
     }
 
-    @PostMapping("/private-match/assign-field/{fieldId}")
-    public ResponseEntity<?> assignFieldToPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
-        fieldService.playerChoseAFieldForPrivateMatch(user.getId(), fieldId);
+    @PostMapping("/private-match/{privateMatchId}/assign-field/{fieldId}")
+    public ResponseEntity<?> assignFieldToPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId, @PathVariable Integer fieldId) {
+        fieldService.playerChoseAFieldForPrivateMatch(2, privateMatchId, fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Field assigned to private match successfully."));
+    }
+
+    @GetMapping("/field/{id}")
+    public ResponseEntity<?> getFieldById(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(fieldService.getFieldById(id));
     }
 
 }
