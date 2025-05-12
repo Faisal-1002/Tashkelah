@@ -65,12 +65,6 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
     }
 
-    @PutMapping("/selectTeam/{sportId}/{fieldId}/{matchId}/{teamId}")
-    public ResponseEntity<?> selectTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId, @PathVariable Integer matchId, @PathVariable Integer teamId) {
-        publicMatchService.PublicTeamSelection(user.getId(), sportId, fieldId, matchId, teamId);
-        return ResponseEntity.status(200).body(new ApiResponse("Your team has been successfully booked."));
-    }
-
     @GetMapping("/chekout/{publicMatchId}/{teamId}")
     public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));

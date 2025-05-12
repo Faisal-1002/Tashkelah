@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -219,8 +220,8 @@ public class FieldService {
         Player player=playerRepository.findPlayerById(player_id);
         if(player==null)
             throw new ApiException("User Not Found");
-Field field=fieldRepository.findFieldById(fieldId);
-    if (field == null)
+        Field field=fieldRepository.findFieldById(fieldId);
+        if (field == null)
             throw new ApiException("Field not found");
 
         List<Field> fields = fieldRepository.findAllBySportIdAndLocation(field.getSport().getId(), player.getUser().getAddress());
