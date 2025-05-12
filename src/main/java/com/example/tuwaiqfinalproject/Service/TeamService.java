@@ -1,8 +1,11 @@
 package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
+import com.example.tuwaiqfinalproject.Model.Field;
+import com.example.tuwaiqfinalproject.Model.Organizer;
 import com.example.tuwaiqfinalproject.Model.PublicMatch;
 import com.example.tuwaiqfinalproject.Model.Team;
+import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
 import com.example.tuwaiqfinalproject.Repository.PublicMatchRepository;
 import com.example.tuwaiqfinalproject.Repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final PublicMatchRepository publicMatchRepository;
+    private final OrganizerRepository organizerRepository;
 
     public List<Team>getAllTeam(){
         return teamRepository.findAll();
@@ -26,20 +30,36 @@ public class TeamService {
         return teamRepository.findTeamById(id);
     }
 
-    // 21. Eatzaz - Add team for a public match - Tested
-    public void addTeam(Integer publicMatchId, Team team){
+    // 21. Taha - Add team for a public match - Tested
+    public void addTeamsForPublicMatch(Integer userId, Integer publicMatchId){
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if(organizer== null)
+            throw new ApiException("Organizer not found");
         PublicMatch publicMatch= publicMatchRepository.findPublicMatchById(publicMatchId);
-        if(publicMatch== null){
+        if(publicMatch== null)
             throw new ApiException("PublicMatch not found");
-        }
-        if (publicMatch.getField() == null) {
+        Field field = publicMatch.getField();
+        if (field == null)
             throw new ApiException("Field not assigned to this PublicMatch");
-        }
-        team.setMax_players_count(publicMatch.getField().getCapacity()/2);
-        team.setPublic_match(publicMatch);
-        team.setPlayersCount(0);
-        teamRepository.save(team);
-        publicMatch.getTeam().add(team);
+
+        // Create two teams and assign to match
+        Team teamA = new Team();
+        teamA.setName("Team A");
+        teamA.setPlayersCount(0);
+        teamA.setMax_players_count(field.getCapacity() / 2);
+        teamA.setPublic_match(publicMatch);
+
+        Team teamB = new Team();
+        teamB.setName("Team B");
+        teamB.setPlayersCount(0);
+        teamB.setMax_players_count(field.getCapacity() / 2);
+        teamB.setPublic_match(publicMatch);
+
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        publicMatch.getTeams().add(teamA);
+        publicMatch.getTeams().add(teamB);
         publicMatchRepository.save(publicMatch);
     }
 

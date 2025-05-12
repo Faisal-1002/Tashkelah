@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -19,9 +18,8 @@ public class PublicMatch {
     private Integer id;
 
     @NotEmpty(message = "Status must not be empty")
+    @Pattern(regexp = "OPEN|FULL", message = "Status must be OPEN or FULL")
     @Column(columnDefinition = "varchar(20) not null")
-    
-    @Pattern(regexp = "PENDING|OPEN|FULL|SCHEDULED")
     private String status;
 
     @ManyToOne
@@ -31,7 +29,7 @@ public class PublicMatch {
     private List<TimeSlot> time_slots;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
-    private List<Team> team;
+    private List<Team> teams;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "public_match")
     private List<Player> players;

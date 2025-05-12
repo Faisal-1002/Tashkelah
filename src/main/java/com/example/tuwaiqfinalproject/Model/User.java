@@ -2,6 +2,7 @@ package com.example.tuwaiqfinalproject.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.annotations.Check;
@@ -39,10 +40,11 @@ public class User implements UserDetails {
     @Column(columnDefinition = "varchar(10) not null")
     private String phone;
 
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(50) not null")
     private String address;
 
-    @Column(columnDefinition = "varchar(100) not null unique")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")

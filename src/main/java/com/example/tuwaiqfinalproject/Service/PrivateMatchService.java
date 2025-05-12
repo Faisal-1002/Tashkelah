@@ -16,7 +16,6 @@ public class PrivateMatchService {
 
     private final PrivateMatchRepository privateMatchRepository;
     private final PlayerRepository playerRepository;
-    private final FieldRepository fieldRepository;
 
     public List<PrivateMatch> getAllPrivateMatches() {
         return privateMatchRepository.findAll();

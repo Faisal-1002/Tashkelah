@@ -20,7 +20,6 @@ public class BookingService {
     private final TimeSlotRepository timeSlotRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final PublicMatchRepository publicMatchRepository;
-    private final TimeSlotService timeSlotService;
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
@@ -166,17 +165,18 @@ public class BookingService {
         match.setStatus("PENDING");
         publicMatchRepository.save(match);
     }
+
     //13. Eatzaz - get Player My Booking - tested
-public List<Booking> getMyBookingForPublicMatch(Integer playerId){
+    public List<Booking> getMyBookingForPublicMatch(Integer playerId){
         Player player=playerRepository.findPlayerById(playerId);
-        if(player==null){
+        if(player==null)
             throw new ApiException("Player Not Found !");
-        }
-      List<Booking>myBookings=bookingRepository.findBookingsByPlayerInPublicMatch(player);
-    if (myBookings.isEmpty()) {
-        throw new ApiException("You have no bookings in public matches.");
-    }
+
+        List<Booking>myBookings=bookingRepository.findBookingsByPlayerInPublicMatch(player);
+        if (myBookings.isEmpty())
+            throw new ApiException("You have no bookings in public matches.");
 
         return myBookings;
+    }
 }
-}
+

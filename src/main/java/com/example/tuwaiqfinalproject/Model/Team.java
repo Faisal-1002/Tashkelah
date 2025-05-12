@@ -1,8 +1,8 @@
 package com.example.tuwaiqfinalproject.Model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class Team {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -28,5 +27,4 @@ public class Team {
     @ManyToOne
     @JsonIgnore
     private PublicMatch public_match;
-
 }
