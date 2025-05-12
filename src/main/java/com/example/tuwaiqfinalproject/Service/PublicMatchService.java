@@ -27,6 +27,7 @@ public class PublicMatchService {
     private final TimeSlotRepository timeSlotRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final BookingRepository bookingRepository;
+    private final AuthRepository authRepository;
     private final TeamService teamService;
 
     public List<PublicMatch> getAllPublicMatches() {
@@ -276,9 +277,19 @@ public class PublicMatchService {
         Organizer organizer=organizerRepository.findOrganizerById(userId);
         if(organizer==null)
             throw new ApiException("Organizer Not Found");
-
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
+
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+
+        if (organizer== null){
+            throw new ApiException("Organizer not found");
+        }
+
+        if (!field.getOrganizer().getId().equals(organizer.getId())){
+            throw new ApiException("Unauthorized access");
+        }
+
 
         List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
 
@@ -317,7 +328,6 @@ public class PublicMatchService {
 
         timeSlotRepository.saveAll(slots);
         teamService.addTeamsForPublicMatch(userId, match.getId());
-
     }
 
 }
