@@ -35,12 +35,12 @@ public class PublicMatchController {
 
     @PostMapping("/addPublicMatch/{organizerId}/{fieldId}")
     public ResponseEntity<?> addPublicMatch(
-            @PathVariable Integer organizerId,
+            @AuthenticationPrincipal User user,
             @PathVariable Integer fieldId,
             @RequestParam List<Integer> timeSlotId,
             @RequestBody @Valid PublicMatch match
     ) {
-        publicMatchService.addPublicMatch(organizerId, match, fieldId, timeSlotId);
+        publicMatchService.addPublicMatch(user.getId(), match, fieldId, timeSlotId);
         return ResponseEntity.ok(new ApiResponse("Public match added successfully \uD83D\uDCAA\uD83C\uDFFC"));
     }
 
@@ -63,15 +63,15 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(publicMatchService.showFieldMatches(fieldId, user.getId()));
     }
 
-    @PutMapping("/PlayWithPublicTeam/{sportId}/{fieldId}")
-    public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
-        publicMatchService.PlayWithPublicMatch(sportId, fieldId, user.getId());
+    @PutMapping("/PlayWithPublicTeam/{publicId}/{teamId}")
+    public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {
+        publicMatchService.PlayWithPublicMatch(publicId, teamId, user.getId());
         return ResponseEntity.status(200).body(new ApiResponse("You have been entered into the public match."));
     }
 
-    @GetMapping("/getMatchAndTeam/{sportId}/{fieldId}")
-    public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
-        return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), sportId, fieldId));
+    @GetMapping("/getMatchByTime/{publicMatchId}")
+    public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId) {
+        return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), publicMatchId));
 
     }
 
@@ -93,12 +93,13 @@ public class PublicMatchController {
 
     @GetMapping("/not/{bookingId}")
     public ResponseEntity Notifications(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
-        return ResponseEntity.status(200).body(publicMatchService.Notifications(user.getId(),bookingId));
+        publicMatchService.Notifications(user.getId(),bookingId);
+        return ResponseEntity.status(200).body(new ApiResponse("Booking successful, waiting for more players"));
     }
 
     @PutMapping("/changeStatus/{publicMatchId}")
-    public ResponseEntity changeStatusAfterCompleted(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
-        publicMatchService.changeStatusAfterCompleted(user.getId(),publicMatchId);
+    public ResponseEntity changeStatusAfterCompleted(@PathVariable Integer publicMatchId){
+        publicMatchService.changeStatusAfterCompleted(publicMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
     }
 

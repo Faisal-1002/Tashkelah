@@ -121,9 +121,6 @@ public class BookingService {
         if (match == null ) {
             throw new ApiException("Match not found ");
         }
-        if(!match.getStatus().equals("SCHEDULED")){
-            throw new ApiException("Match not scheduled");
-        }
 
         Field field = match.getField();
         if (field == null)
@@ -136,7 +133,7 @@ public class BookingService {
         for (TimeSlot slot : slots) {
             if (!slot.getField().getId().equals(field.getId()))
                 throw new ApiException("TimeSlot does not belong to the assigned field");
-            if (!slot.getStatus().equals("AVAILABLE"))
+            if (!slot.getStatus().equals("AVAILABLE") && !slot.getStatus().equals("PENDING"))
                 throw new ApiException("One or more time slots are already booked");
         }
 
