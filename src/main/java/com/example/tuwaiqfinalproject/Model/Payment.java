@@ -32,7 +32,7 @@ public class Payment {
     private String year;
 
     @Column(columnDefinition = "double")
-    private double amount;
+    private Double amount;
 
     @Column(columnDefinition = "varchar(20)")
     private String currency;

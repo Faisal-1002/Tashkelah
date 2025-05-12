@@ -61,13 +61,11 @@ public class PublicMatchService {
         match.setOrganizer(organizer);
         match.setField(field);
 
+    for (TimeSlot slot : timeSlots) {
+        slot.setStatus("PENDING");
+        slot.setPublic_match(match);
+    }
         publicMatchRepository.save(match);
-
-        for (TimeSlot slot : timeSlots) {
-            slot.setStatus("BOOKED");
-            slot.setPublic_match(match);
-        }
-
         timeSlotRepository.saveAll(timeSlots);
 
     }
@@ -163,6 +161,7 @@ public class PublicMatchService {
         if (match == null) {
             throw new ApiException("Public match not found");
         }
+
         Field field = fieldRepository.findFieldById(match.getField().getId());
         if (field == null) {
             throw new ApiException("Field match not found");
@@ -263,7 +262,6 @@ public class PublicMatchService {
         for (Team team : teams) {
             numberPlayer += team.getPlayersCount();
         }
-
 
         if (numberPlayer == publicMatch.getField().getCapacity()) {
             publicMatch.setStatus("FULL");

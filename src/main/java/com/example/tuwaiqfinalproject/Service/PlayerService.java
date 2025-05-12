@@ -1,3 +1,4 @@
+
 package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
@@ -8,9 +9,11 @@ import com.example.tuwaiqfinalproject.Repository.AuthRepository;
 import com.example.tuwaiqfinalproject.Repository.FieldRepository;
 import com.example.tuwaiqfinalproject.Repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @Service
@@ -20,6 +23,8 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final AuthRepository authRepository;
     private final FieldRepository fieldRepository;
+    @Autowired
+    private WhatsAppService whatsAppService;
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -50,6 +55,14 @@ public class PlayerService {
 
         authRepository.save(user);
         playerRepository.save(player);
+//        System.out.println("تم إنشاء الحساب للمستخدم: " + player.getUser().getName());
+//
+//        // 2. إرسال رسالة واتساب بعد الإنشاء
+//        String welcomeMessage = "مرحبًا " + player.getUser().getName() + "، تم إنشاء حسابك بنجاح!";
+//        String result = whatsAppService.sendMessage(player.getUser().getPhone(), welcomeMessage);
+//
+//        // 3. إرجاع النتيجة
+//        return "الحساب تم إنشاؤه، والرسالة: " + result;
     }
 
     public void updatePlayer(Integer player_id, PlayerDTO dto) {

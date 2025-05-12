@@ -25,8 +25,9 @@ public class PaymentController {
     public ResponseEntity<?> getPaymentStatus(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
         return ResponseEntity.status(HttpStatus.OK).body(paymentService.getPaymentStatusAndConfirm(2, privateMatchId));
     }
-    @PostMapping("/buy")
-    public ResponseEntity<?> PublicMatchPayment(@AuthenticationPrincipal User user, @RequestBody Payment paymentRequest) {
-        return ResponseEntity.status(200).body(paymentService.PublicMatchPayment(2, paymentRequest));
+
+    @PostMapping("/buy/{matchId}")
+    public ResponseEntity<?> PublicMatchPayment(@AuthenticationPrincipal User user, @PathVariable Integer matchId, @RequestBody Payment paymentRequest) {
+        return ResponseEntity.status(200).body(paymentService.PublicMatchPayment(user.getId(), matchId, paymentRequest));
     }
 }
