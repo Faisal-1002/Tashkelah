@@ -27,6 +27,7 @@ public class PublicMatchService {
     private final TimeSlotRepository timeSlotRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final BookingRepository bookingRepository;
+    private final AuthRepository authRepository;
 
     public List<PublicMatch> getAllPublicMatches() {
         return publicMatchRepository.findAll();
@@ -274,9 +275,20 @@ public class PublicMatchService {
     }
 
     // Taha ---------------------------  createMatchFromTimeSlots
-    public void createMatchFromTimeSlots(Integer fieldId, List<Integer> slotIds) {
+    public void createMatchFromTimeSlots(Integer userId ,Integer fieldId, List<Integer> slotIds) {
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
+
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+
+        if (organizer== null){
+            throw new ApiException("Organizer not found");
+        }
+
+        if (!field.getOrganizer().getId().equals(organizer.getId())){
+            throw new ApiException("Unauthorized access");
+        }
+
 
         List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
 

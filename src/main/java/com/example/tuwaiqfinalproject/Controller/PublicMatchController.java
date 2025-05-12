@@ -104,11 +104,11 @@ public class PublicMatchController {
 
     // Create a public match by providing only the fieldId as path variable
     @PostMapping("/matches/{fieldId}/slots/{slotIds}")
-    public ResponseEntity<?> createMatchFromSlots(
+    public ResponseEntity<?> createMatchFromSlots(@AuthenticationPrincipal User user,
             @PathVariable Integer fieldId,
             @PathVariable List<Integer> slotIds) {
 
-        publicMatchService.createMatchFromTimeSlots(fieldId, slotIds);
+        publicMatchService.createMatchFromTimeSlots(user.getId(),fieldId, slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Match created successfully"));
     }
 

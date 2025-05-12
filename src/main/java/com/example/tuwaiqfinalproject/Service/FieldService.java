@@ -27,6 +27,7 @@ public class FieldService {
     private final PrivateMatchRepository privateMatchRepository;
     private final TimeSlotService timeSlotService;
     private final TimeSlotRepository timeSlotRepository;
+    private final AuthRepository authRepository;
 
     public List<Field> getAllFields() {
         return fieldRepository.findAll();
@@ -38,18 +39,22 @@ public class FieldService {
     }
 
     // 10. Taha - Public method to allow an approved organizer to add a new field with an image - Tested
-    public void addField(Integer organizer_id, Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
-        Organizer organizer = organizerRepository.findOrganizerById(organizer_id);
-        if (organizer == null) {
+    public void addField(Integer organizer_id , Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
+        User user = authRepository.findUserById(organizer_id);
+        if (user == null) {
             throw new ApiException("Organizer not found");
         }
-        if (!organizer.getStatus().equals("ACTIVE")) {
+        if (!user.getOrganizer().getStatus().equals("ACTIVE")) {
             throw new ApiException("Your account is not yet approved");
         }
 
         Sport sport = sportRepository.findSportById(sport_id);
         if (sport == null) {
             throw new ApiException("Sport not found");
+        }
+
+        if (!user.getId().equals(organizer_id)){
+            throw new ApiException("Unauthorized access");
         }
 
         String photo = saveImage(photoFile);
@@ -64,7 +69,7 @@ public class FieldService {
                 fieldDTO.getCapacity(),
                 fieldDTO.getPrice(),
                 sport,
-                organizer,
+                user.getOrganizer(),
                 null,
                 null,
                 null,

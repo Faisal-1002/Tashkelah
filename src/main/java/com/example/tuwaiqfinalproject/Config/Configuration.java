@@ -51,6 +51,17 @@ public class Configuration {
 //                        "/api/v1/player/register"
 //                ).permitAll()
 //
+
+
+                 //                        "/api/v1/organizer/register",
+                 //                        "/api/v1/organizer/approve/{organizerId}/{isApproved}",
+
+
+                //Taha
+//                .requestMatchers("/api/v1/field/add/{{sport_id}}","/api/v1/public-match/matches/{{fieldId}}/slots/{{slotIds}}").hasAuthority("ORGANIZER")
+
+
+
 //                // Admin-only endpoints
 //                .requestMatchers(
 //                        "/api/v1/auth/users",
