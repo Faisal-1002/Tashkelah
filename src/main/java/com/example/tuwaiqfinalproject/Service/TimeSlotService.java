@@ -157,7 +157,5 @@ public class TimeSlotService {
         match.setStatus("TIME_RESERVED");
         privateMatchRepository.save(match);
     }
-        timeSlotRepository.saveAll(timeSlots);
-    }
 
 }
