@@ -2,6 +2,7 @@ package com.example.tuwaiqfinalproject.Repository;
 
 import com.example.tuwaiqfinalproject.Model.Field;
 
+import com.example.tuwaiqfinalproject.Model.Organizer;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.example.tuwaiqfinalproject.Model.Sport;
@@ -17,12 +18,9 @@ public interface FieldRepository extends JpaRepository<Field, Integer> {
 
     @Query("SELECT f FROM Field f JOIN FETCH f.organizer WHERE f.id = :id")
     Field findFieldById(Integer id);
-    @Query("SELECT f FROM Field f WHERE f.organizer.id = :organizerId")
-    List<Field> findFieldByOrganizer_Id(Integer organizerId);
+    List<Field> findFieldByOrganizer(Organizer organizer);
     @Query("SELECT f FROM Field f WHERE f.sport.id = ?1 AND f.address = ?2")
     List<Field> findAllBySportIdAndLocation(Integer sportId, String location);
-
-    List<Field> findFieldByAddressAndSport_Id(String address, Integer sportId);
 
 
 }

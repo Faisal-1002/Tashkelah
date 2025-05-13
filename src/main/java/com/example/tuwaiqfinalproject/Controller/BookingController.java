@@ -34,14 +34,13 @@ public class BookingController {
     //PLAYER
     @GetMapping("/my")
     public ResponseEntity<?> getMyBookings(@AuthenticationPrincipal User user) {
-        List<Booking> myBookings = bookingService.getMyBookings(user.getId());
-        return ResponseEntity.status(200).body(myBookings);
+        return ResponseEntity.status(200).body(bookingService.getMyBookings(user.getId()));
     }
 
     //PLAYER
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateBooking(@PathVariable Integer id, @RequestBody @Valid Booking booking) {
-        bookingService.updateBooking(id, booking);
+    public ResponseEntity<?> updateBooking(@AuthenticationPrincipal User user, @PathVariable Integer id, @RequestBody @Valid Booking booking) {
+        bookingService.updateBooking(user.getId(), id, booking);
         return ResponseEntity.status(200).body(new ApiResponse("Booking updated successfully"));
     }
 
@@ -53,21 +52,22 @@ public class BookingController {
     }
 
     //PLAYER
-    @PostMapping("/book/private-match/{privateMatchId}")
+    @PostMapping("/private-match/{privateMatchId}")
     public ResponseEntity<?> bookPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
-        bookingService.bookPrivateMatch(2, privateMatchId);
+        bookingService.bookPrivateMatch(user.getId(), privateMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("Private match booked successfully"));
     }
 
     //PLAYER
-    @PostMapping("/book/publicMatch")
-    public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @RequestBody List<Integer> slotIds) {
-        bookingService.bookPublicMatch(user.getId(), slotIds);
+    @PostMapping("/public-match/{publicMatchId}")
+    public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId, @RequestBody List<Integer> slotIds) {
+        bookingService.bookPublicMatch(user.getId(), publicMatchId, slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Public match booked successfully"));
     }
 
-    @GetMapping("getBookingPublicMatch")
-    public ResponseEntity getMyBookingForPublicMatch(@AuthenticationPrincipal User user){
+    //PLAYER
+    @GetMapping("/getBookingPublicMatch")
+    public ResponseEntity<?> getMyBookingForPublicMatch(@AuthenticationPrincipal User user){
         return ResponseEntity.status(200).body(bookingService.getMyBookingForPublicMatch(user.getId()));
     }
 

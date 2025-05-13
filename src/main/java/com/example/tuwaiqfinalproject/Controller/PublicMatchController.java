@@ -19,54 +19,66 @@ public class PublicMatchController {
 
     private final PublicMatchService publicMatchService;
 
+    //ADMIN
     @GetMapping("/all")
     public ResponseEntity<?> getAllPublicMatches() {
-        List<PublicMatch> matches = publicMatchService.getAllPublicMatches();
-        return ResponseEntity.status(200).body(matches);
+        return ResponseEntity.status(200).body(publicMatchService.getAllPublicMatches());
     }
 
+    //ADMIN
     @GetMapping("/getById/{id}")
     public ResponseEntity<?> getPublicMatchById(@PathVariable Integer id) {
-        PublicMatch match = publicMatchService.getPublicMatchById(id);
-        return ResponseEntity.status(200).body(match);
+        return ResponseEntity.status(200).body(publicMatchService.getPublicMatchById(id));
     }
 
+    //PLAYER
+    @GetMapping("/my-public-matches")
+    public ResponseEntity<?> getMyPublicMatchBookings(@AuthenticationPrincipal User user) {
+        return ResponseEntity.status(200).body(publicMatchService.getMyPublicMatches(user.getId()));
+    }
+
+    //ORGANIZER
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePublicMatch(@PathVariable Integer id, @RequestBody @Valid PublicMatch updatedMatch) {
-        publicMatchService.updatePublicMatch(id, updatedMatch);
+    public ResponseEntity<?> updatePublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer id, @RequestBody @Valid PublicMatch updatedMatch) {
+        publicMatchService.updatePublicMatch(user.getId(), id, updatedMatch);
         return ResponseEntity.status(200).body(new ApiResponse("Public match updated successfully"));
     }
 
+    //ORGANIZER
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePublicMatch(@PathVariable Integer id) {
-        publicMatchService.deletePublicMatch(id);
+    public ResponseEntity<?> deletePublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer id) {
+        publicMatchService.deletePublicMatch(user.getId(), id);
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
 
+    //ORGANIZER
     @GetMapping("/field/{fieldId}/matches")
     public ResponseEntity<?> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
         return ResponseEntity.status(200).body(publicMatchService.showFieldMatches(fieldId, user.getId()));
     }
 
+    //PLAYER
     @PutMapping("/PlayWithPublicTeam/{publicId}/{teamId}")
     public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {
-        publicMatchService.PlayWithPublicMatch(publicId, teamId, user.getId());
+        publicMatchService.playWithPublicMatch(user.getId(), publicId, teamId);
         return ResponseEntity.status(200).body(new ApiResponse("You have been entered into the public match."));
     }
 
-    @GetMapping("/getMatchByTime/{publicMatchId}")
-    public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId) {
-        return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), publicMatchId));
-
+    //PLAYER
+    @GetMapping("/getMatchByTime/{sportId}/{fieldId}")
+    public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), sportId, fieldId));
     }
 
+    //PLAYER
     @GetMapping("/getTeams/{publicMatchId}")
-    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId){
         return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
     }
 
+    //PLAYER
     @GetMapping("/chekout/{publicMatchId}/{teamId}")
-    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
+    public ResponseEntity<?> getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }
 

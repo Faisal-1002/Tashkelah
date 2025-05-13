@@ -29,47 +29,47 @@ import java.util.List;
 public class FieldController {
 
     private final FieldService fieldService;
-    private final OrganizerRepository organizerRepository;
 
+    //PERMIT ALL
     @GetMapping("/all")
     public ResponseEntity<?> getAllFields() {
         return ResponseEntity.status(200).body(fieldService.getAllFields());
     }
 
+    //ORGANIZER
     @PostMapping("/add/{sport_id}")
     public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
         fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
+    //ORGANIZER
     @PutMapping("/update/{fieldId}")
-    public ResponseEntity<?> updateField(@AuthenticationPrincipal User user,@PathVariable Integer fieldId, @ModelAttribute FieldDTO fieldDTO, @RequestPart(required = false) MultipartFile photoFile) {
+    public ResponseEntity<?> updateMyField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @ModelAttribute FieldDTO fieldDTO, @RequestPart(required = false) MultipartFile photoFile) {
         fieldService.updateField(user.getId(), fieldId, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field updated successfully"));
     }
 
+    //ORGANIZER
     @DeleteMapping("/delete/{fieldId}")
     public ResponseEntity<?> deleteField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
         fieldService.deleteField(user.getId(), fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Field deleted successfully"));
     }
+
+    //PLAYER
     @GetMapping("getBySportAndCity/{sportId}")
-    public ResponseEntity getFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId){
-       return ResponseEntity.status(200).body( fieldService.getFieldBySportAndCity(user.getId(),sportId));
+    public ResponseEntity<?> getFieldBySportAndAddress(@AuthenticationPrincipal User user, @PathVariable Integer sportId){
+       return ResponseEntity.status(200).body( fieldService.getFieldBySportAndAddress(user.getId(),sportId));
     }
 
+    //PLAYER
     @GetMapping("/getByDetailsSportAndCity/{sportId}")
-    public ResponseEntity<?> getDetailsFieldBySportAndCity(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
-        return ResponseEntity.status(200).body(fieldService.getDetailsFieldBySportAndCity(user.getId(), sportId));
+    public ResponseEntity<?> getDetailsFieldBySportAndAddress(@AuthenticationPrincipal User user, @PathVariable Integer sportId) {
+        return ResponseEntity.status(200).body(fieldService.getDetailsFieldBySportAndAddress(user.getId(), sportId));
     }
 
-    @PutMapping("/choseField/{fieldId}/{sportId}")
-    public ResponseEntity<?> choseField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable Integer sportId) {
-        fieldService.playerChoseAFieldForAPublicMatch(user.getId(), fieldId, sportId);
-        return ResponseEntity.status(200).body(new ApiResponse("The stadium has been successfully selected"));
-    }
-
-    //Taha - get photo
+    //PERMIT ALL
     @GetMapping("/images/{filename:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) throws IOException {
         Path imagePath = Paths.get("uploads", filename);
@@ -91,31 +91,33 @@ public class FieldController {
         return MediaType.APPLICATION_OCTET_STREAM;
     }
 
-    //Taha
+    //ORGANIZER
     @GetMapping("/organizer-fields")
-    public ResponseEntity getOrganizerFields(@AuthenticationPrincipal User user) {
+    public ResponseEntity<?> getOrganizerFields(@AuthenticationPrincipal User user) {
        List<Field> fields = fieldService.getAllOrganizerFields(user.getId());
         return ResponseEntity.status(200).body(fields);
     }
 
-    // Taha
+    //ORGANIZER
     @GetMapping("/booked-slots/{fieldId}")
     public ResponseEntity<?> getBookedTimeSlots(@AuthenticationPrincipal User user,@PathVariable Integer fieldId) {
         return ResponseEntity.status(200).body(fieldService.getBookedTimeSlotsForField(user.getId(), fieldId));
     }
 
-    // Taha
+    //ORGANIZER
     @GetMapping("/available-slots/{fieldId}")
-    public ResponseEntity<?> getAvailableTimeSlots(@PathVariable Integer fieldId) {
-        return ResponseEntity.status(200).body(fieldService.getAvailableTimeSlots(fieldId));
+    public ResponseEntity<?> getAvailableTimeSlots(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(fieldService.getAvailableTimeSlots(user.getId(), fieldId));
     }
 
+    //PLAYER
     @PostMapping("/private-match/{privateMatchId}/assign-field/{fieldId}")
     public ResponseEntity<?> assignFieldToPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId, @PathVariable Integer fieldId) {
-        fieldService.playerChoseAFieldForPrivateMatch(2, privateMatchId, fieldId);
+        fieldService.playerChoseAFieldForPrivateMatch(user.getId(), privateMatchId, fieldId);
         return ResponseEntity.status(200).body(new ApiResponse("Field assigned to private match successfully."));
     }
 
+    //ADMIN
     @GetMapping("/field/{id}")
     public ResponseEntity<?> getFieldById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(fieldService.getFieldById(id));

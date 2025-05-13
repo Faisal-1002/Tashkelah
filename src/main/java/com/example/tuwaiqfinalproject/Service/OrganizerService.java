@@ -7,7 +7,6 @@ import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Repository.AuthRepository;
 import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class OrganizerService {
 
     private final OrganizerRepository organizerRepository;
     private final AuthRepository authRepository;
-    private final JavaMailSender mailSender;
+    private final EmailsService emailsService;
 
     public List<Organizer> getAllOrganizers() {
         return organizerRepository.findAll();
@@ -81,28 +80,20 @@ public class OrganizerService {
     }
 
     // 2. Taha - Admin approve organizer - Tested
-    public void approveOrganizer(Integer organizerId, Boolean isApproved) {
+    public void approveOrganizer(Integer organizerId) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
-
-        if (isApproved) {
-            organizer.setStatus("ACTIVE");
-            organizerRepository.save(organizer);
-            sendApprovalEmail(organizer);
-        } else {
-            organizer.setStatus("INACTIVE");
-            organizerRepository.save(organizer);
-            sendRejectedEmail(organizer);
-        }
+        organizer.setStatus("ACTIVE");
+        organizerRepository.save(organizer);
+        sendApprovalEmail(organizer);
     }
 
     // 3. Taha - Reject Organizer - Tested
-    public void rejectOrganizer(Integer organizerId ) {
+    public void rejectOrganizer(Integer organizerId) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
-
         organizer.setStatus("INACTIVE");
         organizerRepository.save(organizer);
         sendRejectedEmail(organizer);
@@ -113,7 +104,6 @@ public class OrganizerService {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
-
         organizer.setStatus("BLOCKED");
         organizerRepository.save(organizer);
         sendBlockedEmail(organizer);
@@ -127,7 +117,7 @@ public class OrganizerService {
                 "You can now start adding your fields and managing your activities.\n\n" +
                 "Best of luck on your journey!";
 
-        sendEmail(organizer.getUser().getEmail(), subject, message);
+        emailsService.sendEmail(organizer.getUser().getEmail(), subject, message);
     }
 
     // 6. Taha - Send reject notification to organizer - Tested
@@ -138,7 +128,7 @@ public class OrganizerService {
                 "If you need help, feel free to reach out to us.\n\n" +
                 "We’re here to support you.";
 
-        sendEmail(organizer.getUser().getEmail(), subject, message);
+        emailsService.sendEmail(organizer.getUser().getEmail(), subject, message);
     }
 
     // 7. Taha - Send block notification to organizer - Tested
@@ -147,17 +137,7 @@ public class OrganizerService {
         String message = "🚫 Your account has been blocked due to policy violations or other reasons.\n\n" +
                 "Please contact support if you believe this is a mistake or require assistance.";
 
-        sendEmail(organizer.getUser().getEmail(), subject, message);
-    }
-
-
-    // 8. Taha - Mail helper method - Tested
-    private void sendEmail(String to, String subject, String message) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(to);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(message);
-        mailSender.send(mailMessage);
+        emailsService.sendEmail(organizer.getUser().getEmail(), subject, message);
     }
 
 }
