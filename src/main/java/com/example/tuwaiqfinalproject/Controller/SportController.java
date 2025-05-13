@@ -25,7 +25,7 @@ public class SportController {
     }
 
     //PERMIT ALL
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getSportById(@PathVariable Integer id) {
         Sport sport = sportService.getSportById(id);
         return ResponseEntity.status(200).body(sport);

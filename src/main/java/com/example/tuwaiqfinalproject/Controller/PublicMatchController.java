@@ -59,7 +59,7 @@ public class PublicMatchController {
 
     //PLAYER
     @PutMapping("/PlayWithPublicTeam/{publicId}/{teamId}")
-    public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {
+    public ResponseEntity<?> playWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {
         publicMatchService.playWithPublicMatch(user.getId(), publicId, teamId);
         return ResponseEntity.status(200).body(new ApiResponse("You have been entered into the public match."));
     }
@@ -77,7 +77,7 @@ public class PublicMatchController {
     }
 
     //PLAYER
-    @GetMapping("/chekout/{publicMatchId}/{teamId}")
+    @GetMapping("/checkout/{publicMatchId}/{teamId}")
     public ResponseEntity<?> getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }

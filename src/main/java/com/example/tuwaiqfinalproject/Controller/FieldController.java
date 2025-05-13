@@ -35,8 +35,8 @@ public class FieldController {
 
     //ORGANIZER
     @PostMapping("/add/{sportId}")
-    public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-        fieldService.addField(user.getId(), sportId, fieldDTO, photoFile);
+    public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photo) {
+        fieldService.addField(user.getId(), sportId, fieldDTO, photo);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 

@@ -26,7 +26,7 @@ public class BookingController {
     }
 
     //ADMIN
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getBookingById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(bookingService.getBookingById(id));
     }
@@ -60,8 +60,8 @@ public class BookingController {
 
     //PLAYER
     @PostMapping("/public-match/{publicMatchId}")
-    public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId, @RequestBody List<Integer> slotIds) {
-        bookingService.bookPublicMatch(user.getId(), publicMatchId, slotIds);
+    public ResponseEntity<?> bookPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId) {
+        bookingService.bookPublicMatch(user.getId(), publicMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("Public match booked successfully"));
     }
 

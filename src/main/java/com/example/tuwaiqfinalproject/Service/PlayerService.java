@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -45,20 +47,15 @@ public class PlayerService {
 
     // 24. Eatzaz + Faisal - Register Player - Tested
     public void registerPlayer(PlayerDTO dto) {
+        int age = Period.between(dto.getBirth_date(), LocalDate.now()).getYears();
+        if (age < 15) {
+            throw new ApiException("You must be at least 15 years old to register.");
+        }
         String hashPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
         User user = new User(null, dto.getUsername(),hashPassword,"PLAYER",dto.getName(),dto.getPhone(),dto.getAddress(),dto.getEmail(), null, null);
         Player player = new Player(null, dto.getGender(), dto.getBirth_date(),user,null,null,null);
-
         authRepository.save(user);
         playerRepository.save(player);
-//        System.out.println("تم إنشاء الحساب للمستخدم: " + player.getUser().getName());
-//
-//        // 2. إرسال رسالة واتساب بعد الإنشاء
-//        String welcomeMessage = "مرحبًا " + player.getUser().getName() + "، تم إنشاء حسابك بنجاح!";
-//        String result = whatsAppService.sendMessage(player.getUser().getPhone(), welcomeMessage);
-//
-//        // 3. إرجاع النتيجة
-//        return "الحساب تم إنشاؤه، والرسالة: " + result;
     }
 
     public void updatePlayer(Integer player_id, PlayerDTO dto) {

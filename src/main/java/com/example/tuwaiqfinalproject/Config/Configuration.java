@@ -26,169 +26,106 @@ public class Configuration {
 
         return authenticationProvider;
     }
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .and()
                 .authenticationProvider(daoAuthenticationProvider())
                 .authorizeHttpRequests()
-                
-//                 .requestMatchers(
-//                         "/api/v1/auth/register",
-//                         "/api/v1/auth/login",
-//                         "/api/v1/sports/all",
-//                         "/api/v1/sports/{id}",
-//                         "/api/v1/field/all",
-//                         "/api/v1/field/images/**",
-//                         "/api/v1/field/field/{id}",
-//                         "/api/v1/organizer/register",
-//                         "/api/v1/player/register"
-//                 ).permitAll()
-
-//                 // Admin-only endpoints
-//                 .requestMatchers(
-//                         "/api/v1/auth/users",
-//                         "/api/v1/auth/register/admin",
-//                         "/api/v1/auth/update/admin/{id}",
-//                         "/api/v1/auth/delete/admin/{id}",
-//                         "/api/v1/organizer/all",
-//                         "/api/v1/organizer/approve/{organizerId}/{isApproved}",
-//                         "/api/v1/organizer/reject/{organizerId}",
-//                         "/api/v1/organizer/block/{organizerId}",
-//                         "/api/v1/sports/add",
-//                         "/api/v1/sports/update/{id}",
-//                         "/api/v1/booking/all",
-//                         "/api/v1/booking/{id}",
-//                         "/api/v1/sports/delete/{id}"
-//                 ).hasAuthority("ADMIN")
-
-//                 // Organizer-only endpoints
-//                 .requestMatchers(
-//                         "/api/v1/organizer/info",
-//                         "/api/v1/organizer/update",
-//                         "/api/v1/organizer/delete",
-//                         "/api/v1/field/add/{sport_id}",
-//                         "/api/v1/field/update/{fieldId}",
-//                         "/api/v1/field/delete/{fieldId}",
-//                         "/api/v1/field/organizer-fields",
-//                         "/api/v1/field/booked-slots/{fieldId}",
-//                         "/api/v1/field/available-slots/{fieldId}",
-//                         "/api/v1/public-match/addPublicMatch/{fieldId}/{timeSlotId}",
-//                         "/api/v1/public-match/update/{id}",
-//                         "/api/v1/public-match/delete/{id}",
-//                         "/api/v1/public-match/field/{fieldId}/matches",
-//                         "/api/v1/public-match/changeStatus/{publicMatchId}"
-//                 ).hasAuthority("ORGANIZER")
-//                 // Player-only endpoints
-//                 .requestMatchers("/api/v1/player/info",
-//                         "/api/v1/player/update",
-//                         "/api/v1/player/delete",
-//                         "/api/v1/field/getBySportAndCity/{sportId}",
-//                         "/api/v1/field/getByDetailsSportAndCity/{sportId}",
-//                         "/api/v1/field//choseField/{fieldId}/{sportId}",
-//                         "/api/v1/field/private-match/assign-field/{fieldId}",
-//                         "/api/v1/public-match/PlayWithPublicTeam/{sportId}/{fieldId}",
-//                         "/api/v1/public-match/getMatchAndTeam/{sportId}/{fieldId}",
-//                         "/api/v1/public-match/getTeams/{publicMatchId}",
-//                         "/api/v1/public-match/selectTeam/{sportId}/{fieldId}/{matchId}/{teamId}",
-//                         "/api/v1/public-match/chekout/{publicMatchId}/{teamId}",
-//                         "/api/v1/public-match/not/{bookingId}",
-//                 "/api/v1/booking/getBookingPublicMatch")
-//                 .hasAuthority("PLAYER")
-
-                // All
-                .requestMatchers("**").permitAll()
-
-//                // Public endpoints (no authentication required)
-//                .requestMatchers(
-//                        "/api/v1/sports/all",
-//                        "/api/v1/sports/{id}",
-//                        "/api/v1/field/all",
-//                        "/api/v1/field/images/**",
-//                        "/api/v1/field/field/{id}",
-//                        "/api/v1/organizer/register",
-//                        "/api/v1/player/register"
-//                ).permitAll()
-//
-//                // Admin-only endpoints
-//                .requestMatchers(
-//                        "/api/v1/auth/users",
-//                        "/api/v1/organizer/all",
-//                        "/api/v1/organizer/approve/{organizerId}",
-//                        "/api/v1/organizer/reject/{organizerId}",
-//                        "/api/v1/organizer/block/{organizerId}",
-//                        "/api/v1/sports/add",
-//                        "/api/v1/sports/update/{id}",
-//                        "/api/v1/booking/all",
-//                        "/api/v1/booking/{id}",
-//                        "/api/v1/booking/delete/{id}",
-//                        "/api/v1/sports/delete/{id}"
-//                ).hasAuthority("ADMIN")
-//
-//                // Organizer-only endpoints
-//                .requestMatchers(
-//                        "/api/v1/organizer/info",
-//                        "/api/v1/organizer/update",
-//                        "/api/v1/organizer/delete",
-//                        "/api/v1/field/add/{sport_id}",
-//                        "/api/v1/field/update/{fieldId}",
-//                        "/api/v1/field/delete/{fieldId}",
-//                        "/api/v1/field/organizer-fields",
-//                        "/api/v1/field/booked-slots/{fieldId}",
-//                        "/api/v1/field/available-slots/{fieldId}",
-//                        "/api/v1/public-match/addPublicMatch/{fieldId}/{timeSlotId}",
-//                        "/api/v1/public-match/update/{id}",
-//                        "/api/v1/public-match/delete/{id}",
-//                        "/api/v1/public-match/field/{fieldId}/matches",
-//                        "/api/v1/field/add/{{sport_id}}",
-//                        "/api/v1/public-match/matches/{{fieldId}}/slots/{{slotIds}}",
-//                        "/api/v1/public-match/changeStatus/{publicMatchId}"
-//                ).hasAuthority("ORGANIZER")
-//
-//                // Player-only endpoints
-//                .requestMatchers(
-//                        "/api/v1/player/info",
-//                        "/api/v1/player/update",
-//                        "/api/v1/player/delete",
-//                        "/api/v1/field/getBySportAndCity/{sportId}",
-//                        "/api/v1/field/choseField/{fieldId}/{sportId}",
-//                        "/api/v1/field/private-match/assign-field/{fieldId}",
-//                        "/api/v1/booking/my",
-//                        "/api/v1/booking/update/{id}",
-//                        "/api/v1/booking/book/private-match",
-//                        "/api/v1/booking/book/publicMatch",
-//                        "/api/v1/private-match/create/{fieldId}",
-//                        "/api/v1/emails/add/{privateMatchId}",
-//                        "/api/v1/emails/private-match/send-invites",
-//                        "/api/v1/public-match/PlayWithPublicTeam/{sportId}/{fieldId}",
-//                        "/api/v1/public-match/getMatchAndTeam/{sportId}/{fieldId}",
-//                        "/api/v1/public-match/getTeams/{publicMatchId}",
-//                        "/api/v1/public-match/selectTeam/{sportId}/{fieldId}/{matchId}/{teamId}",
-//                        "/api/v1/public-match/chekout/{publicMatchId}/{teamId}",
-//                        "/api/v1/public-match/not/{bookingId}",
-//                        "/api/v1/payments/card",
-//                        "/api/v1/payments/get-status/{id}",
-//                        "/api/v1/payments/puy"
-//                ).hasAuthority("PLAYER")
-//
-//                // Shared endpoints (both player and organizer)
-//                .requestMatchers(
-//                        "/api/v1/private-match/all",
-//                        "/api/v1/private-match/{id}",
-//                        "/api/v1/public-match/all",
-//                        "/api/v1/public-match/getById/{id}",
-//                        "/api/v1/emails/match/{privateMatchId}",
-//                        "/api/v1/emails/delete/{emailId}"
-//                ).hasAnyAuthority("PLAYER", "ORGANIZER")
-
-
-                .anyRequest().authenticated()
+                // Permit All endpoints
+                .requestMatchers(
+                        "/api/v1/field/all",
+                        "/api/v1/field/images/**",
+                        "/api/v1/player/register",
+                        "/api/v1/public-match/changeStatus/{publicMatchId}",
+                        "/api/v1/organizer/register",
+                        "/api/v1/sports/all",
+                        "/api/v1/sports/get-by-id/{id}"
+                        ).permitAll()
+                // ADMIN endpoints
+                .requestMatchers(
+                        "/api/v1/auth/users",
+                        "/api/v1/booking/all",
+                        "/api/v1/booking/get-by-id/{id}",
+                        "/api/v1/booking/delete/{id}",
+                        "/api/v1/organizer/all",
+                        "/api/v1/organizer/get-by-id/{id}",
+                        "/api/v1/organizer/approve/{organizerId}",
+                        "/api/v1/organizer/reject/{organizerId}",
+                        "/api/v1/organizer/block/{organizerId}",
+                        "/api/v1/player/all",
+                        "/api/v1/player/get-by-id/{id}",
+                        "/api/v1/player/delete/{id}",
+                        "/api/v1/private-match/all",
+                        "/api/v1/private-match/get-by-id/{id}",
+                        "/api/v1/private-match/delete/{id}",
+                        "/api/v1/public-match/all",
+                        "/api/v1/public-match/getById/{id}",
+                        "/api/v1/team/getAllTeam",
+                        "/api/v1/team/get-by-id/{id}",
+                        "/api/v1/slot/all",
+                        "/api/v1/slot/getById/{id}",
+                        "/api/v1/field/field/{id}",
+                        "/api/v1/sports/add",
+                        "/api/v1/sports/update/{id}",
+                        "/api/v1/sports/delete/{id}"
+                ).hasAuthority("ADMIN")
+                // PLAYER endpoints
+                .requestMatchers(
+                        "/api/v1/booking/my",
+                        "/api/v1/booking/update/{id}",
+                        "/api/v1/booking/private-match/{privateMatchId}",
+                        "/api/v1/booking/public-match/{publicMatchId}",
+                        "/api/v1/booking/getBookingPublicMatch",
+                        "/api/v1/emails/**",
+                        "/api/v1/field/getBySportAndCity/{sportId}",
+                        "/api/v1/field/getByDetailsSportAndCity/{sportId}",
+                        "/api/v1/field/private-match/{privateMatchId}/assign-field/{fieldId}",
+                        "/api/v1/payments/**",
+                        "/api/v1/player/info",
+                        "/api/v1/player/update",
+                        "/api/v1/private-match/my-private-matches",
+                        "/api/v1/private-match/update/{id}",
+                        "/api/v1/private-match/create",
+                        "/api/v1/public-match/my-public-matches",
+                        "/api/v1/public-match/getTeams/{publicMatchId}",
+                        "/api/v1/public-match/PlayWithPublicTeam/{publicId}/{teamId}",
+                        "/api/v1/public-match/getMatchByTime/{sportId}/{fieldId}",
+                        "/api/v1/public-match/checkout/{publicMatchId}/{teamId}",
+                        "/api/v1/public-match/notifications/{bookingId}",
+                        "/api/v1/slot/private-match/slots/{privateMatchId}",
+                        "/api/v1/slot/private-match/{matchId}/assign-slots"
+                ).hasAuthority("PLAYER")
+                // ORGANIZER endpoints
+                .requestMatchers(
+                        "/api/v1/field/add/{sportId}",
+                        "/api/v1/field/update/{fieldId}",
+                        "/api/v1/field/delete/{fieldId}",
+                        "/api/v1/field/organizer-fields",
+                        "/api/v1/field/booked-slots/{fieldId}",
+                        "/api/v1/field/available-slots/{fieldId}",
+                        "/api/v1/organizer/info",
+                        "/api/v1/organizer/update",
+                        "/api/v1/organizer/delete",
+                        "/api/v1/public-match/update/{id}",
+                        "/api/v1/public-match/delete/{id}",
+                        "/api/v1/public-match/field/{fieldId}/matches",
+                        "/api/v1/public-match/matches/{fieldId}",
+                        "/api/v1/team/update/{teamId}",
+                        "/api/v1/team/delete/{teamId}",
+                        "/api/v1/team/addTeamsForPublicMatch/{matchId}",
+                        "/api/v1/slot/update/{id}",
+                        "/api/v1/slot/delete/{id}",
+                        "/api/v1/slot/field/{fieldId}/timeslots/create"
+                ).hasAuthority("ORGANIZER")
                 .and()
                 .logout().logoutUrl("/api/v1/auth/logout")
                 .deleteCookies("JSESSIONID")
