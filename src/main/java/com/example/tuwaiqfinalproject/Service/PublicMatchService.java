@@ -27,7 +27,6 @@ public class PublicMatchService {
     private final PrivateMatchRepository privateMatchRepository;
     private final BookingRepository bookingRepository;
     private final EmailsService emailsService;
-    private final TeamService teamService;
     private final WhatsAppService whatsAppService;
 
     public List<PublicMatch> getAllPublicMatches() {
@@ -292,7 +291,6 @@ public class PublicMatchService {
             String body = "Dear " + organizer.getUser().getName() + ",\n\n"
                     + "The public match at your field '" + publicMatch.getField().getName() + "' is now FULL.\n"
                     + "Consider creating another match to accommodate more players.\n\nRegards.";
-
             whatsAppService.sendMessage(organizer.getUser().getPhone(), body);
         }
     }
@@ -342,8 +340,6 @@ public class PublicMatchService {
             slot.setPublic_match(match);
         }
         timeSlotRepository.saveAll(slots);
-
-        // Create empty teams for players to join
-        //teamService.addTeamsForPublicMatch(userId, match.getId());
     }
+
 }

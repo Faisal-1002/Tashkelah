@@ -137,6 +137,9 @@ public class PaymentService {
                 booking.setPayment(payment);
                 bookingRepository.save(booking);
 
+                match.setStatus("CONFIRMED");
+                privateMatchRepository.save(match);
+
                 // ✅ Set all time slots to BOOKED
                 List<TimeSlot> slots = match.getTime_slots();
                 for (TimeSlot slot : slots) {
@@ -155,7 +158,7 @@ public class PaymentService {
                         + "⏰ Time: " + match.getTime_slots().get(0).getStart_time() + " – "
                         + match.getTime_slots().get(match.getTime_slots().size() - 1).getEnd_time() + "\n\n"
                         + "Thank you for booking with us. Good luck and enjoy the match! ⚽\n\n"
-                        + "- Sports Booking Team";
+                        + "- Tashkelah Team";
 
                 whatsAppService.sendMessage(player.getUser().getPhone(), body);
 

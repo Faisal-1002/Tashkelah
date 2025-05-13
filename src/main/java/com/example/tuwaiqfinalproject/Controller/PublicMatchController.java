@@ -51,12 +51,6 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
 
-    //ORGANIZER
-    @GetMapping("/field/{fieldId}/matches")
-    public ResponseEntity<?> getMatchesForOneField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
-        return ResponseEntity.status(200).body(publicMatchService.getMatchesForOneField(fieldId, user.getId()));
-    }
-
     //PLAYER
     @PutMapping("/PlayWithPublicTeam/{publicId}/{teamId}")
     public ResponseEntity<?> playWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {

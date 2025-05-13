@@ -60,7 +60,6 @@ public class ControllerAdvice {
         return ResponseEntity.status(400).body(new ApiResponse(msg));
     }
 
-
     // SQL Constraint Ex:(Duplicate) Exception
     @ExceptionHandler(value = SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<ApiResponse> SQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e){

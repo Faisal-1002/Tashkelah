@@ -18,7 +18,7 @@ public class WhatsAppService {
     @Value("${ultra.api.url}")
     private String baseUrl;
 
-    public String sendMessage(String to, String message) {
+    public void sendMessage(String to, String message) {
         String apiUrl = baseUrl + instanceId + "/messages/chat";
         String formattedNumber = to.replaceFirst("^0", "+966");
         try {
@@ -35,9 +35,6 @@ public class WhatsAppService {
             if (response.getStatus() != 200) {
                 throw new ApiException("Failed to send WhatsApp message: " + responseBody);
             }
-
-            return responseBody;
-
         } catch (Exception e) {
             throw new ApiException("WhatsApp Error: " + e.getMessage());
         }
