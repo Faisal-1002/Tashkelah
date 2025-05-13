@@ -21,10 +21,9 @@ public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
     private final PlayerRepository playerRepository;
-    private final PublicMatchRepository publicMatchRepository;
     private final FieldRepository fieldRepository;
     private final PrivateMatchRepository privateMatchRepository;
-
+    private final OrganizerRepository organizerRepository;
 
     public List<TimeSlot> getAllTimeSlots() {
         return timeSlotRepository.findAll();
@@ -38,57 +37,97 @@ public class TimeSlotService {
         return timeSlot;
     }
 
-    // 43. Faisal - Add Time slots for a given field and date - Tested
-    public void createFullDayTimeSlots(Integer fieldId, LocalDate date) {
+    // 43. Faisal - Add Time slots for a given field manually - Tested
+    public void createFieldTimeSlotsManually(Integer userId, Integer fieldId) {
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
+
         Field field = fieldRepository.findFieldById(fieldId);
-        if (field == null) {
+        if (field == null)
             throw new ApiException("Field not found");
+
+        if (!field.getOrganizer().getId().equals(organizer.getId()))
+            throw new ApiException("Unauthorized access to this field");
+
+        LocalDate today = LocalDate.now();
+        List<TimeSlot> existing = timeSlotRepository.findByFieldAndDate(field, today);
+        if (!existing.isEmpty())
+            throw new ApiException("Time slots already exist for today");
+
+        List<TimeSlot> slots = generateSlots(field, today);
+        timeSlotRepository.saveAll(slots);
+    }
+
+    // 63. Faisal - Scheduled adding time slots - Tested
+    @Scheduled(cron = "0 0 0 * * *") // At midnight every day
+    public void createTimeSlotsAutomatically() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        List<Field> fields = fieldRepository.findAll();
+        for (Field field : fields) {
+            List<TimeSlot> existing = timeSlotRepository.findByFieldAndDate(field, tomorrow);
+            if (existing.isEmpty()) {
+                List<TimeSlot> slots = generateSlots(field, tomorrow);
+                timeSlotRepository.saveAll(slots);
+            }
         }
+    }
 
-        List<TimeSlot> timeSlots = new ArrayList<>();
+    // Faisal - Helper method - Tested
+    private List<TimeSlot> generateSlots(Field field, LocalDate date) {
+        List<TimeSlot> slots = new ArrayList<>();
 
-        for (int hour = field.getOpen_time().getHour(); hour < field.getClose_time().getHour(); hour++) {
-            LocalTime start = LocalTime.of(hour, 0);
-            LocalTime end = LocalTime.of(hour + 1, 0);
+        LocalTime open = field.getOpen_time();
+        LocalTime close = field.getClose_time();
 
+        for (LocalTime time = open; time.isBefore(close); time = time.plusHours(1)) {
             TimeSlot slot = new TimeSlot();
             slot.setField(field);
             slot.setDate(date);
-            slot.setStart_time(start);
-            slot.setEnd_time(end);
+            slot.setStart_time(time);
+            slot.setEnd_time(time.plusHours(1));
             slot.setStatus("AVAILABLE");
             slot.setPrice(field.getPrice());
-
-            timeSlots.add(slot);
+            slots.add(slot);
         }
-        timeSlotRepository.saveAll(timeSlots);
+        return slots;
     }
 
-//    public void addTimeSlotWithPublicMatch(TimeSlot timeSlot,Integer publicMatchId,Integer fieldId) {
-//        PublicMatch publicMatch=publicMatchRepository.findPublicMatchById(publicMatchId);
-//        if (publicMatch == null){
-//            throw new ApiException("TimeSlot not found");}
-//        Field field=fieldRepository.findFieldById(fieldId);
-//        if (field == null){
-//            throw new ApiException("TimeSlot not found");}
-//        timeSlot.setField(field);
-//        timeSlot.setPublic_match(publicMatch);
-//        timeSlotRepository.save(timeSlot);
-//    }
+    public void updateTimeSlot(Integer userId, Integer id, TimeSlot updatedSlot) {
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
 
-    public void updateTimeSlot(Integer id, TimeSlot updatedSlot) {
         TimeSlot existing = timeSlotRepository.findTimeSlotById(id);
         if (existing == null)
             throw new ApiException("TimeSlot not found");
 
-        updatedSlot.setId(existing.getId());
-        timeSlotRepository.save(updatedSlot);
+        Field field = existing.getField();
+        if (field == null || !field.getOrganizer().getId().equals(organizer.getId()))
+            throw new ApiException("You are not allowed to update a timeslot that doesn't belong to your field");
+
+        // Only update allowed fields
+        existing.setStart_time(updatedSlot.getStart_time());
+        existing.setEnd_time(updatedSlot.getEnd_time());
+        existing.setPrice(updatedSlot.getPrice());
+        existing.setStatus(updatedSlot.getStatus());
+
+        timeSlotRepository.save(existing);
     }
 
-    public void deleteTimeSlot(Integer id) {
+    public void deleteTimeSlot(Integer userID, Integer id) {
+        Organizer organizer = organizerRepository.findOrganizerById(userID);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
+
         TimeSlot timeSlot = timeSlotRepository.findTimeSlotById(id);
         if (timeSlot == null)
             throw new ApiException("TimeSlot not found");
+
+        if (!timeSlot.getField().getOrganizer().getId().equals(organizer.getId()))
+            throw new ApiException("You are not allowed to delete a timeslot from another organizer's field");
+
         timeSlotRepository.delete(timeSlot);
     }
 

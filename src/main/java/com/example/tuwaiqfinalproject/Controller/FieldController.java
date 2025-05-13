@@ -1,26 +1,23 @@
 package com.example.tuwaiqfinalproject.Controller;
+
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Api.ApiResponse;
 import com.example.tuwaiqfinalproject.DTO.FieldDTO;
 import com.example.tuwaiqfinalproject.Model.Field;
-import com.example.tuwaiqfinalproject.Model.Organizer;
-import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
-import com.example.tuwaiqfinalproject.Model.Player;
 import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Service.FieldService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -37,9 +34,9 @@ public class FieldController {
     }
 
     //ORGANIZER
-    @PostMapping("/add/{sport_id}")
-    public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sport_id, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
-        fieldService.addField(user.getId(), sport_id, fieldDTO, photoFile);
+    @PostMapping("/add/{sportId}")
+    public ResponseEntity<?> addField(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @ModelAttribute FieldDTO fieldDTO, @RequestPart MultipartFile photoFile) {
+        fieldService.addField(user.getId(), sportId, fieldDTO, photoFile);
         return ResponseEntity.status(200).body(new ApiResponse("Field added successfully"));
     }
 
@@ -58,7 +55,7 @@ public class FieldController {
     }
 
     //PLAYER
-    @GetMapping("getBySportAndCity/{sportId}")
+    @GetMapping("/getBySportAndCity/{sportId}")
     public ResponseEntity<?> getFieldBySportAndAddress(@AuthenticationPrincipal User user, @PathVariable Integer sportId){
        return ResponseEntity.status(200).body( fieldService.getFieldBySportAndAddress(user.getId(),sportId));
     }

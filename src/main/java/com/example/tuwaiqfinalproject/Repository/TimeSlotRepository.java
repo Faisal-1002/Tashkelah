@@ -18,6 +18,8 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
     TimeSlot findTimeSlotById(Integer id);
     List<TimeSlot> findTimeSlotsByFieldAndStatus(Field field, String status);
     List<TimeSlot> findByFieldAndStatus(Field field, String status);
+    @Query("SELECT t FROM TimeSlot t WHERE t.field = ?1 AND t.date = ?2")
+    List<TimeSlot> findByFieldAndDate(Field field, LocalDate date);
 }
 
 

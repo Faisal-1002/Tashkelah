@@ -47,7 +47,7 @@ public class PlayerService {
     public void registerPlayer(PlayerDTO dto) {
         String hashPassword = new BCryptPasswordEncoder().encode(dto.getPassword());
         User user = new User(null, dto.getUsername(),hashPassword,"PLAYER",dto.getName(),dto.getPhone(),dto.getAddress(),dto.getEmail(), null, null);
-        Player player = new Player(null, dto.getGender(), dto.getBirth_date(),user,null,null);
+        Player player = new Player(null, dto.getGender(), dto.getBirth_date(),user,null,null,null);
 
         authRepository.save(user);
         playerRepository.save(player);
