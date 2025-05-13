@@ -6,19 +6,15 @@ import com.example.tuwaiqfinalproject.Model.Organizer;
 import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Repository.AuthRepository;
 import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -28,7 +24,7 @@ public class OrganizerService {
     private final OrganizerRepository organizerRepository;
     private final AuthRepository authRepository;
     private final EmailsService emailsService;
-
+    private final JavaMailSender mailSender;
 
     public List<Organizer> getAllOrganizers() {
         return organizerRepository.findAll();
@@ -109,7 +105,7 @@ public class OrganizerService {
     }
 
     // 4. Taha - Block Organizer - Tested
-    public void blockOrganizer(Integer organizerId, Boolean block) {
+    public void blockOrganizer(Integer organizerId) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");

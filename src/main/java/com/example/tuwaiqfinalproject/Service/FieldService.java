@@ -36,10 +36,6 @@ public class FieldService {
         return fieldRepository.findFieldById(id);
     }
 
-
-
-
-
     // 10. Taha - Public method to allow an approved organizer to add a new field with an image - Tested
     public void addField(Integer organizerId, Integer sportId, FieldDTO fieldDTO, MultipartFile photoFile) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
