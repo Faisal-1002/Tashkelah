@@ -35,4 +35,7 @@ public class Player {
     @JsonIgnore
     private PublicMatch public_match;
 
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
+
 }

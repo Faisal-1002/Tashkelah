@@ -29,12 +29,29 @@ public class PrivateMatchService {
         return match;
     }
 
-    public void updatePrivateMatch(Integer id, PrivateMatch updatedMatch) {
-        PrivateMatch existing = privateMatchRepository.findPrivateMatchById(id);
-        if (existing == null)
-            throw new ApiException("Private match not found");
+    // 62. Faisal - Get my private matches - Tested
+    public List<PrivateMatch> getMyPrivateMatches(Integer userId) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+        List<PrivateMatch> matches = player.getPrivate_matches();
+        if (matches == null || matches.isEmpty())
+            throw new ApiException("No private matches found for this player");
+        return matches;
+    }
 
-        updatedMatch.setId(existing.getId());
+
+    public void updatePrivateMatch(Integer userId, Integer privateMatchId, PrivateMatch updatedMatch) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+        PrivateMatch match = privateMatchRepository.findPrivateMatchById(privateMatchId);
+        if (match == null)
+            throw new ApiException("Private match not found");
+        if (!match.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("Player id mismatch");
+
+        updatedMatch.setId(match.getId());
         privateMatchRepository.save(updatedMatch);
     }
 

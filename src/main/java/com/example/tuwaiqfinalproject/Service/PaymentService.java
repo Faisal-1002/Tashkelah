@@ -2,11 +2,7 @@ package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Model.*;
-import com.example.tuwaiqfinalproject.Repository.BookingRepository;
-import com.example.tuwaiqfinalproject.Repository.PaymentRepository;
-import com.example.tuwaiqfinalproject.Repository.PlayerRepository;
-import com.example.tuwaiqfinalproject.Repository.PublicMatchRepository;
-import com.example.tuwaiqfinalproject.Repository.PrivateMatchRepository;
+import com.example.tuwaiqfinalproject.Repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +24,15 @@ public class PaymentService {
     private final BookingRepository bookingRepository;
     private final PublicMatchRepository publicMatchRepository;
     private final PrivateMatchRepository privateMatchRepository;
+    private final TimeSlotRepository timeSlotRepository;
+    private final WhatsAppService whatsAppService;
 
     @Value("${moyasar.api.key}")
     private String apiKey;
     private static final String MOYASAR_API_URL = "https://api.moyasar.com/v1/payments/";
 
     // 48. Faisal - Pay - Tested
-    public ResponseEntity<String> processPayment(Integer user_id, Integer privateMatchId, Payment paymentRequest) {
+    public ResponseEntity<String> privateMatchPayment(Integer user_id, Integer privateMatchId, Payment paymentRequest) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
 
@@ -49,7 +45,6 @@ public class PaymentService {
             throw new ApiException("Booking is already paid or invalid");
 
         String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments"; // Replace with your real callback
-        //String call = "http://localhost:8080/api/v1/payments/get-status/{{privateMatchId}}";
         paymentRequest.setName(player.getUser().getName());
         paymentRequest.setAmount(booking.getTotal_amount());
         paymentRequest.setCurrency("SAR");
@@ -99,8 +94,8 @@ public class PaymentService {
     }
 
     // 49. Faisal - Get payment status - Tested
-    public String getPaymentStatusAndConfirm(Integer user_id, Integer privateMatchId) {
-        Player player = playerRepository.findPlayerById(user_id);
+    public String privateMatchPaymentStatus(Integer userId, Integer privateMatchId) {
+        Player player = playerRepository.findPlayerById(userId);
         if (player == null)
             throw new ApiException("Player not found");
 
@@ -117,12 +112,12 @@ public class PaymentService {
             throw new ApiException("Payment not found");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(apiKey, ""); // Moyasar API key as username
+        headers.setBasicAuth(apiKey, "");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
         RestTemplate restTemplate = new RestTemplate();
+
         ResponseEntity<String> response = restTemplate.exchange(
                 MOYASAR_API_URL + booking.getPayment().getTransactionId(),
                 HttpMethod.GET,
@@ -130,85 +125,165 @@ public class PaymentService {
                 String.class
         );
 
-        // ✅ Extract status from response
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonResponse;
         try {
-            jsonResponse = objectMapper.readTree(response.getBody());
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+
+            String paymentStatus = jsonResponse.get("status").asText();
+
+            if (paymentStatus.equalsIgnoreCase("paid")) {
+                booking.setStatus("CONFIRMED");
+                booking.setIs_paid(true);
+                booking.setPayment(payment);
+                bookingRepository.save(booking);
+
+                // ✅ Set all time slots to BOOKED
+                List<TimeSlot> slots = match.getTime_slots();
+                for (TimeSlot slot : slots) {
+                    if ("PENDING".equals(slot.getStatus())) {
+                        slot.setStatus("BOOKED");
+                    }
+                }
+                timeSlotRepository.saveAll(slots);
+
+                String body = "Hi " + player.getUser().getName() + ",\n"
+                        + "Your booking has been confirmed! 🎉\n\n"
+                        + "Match Details:\n"
+                        + "🏟️ Field: " + match.getField().getName() + "\n"
+                        + "📍 Location: " + match.getField().getAddress() + "\n"
+                        + "📅 Date: " + match.getTime_slots().get(0).getDate() + "\n"
+                        + "⏰ Time: " + match.getTime_slots().get(0).getStart_time() + " – "
+                        + match.getTime_slots().get(match.getTime_slots().size() - 1).getEnd_time() + "\n\n"
+                        + "Thank you for booking with us. Good luck and enjoy the match! ⚽\n\n"
+                        + "- Sports Booking Team";
+
+                whatsAppService.sendMessage(player.getUser().getPhone(), body);
+
+            }
+
+            return response.getBody();
+
         } catch (Exception e) {
             throw new ApiException("Failed to parse Moyasar response");
         }
-
-        String paymentStatus = jsonResponse.get("status").asText(); // e.g. "initiated", "paid", "failed"
-        booking.setStatus(paymentStatus.toUpperCase()); // Save it as uppercase if you prefer consistency
-        booking.setIs_paid(paymentStatus.equalsIgnoreCase("paid")); // Mark as paid only if status is "paid"
-        booking.setPayment(payment);
-        bookingRepository.save(booking);
-
-        return response.getBody();
     }
 
-    // 35. Eatzaz - Payment - need testing
-    public ResponseEntity<String> PublicMatchPayment(Integer user_id, Integer matchId, Payment paymentRequest) {
+    // 35. Eatzaz - Payment - Tested
+    public ResponseEntity<String> publicMatchPayment(Integer user_id, Integer publicMatchId, Payment paymentRequest) {
         Player player = playerRepository.findPlayerById(user_id);
         if (player == null) throw new ApiException("Player not found");
 
-        PublicMatch match = publicMatchRepository.findPublicMatchById(matchId);
-        if (match == null || match.getBookings() == null || match.getBookings().isEmpty())
-            throw new ApiException("No booking found for this match");
+        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (match == null)
+            throw new ApiException("Public match not found");
 
-        List<Booking> bookings = match.getBookings();
-//        if (!booking.getStatus().equals("PENDING"))
-//            throw new ApiException("Booking is already confirmed or invalid");
+        Booking booking = bookingRepository.findByPlayerAndPublicMatch(player, match);
+        if (booking == null || !"PENDING".equals(booking.getStatus()))
+            throw new ApiException("No pending booking found for this player in the selected match");
 
-//        if (pendingBookings.isEmpty()) {
-//            throw new ApiException("No pending bookings found for this match");
-//        }
         String callbackUrl = "https://dashboard.moyasar.com/entities/f0144c0a-b82c-4fdf-aefb-6c7be5b87cb7/payments";
 
-        RestTemplate restTemplate = new RestTemplate();
+        paymentRequest.setName(player.getUser().getName());
+        paymentRequest.setAmount(booking.getTotal_amount());
+        paymentRequest.setCurrency("SAR");
+
+        String requestBody = String.format(
+                "source[type]=card&source[name]=%s&source[number]=%s&source[cvc]=%s" +
+                        "&source[month]=%s&source[year]=%s&amount=%d&currency=%s&callback_url=%s",
+                paymentRequest.getName(),
+                paymentRequest.getNumber(),
+                paymentRequest.getCvc(),
+                paymentRequest.getMonth(),
+                paymentRequest.getYear(),
+                (int) (paymentRequest.getAmount() * 100), // convert SAR to halalah
+                paymentRequest.getCurrency(),
+                callbackUrl
+        );
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(apiKey, "");
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(MOYASAR_API_URL, HttpMethod.POST, entity, String.class);
 
-        ResponseEntity<String> response = null;
+        String transactionId;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+            transactionId = jsonResponse.get("id").asText();
+        } catch (JsonProcessingException e) {
+            throw new ApiException("Error parsing JSON");
+        }
 
-        //for (Booking booking : pendingBookings) {
-            Double amount = bookings.get(0).getTotal_amount();
-            // تحويل المبلغ إلى هللة (عدد صحيح)
-            int amountInCents = (int) (amount * 100);  // ضرب المبلغ في 100 للحصول على هللة
+        paymentRequest.setTransactionId(transactionId);
+        paymentRequest.setBooking(booking);
+        paymentRequest.setPayment_date(LocalDateTime.now());
+        paymentRepository.save(paymentRequest);
 
-            // التحقق من أن المبلغ لا يقل عن 100 ريال سعودي (10000 هللة)
-            if (amountInCents < 10000) {
-                throw new ApiException("The minimum amount required is 100 SAR.");
-            }
-            String requestBody = String.format(
-                    "source[type]=card&source[name]=%s&source[number]=%s&source[cvc]=%s" +
-                            "&source[month]=%s&source[year]=%s&amount=%d&currency=%s&callback_url=%s",
-                    paymentRequest.getName(),
-                    paymentRequest.getNumber(),
-                    paymentRequest.getCvc(),
-                    paymentRequest.getMonth(),
-                    paymentRequest.getYear(),
-                    100000, // إرسال المبلغ كعدد صحيح بالهللة
-                    "SAR",
-                    callbackUrl
-            );
-
-            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-            response = restTemplate.exchange(MOYASAR_API_URL, HttpMethod.POST, entity, String.class);
-
-            // حفظ كل دفعه
-            Payment newPayment = new Payment();
-            newPayment.setBooking(bookings.get(0));
-            newPayment.setName(player.getUser().getName());
-            newPayment.setAmount(amount);
-            newPayment.setCurrency("SAR");
-            newPayment.setPayment_date(LocalDateTime.now());
-
-            paymentRepository.save(newPayment);
-        //}
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
+
+    public String publicMatchPaymentStatus(Integer userId, Integer publicMatchId) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+
+        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (match == null)
+            throw new ApiException("Public match not found");
+
+        Booking booking = bookingRepository.findByPlayerAndPublicMatch(player, match);
+        if (booking == null || !"PENDING".equals(booking.getStatus()))
+            throw new ApiException("Booking is already confirmed or invalid");
+
+        Payment payment = paymentRepository.findPaymentByBooking(booking);
+        if (payment == null)
+            throw new ApiException("Payment not found");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(apiKey, "");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                MOYASAR_API_URL + payment.getTransactionId(),
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+
+            String paymentStatus = jsonResponse.get("status").asText();
+
+            if ("paid".equalsIgnoreCase(paymentStatus)) {
+                booking.setStatus("CONFIRMED");
+                booking.setIs_paid(true);
+                booking.setPayment(payment);
+                bookingRepository.save(booking);
+
+                // ✅ Update all related slots to BOOKED
+                List<TimeSlot> slots = match.getTime_slots();
+                for (TimeSlot slot : slots) {
+                    if ("PENDING".equals(slot.getStatus())) {
+                        slot.setStatus("BOOKED");
+                    }
+                }
+                timeSlotRepository.saveAll(slots);
+            }
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            throw new ApiException("Failed to parse Moyasar response");
+        }
+    }
+
+
 }

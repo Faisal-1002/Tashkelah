@@ -27,7 +27,7 @@ public class OrganizerService {
 
     private final OrganizerRepository organizerRepository;
     private final AuthRepository authRepository;
-    private final JavaMailSender mailSender;
+    private final EmailsService emailsService;
 
 
     public List<Organizer> getAllOrganizers() {
@@ -89,38 +89,23 @@ public class OrganizerService {
     }
 
     // 2. Taha - Admin approve organizer - Tested
-    public void approveOrganizer(Integer organizerId, Boolean isApproved) {
+    public void approveOrganizer(Integer organizerId) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
-
-
-        if (isApproved) {
-            organizer.setStatus("ACTIVE");
-            organizerRepository.save(organizer);
-            sendApprovalEmail(organizer);
-        } else {
-            organizer.setStatus("INACTIVE");
-            organizerRepository.save(organizer);
-            sendRejectedEmail(organizer);
-        }
+        organizer.setStatus("ACTIVE");
+        organizerRepository.save(organizer);
+        sendApprovalEmail(organizer);
     }
 
     // 3. Taha - Reject Organizer - Tested
-    public void rejectOrganizer(Integer organizerId, Boolean isARejected) {
+    public void rejectOrganizer(Integer organizerId) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
-
-        if (isARejected) {
-            organizer.setStatus("INACTIVE");
-            organizerRepository.save(organizer);
-            sendRejectedEmail(organizer);
-        } else {
-            organizer.setStatus("ACTIVE");
-            organizerRepository.save(organizer);
-            sendRejectedEmail(organizer);
-        }
+        organizer.setStatus("INACTIVE");
+        organizerRepository.save(organizer);
+        sendRejectedEmail(organizer);
     }
 
     // 4. Taha - Block Organizer - Tested
@@ -128,20 +113,12 @@ public class OrganizerService {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
-
-        if (block) {
-            organizer.setStatus("BLOCKED");
-            organizerRepository.save(organizer);
-            sendBlockedEmail(organizer);
-        } else {
-            organizer.setStatus("INACTIVE");
-            organizerRepository.save(organizer);
-            sendRejectedEmail(organizer);
-        }
+        organizer.setStatus("BLOCKED");
+        organizerRepository.save(organizer);
+        sendBlockedEmail(organizer);
     }
 
     // 5. Taha - Send approve notification to organizer - Tested
-
     private void sendApprovalEmail(Organizer organizer) {
         //  Define the subject of the email
         String subject = "Your Account Has Been Approved!";
@@ -151,11 +128,9 @@ public class OrganizerService {
                 "Your account has been approved successfully.\n" +
                 "You can now start adding your fields and managing your activities.\n\n" +
                 "Best of luck on your journey!";
-
         //  Send the email with the embedded image
         sendEmailWithImage(organizer.getUser().getEmail(), subject, message);
     }
-
 
     // 5. Taha - Send approve notification WithImage to organizer - Tested
     @Value("${email.logo.path}")
@@ -191,10 +166,6 @@ public class OrganizerService {
         }
     }
 
-
-
-
-
     // 6. Taha - Send reject notification to organizer - Tested
     private void sendRejectedEmail(Organizer organizer) {
         String subject = "Your Account Has Been Rejected";
@@ -203,7 +174,7 @@ public class OrganizerService {
                 "If you need help, feel free to reach out to us.\n\n" +
                 "We’re here to support you.";
 
-        sendEmail(organizer.getUser().getEmail(), subject, message);
+        emailsService.sendEmail(organizer.getUser().getEmail(), subject, message);
     }
 
     // 7. Taha - Send block notification to organizer - Tested
@@ -212,17 +183,7 @@ public class OrganizerService {
         String message = "🚫 Your account has been blocked due to policy violations or other reasons.\n\n" +
                 "Please contact support if you believe this is a mistake or require assistance.";
 
-        sendEmail(organizer.getUser().getEmail(), subject, message);
-    }
-
-
-    // 8. Taha - Mail helper method - Tested
-    private void sendEmail(String to, String subject, String message) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(to);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(message);
-        mailSender.send(mailMessage);
+        emailsService.sendEmail(organizer.getUser().getEmail(), subject, message);
     }
 
 }

@@ -17,27 +17,30 @@ public class EmailsController {
 
     private final EmailsService emailsService;
 
+    //PLAYER
     @PostMapping("/add/{privateMatchId}")
-    public ResponseEntity<?> addEmail(@PathVariable Integer privateMatchId, @RequestBody @Valid Emails email) {
-        emailsService.addEmailToPrivateMatch(privateMatchId, email);
+    public ResponseEntity<?> addEmail(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId, @RequestBody @Valid Emails email) {
+        emailsService.addEmailToPrivateMatch(user.getId(), privateMatchId, email);
         return ResponseEntity.status(200).body(new ApiResponse("Email added to private match"));
     }
 
+    //PLAYER
     @GetMapping("/match/{privateMatchId}")
-    public ResponseEntity<?> getEmailsByPrivateMatch(@PathVariable Integer privateMatchId) {
-        List<Emails> emails = emailsService.getEmailsForPrivateMatch(privateMatchId);
-        return ResponseEntity.status(200).body(emails);
+    public ResponseEntity<?> getEmailsByPrivateMatch(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
+        return ResponseEntity.status(200).body(emailsService.getEmailsForPrivateMatch(user.getId(), privateMatchId));
     }
 
-    @DeleteMapping("/delete/{emailId}")
-    public ResponseEntity<?> deleteEmail(@PathVariable Integer emailId) {
-        emailsService.deleteEmail(emailId);
+    //PLAYER
+    @DeleteMapping("/delete/{matchId}/{emailId}")
+    public ResponseEntity<?> deleteEmail(@AuthenticationPrincipal User user, @PathVariable Integer matchId, @PathVariable Integer emailId) {
+        emailsService.deleteEmail(user.getId(), matchId, emailId);
         return ResponseEntity.status(200).body(new ApiResponse("Email deleted successfully"));
     }
 
+    //PLAYER
     @PostMapping("/private-match/send-invites/{privateMatchId}")
     public ResponseEntity<?> sendInvites(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
-        emailsService.sendInvites(2, privateMatchId);
+        emailsService.sendInvites(user.getId(), privateMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("Invites sent successfully."));
     }
 

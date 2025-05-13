@@ -23,7 +23,7 @@ public class Booking {
     private LocalDateTime booking_time;
 
     @NotEmpty(message = "Status must not be empty")
-    @Pattern(regexp = "^(PENDING|CONFIRMED)$")
+    @Pattern(regexp = "^(PENDING|CONFIRMED|CANCELLED)$", message = "Status must be PENDING, CONFIRMED or CANCELLED")
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
 
@@ -43,4 +43,8 @@ public class Booking {
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private Payment payment;
+
+    @ManyToOne
+    @JsonIgnore
+    private Player player;
 }

@@ -24,27 +24,52 @@ public class EmailsService {
     private final PlayerRepository playerRepository;
 
     // 53. Faisal - Add email to private match - Tested
-    public void addEmailToPrivateMatch(Integer privateMatchId, Emails email) {
+    public void addEmailToPrivateMatch(Integer userId, Integer privateMatchId, Emails email) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
         PrivateMatch privateMatch = privateMatchRepository.findPrivateMatchById(privateMatchId);
         if (privateMatch == null) {
             throw new ApiException("Private match not found");
         }
+        if (!privateMatch.getPlayer().equals(player))
+            throw new ApiException("Private match does not belong to this player");
         email.setPrivate_match(privateMatch);
         emailsRepository.save(email);
     }
 
-    public List<Emails> getEmailsForPrivateMatch(Integer privateMatchId) {
-        if (!privateMatchRepository.existsById(privateMatchId)) {
+    // 61. Faisal - Get emails for my private match - Tested
+    public List<Emails> getEmailsForPrivateMatch(Integer userId, Integer privateMatchId) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+        PrivateMatch privateMatch = privateMatchRepository.findPrivateMatchById(privateMatchId);
+        if (privateMatch == null)
             throw new ApiException("Private match not found");
-        }
+        if (!privateMatch.getPlayer().equals(player))
+            throw new ApiException("Private match does not belong to this player");
         return emailsRepository.findAllByPrivateMatchId(privateMatchId);
     }
 
-    public void deleteEmail(Integer emailId) {
+    public void deleteEmail(Integer userId, Integer privateMatchId, Integer emailId) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+
+        PrivateMatch privateMatch = privateMatchRepository.findPrivateMatchById(privateMatchId);
+        if (privateMatch == null)
+            throw new ApiException("Private match not found");
+
+        if (!privateMatch.getPlayer().getId().equals(player.getId()))
+            throw new ApiException("Private match does not belong to this player");
+
         Emails email = emailsRepository.findEmailsById(emailId);
-        if (email == null) {
+        if (email == null)
             throw new ApiException("Email not found");
-        }
+
+        if (!privateMatch.getEmails().contains(email))
+            throw new ApiException("This email is not part of the specified private match");
+
         emailsRepository.delete(email);
     }
 
@@ -52,11 +77,11 @@ public class EmailsService {
     public void sendInvites(Integer userId, Integer privateMatchId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null) throw new ApiException("Player not found");
-
         PrivateMatch match = privateMatchRepository.findPrivateMatchById(privateMatchId);
         if (match == null || !match.getStatus().equals("CONFIRMED"))
             throw new ApiException("Private match must be confirmed before sending invites");
-
+        if (!match.getPlayer().equals(player))
+            throw new ApiException("Private match does not belong to this player");
         List<Emails> invites = match.getEmails();
         if (invites == null || invites.isEmpty())
             throw new ApiException("No emails to send invites to");
@@ -71,13 +96,12 @@ public class EmailsService {
            sendEmail(to, subject, body);
         }
 
-        privateMatchRepository.save(match);
     }
 
     // 55. Faisal - Email notification - Tested
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("faisal.a.m.2012@gmail.com");
+        message.setFrom("finalproject.taha@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);

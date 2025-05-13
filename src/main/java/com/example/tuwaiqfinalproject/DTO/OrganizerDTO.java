@@ -35,6 +35,7 @@ public class OrganizerDTO {
     private String address;
 
     @NotEmpty(message = "License number must not be empty")
+    @Pattern(regexp = "^\\d{10}$", message = "Licence number must be 10 digits only")
     private String licence_number;
 
 }

@@ -19,73 +19,87 @@ public class PublicMatchController {
 
     private final PublicMatchService publicMatchService;
 
+    //ADMIN
     @GetMapping("/all")
     public ResponseEntity<?> getAllPublicMatches() {
-        List<PublicMatch> matches = publicMatchService.getAllPublicMatches();
-        return ResponseEntity.status(200).body(matches);
+        return ResponseEntity.status(200).body(publicMatchService.getAllPublicMatches());
     }
 
+    //ADMIN
     @GetMapping("/getById/{id}")
     public ResponseEntity<?> getPublicMatchById(@PathVariable Integer id) {
-        PublicMatch match = publicMatchService.getPublicMatchById(id);
-        return ResponseEntity.status(200).body(match);
+        return ResponseEntity.status(200).body(publicMatchService.getPublicMatchById(id));
     }
 
+    //PLAYER
+    @GetMapping("/my-public-matches")
+    public ResponseEntity<?> getMyPublicMatchBookings(@AuthenticationPrincipal User user) {
+        return ResponseEntity.status(200).body(publicMatchService.getMyPublicMatches(user.getId()));
+    }
+
+    //ORGANIZER
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePublicMatch(@PathVariable Integer id, @RequestBody @Valid PublicMatch updatedMatch) {
-        publicMatchService.updatePublicMatch(id, updatedMatch);
+    public ResponseEntity<?> updatePublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer id, @RequestBody @Valid PublicMatch updatedMatch) {
+        publicMatchService.updatePublicMatch(user.getId(), id, updatedMatch);
         return ResponseEntity.status(200).body(new ApiResponse("Public match updated successfully"));
     }
 
+    //ORGANIZER
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePublicMatch(@PathVariable Integer id) {
-        publicMatchService.deletePublicMatch(id);
+    public ResponseEntity<?> deletePublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer id) {
+        publicMatchService.deletePublicMatch(user.getId(), id);
         return ResponseEntity.status(200).body(new ApiResponse("Public match deleted successfully"));
     }
 
+    //ORGANIZER
     @GetMapping("/field/{fieldId}/matches")
     public ResponseEntity<?> getMatchesForOneField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
         return ResponseEntity.status(200).body(publicMatchService.getMatchesForOneField(fieldId, user.getId()));
     }
 
+    //PLAYER
     @PutMapping("/PlayWithPublicTeam/{publicId}/{teamId}")
-    public ResponseEntity<?> PlayWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {
-        publicMatchService.PlayWithPublicMatch(publicId, teamId, user.getId());
+    public ResponseEntity<?> playWithPublicTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicId, @PathVariable Integer teamId) {
+        publicMatchService.playWithPublicMatch(user.getId(), publicId, teamId);
         return ResponseEntity.status(200).body(new ApiResponse("You have been entered into the public match."));
     }
 
-    @GetMapping("/getMatchByTime/{publicMatchId}")
-    public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId) {
-        return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), publicMatchId));
-
+    //PLAYER
+    @GetMapping("/getMatchByTime/{sportId}/{fieldId}")
+    public ResponseEntity<?> getMatchAndTeam(@AuthenticationPrincipal User user, @PathVariable Integer sportId, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(publicMatchService.getAllAvailablePublicMatches(user.getId(), sportId, fieldId));
     }
 
+    //PLAYER
     @GetMapping("/getTeams/{publicMatchId}")
-    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId){
+    public ResponseEntity<?> getTeamsForPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId){
         return ResponseEntity.status(200).body(publicMatchService.getTeamsForPublicMatch(user.getId(),publicMatchId));
     }
 
-    @GetMapping("/chekout/{publicMatchId}/{teamId}")
-    public ResponseEntity getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
+    //PLAYER
+    @GetMapping("/checkout/{publicMatchId}/{teamId}")
+    public ResponseEntity<?> getPlayerMatchSelection(@AuthenticationPrincipal User user,@PathVariable Integer publicMatchId,@PathVariable Integer teamId){
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }
 
-    @GetMapping("/not/{bookingId}")
-    public ResponseEntity Notifications(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
-        publicMatchService.Notifications(user.getId(),bookingId);
+    //AUTO
+    @GetMapping("/notifications/{bookingId}")
+    public ResponseEntity<?> notifications(@AuthenticationPrincipal User user, @PathVariable Integer bookingId){
+        publicMatchService.notifications(user.getId(),bookingId);
         return ResponseEntity.status(200).body(new ApiResponse("Booking successful, waiting for more players"));
     }
 
+    //AUTO
     @PutMapping("/changeStatus/{publicMatchId}")
-    public ResponseEntity changeStatusAfterCompleted(@PathVariable Integer publicMatchId){
-        publicMatchService.changeStatusAfterCompleted(publicMatchId);
+    public ResponseEntity<?> changeStatusAfterCompleted(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId){
+        publicMatchService.changeStatusAfterCompleted(user.getId(), publicMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
     }
 
-    // Create a public match by providing only the fieldId as path variable
-    @PostMapping("/matches/{fieldId}/slots/{slotIds}")
-    public ResponseEntity<?> createMatchFromSlots(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable List<Integer> slotIds) {
-        publicMatchService.createMatchFromTimeSlots(user.getId(), fieldId, slotIds);
+    //ORGANIZER
+    @PostMapping("/matches/{fieldId}")
+    public ResponseEntity<?> createPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestBody List<Integer> slotIds) {
+        publicMatchService.createPublicMatch(user.getId(), fieldId, slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Match created successfully"));
     }
 

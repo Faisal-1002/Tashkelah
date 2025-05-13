@@ -1,55 +1,43 @@
 package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 @Service
+@RequiredArgsConstructor
 public class WhatsAppService {
-@Value("${ultra.api.url}")
 
-private String apiUrl;
+    @Value("${ultra.instance.id}")
+    private String instanceId;
+    @Value("${ultra.api.token}")
+    private String apiToken;
+    @Value("${ultra.api.url}")
+    private String baseUrl;
 
-    @Value("${ultra.api.key}")
-    private String apiKey;
+    public String sendMessage(String to, String message) {
+        String apiUrl = baseUrl + instanceId + "/messages/chat";
+        String formattedNumber = to.replaceFirst("^0", "+966");
+        try {
+            HttpResponse<String> response = Unirest.post(apiUrl)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .field("token", apiToken)
+                    .field("to", formattedNumber)
+                    .field("body", message)
+                    .asString();
 
-    @Value("${ultra.whatsapp.number}")
-    private String fromNumber;
-// need Config
-    public String sendMessage(String toNumber, String message) {
-        String url = apiUrl + "/sendMessage";
+            String responseBody = response.getBody();
+            System.out.println("WhatsApp API Response: " + responseBody);
 
-        System.out.println("Sending WhatsApp to: " + toNumber);
-        System.out.println("Message: " + message);
-        System.out.println("API URL: " + url);
-        System.out.println("Headers: Bearer " + apiKey);
-
-        String jsonBody = String.format(
-                "{\"to\": \"%s\", \"from\": \"%s\", \"body\": \"%s\"}",
-                toNumber, fromNumber, message
-        );
-
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost postRequest = new HttpPost(url);
-            postRequest.setHeader("Authorization", "Bearer " + apiKey);
-            postRequest.setHeader("Content-Type", "application/json");
-
-            postRequest.setEntity(new StringEntity(jsonBody));
-
-            try (CloseableHttpResponse response = client.execute(postRequest)) {
-                String responseBody = EntityUtils.toString(response.getEntity());
-
-                System.out.println("Ultra API response: " + responseBody);
-
-                return responseBody;
+            if (response.getStatus() != 200) {
+                throw new ApiException("Failed to send WhatsApp message: " + responseBody);
             }
+
+            return responseBody;
+
         } catch (Exception e) {
             throw new ApiException("WhatsApp Error: " + e.getMessage());
         }
