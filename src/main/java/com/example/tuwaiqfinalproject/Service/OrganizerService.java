@@ -6,12 +6,19 @@ import com.example.tuwaiqfinalproject.Model.Organizer;
 import com.example.tuwaiqfinalproject.Model.User;
 import com.example.tuwaiqfinalproject.Repository.AuthRepository;
 import com.example.tuwaiqfinalproject.Repository.OrganizerRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -21,6 +28,7 @@ public class OrganizerService {
     private final OrganizerRepository organizerRepository;
     private final AuthRepository authRepository;
     private final JavaMailSender mailSender;
+
 
     public List<Organizer> getAllOrganizers() {
         return organizerRepository.findAll();
@@ -86,6 +94,7 @@ public class OrganizerService {
         if (organizer == null)
             throw new ApiException("Organizer not found");
 
+
         if (isApproved) {
             organizer.setStatus("ACTIVE");
             organizerRepository.save(organizer);
@@ -98,37 +107,93 @@ public class OrganizerService {
     }
 
     // 3. Taha - Reject Organizer - Tested
-    public void rejectOrganizer(Integer organizerId ) {
+    public void rejectOrganizer(Integer organizerId, Boolean isARejected) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
 
-        organizer.setStatus("INACTIVE");
-        organizerRepository.save(organizer);
-        sendRejectedEmail(organizer);
+        if (isARejected) {
+            organizer.setStatus("INACTIVE");
+            organizerRepository.save(organizer);
+            sendRejectedEmail(organizer);
+        } else {
+            organizer.setStatus("ACTIVE");
+            organizerRepository.save(organizer);
+            sendRejectedEmail(organizer);
+        }
     }
 
     // 4. Taha - Block Organizer - Tested
-    public void blockOrganizer(Integer organizerId) {
+    public void blockOrganizer(Integer organizerId, Boolean block) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
         if (organizer == null)
             throw new ApiException("Organizer not found");
 
-        organizer.setStatus("BLOCKED");
-        organizerRepository.save(organizer);
-        sendBlockedEmail(organizer);
+        if (block) {
+            organizer.setStatus("BLOCKED");
+            organizerRepository.save(organizer);
+            sendBlockedEmail(organizer);
+        } else {
+            organizer.setStatus("INACTIVE");
+            organizerRepository.save(organizer);
+            sendRejectedEmail(organizer);
+        }
     }
 
     // 5. Taha - Send approve notification to organizer - Tested
+
     private void sendApprovalEmail(Organizer organizer) {
+        //  Define the subject of the email
         String subject = "Your Account Has Been Approved!";
+
+        //  Write the body message of the email
         String message = "🎉 Congratulations!\n\n" +
                 "Your account has been approved successfully.\n" +
                 "You can now start adding your fields and managing your activities.\n\n" +
                 "Best of luck on your journey!";
 
-        sendEmail(organizer.getUser().getEmail(), subject, message);
+        //  Send the email with the embedded image
+        sendEmailWithImage(organizer.getUser().getEmail(), subject, message);
     }
+
+
+    // 5. Taha - Send approve notification WithImage to organizer - Tested
+    @Value("${email.logo.path}")
+    private String logoPath;
+    private void sendEmailWithImage(String to, String subject, String message) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true); // true to enable attachments
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setFrom("finalproject.taha@gmail.com");
+
+            // HTML body with larger image
+            String html = "<html><body>" +
+                    "<img src='cid:logo' style='width:300px; height:auto;'><br>" +
+                    "<p>🎉 Congratulations!<br><br>" +
+                    "Your account has been approved successfully.<br>" +
+                    "You can now start adding your fields and managing your activities.<br><br>" +
+                    "Best of luck on your journey 👏🏼 👏🏼 👏🏼!</p>" +
+                    "</body></html>";
+
+            // Set the HTML content
+            helper.setText(html, true); // true = isHtml
+
+            // Load the image from the classpath using the path from application.properties
+            ClassPathResource logo = new ClassPathResource(logoPath);
+            helper.addInline("logo", logo);
+
+            mailSender.send(mimeMessage);
+        } catch (Exception e) {
+            throw new ApiException("Email Error: " + e.getMessage());
+        }
+    }
+
+
+
+
 
     // 6. Taha - Send reject notification to organizer - Tested
     private void sendRejectedEmail(Organizer organizer) {

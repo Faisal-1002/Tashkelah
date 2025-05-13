@@ -60,7 +60,7 @@ public class PublicMatchService {
     }
 
     // 20.Taha - Show public + private matches for a given filed - Tested
-    public List<?> showFieldMatches(Integer fieldId, Integer userId) {
+    public List<?> getMatchesForOneField(Integer fieldId, Integer userId) {
 
         Organizer organizer = organizerRepository.findById(userId)
                 .orElseThrow(() -> new ApiException("Organizer not found"));

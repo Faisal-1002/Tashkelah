@@ -40,6 +40,10 @@ public class FieldService {
         return fieldRepository.findFieldById(id);
     }
 
+
+
+
+
     // 10. Taha - Public method to allow an approved organizer to add a new field with an image - Tested
     public void addField(Integer organizer_id , Integer sport_id, FieldDTO fieldDTO, MultipartFile photoFile) {
         User user = authRepository.findUserById(organizer_id);
@@ -60,24 +64,17 @@ public class FieldService {
         }
 
         String photo = saveImage(photoFile);
-        Field field = new Field(
-                null,
-                fieldDTO.getName(),
-                fieldDTO.getAddress(),
-                fieldDTO.getDescription(),
-                photo,
-                fieldDTO.getOpen_time(),
-                fieldDTO.getClose_time(),
-                fieldDTO.getCapacity(),
-                fieldDTO.getPrice(),
-                sport,
-                user.getOrganizer(),
-                null,
-                null,
-                null);
+
+        Field field = new Field(null,fieldDTO.getName(),fieldDTO.getAddress(),
+                fieldDTO.getDescription(),photo,fieldDTO.getOpen_time(),fieldDTO.getClose_time(),
+                fieldDTO.getCapacity(),fieldDTO.getPrice(),sport,
+                user.getOrganizer(),null,null,null);
+
+
         fieldRepository.save(field);
         timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());
     }
+
 
     // 11. Taha - Private method to save an uploaded image file - Tested
     private String saveImage(MultipartFile file) {
@@ -102,7 +99,7 @@ public class FieldService {
                 Files.createDirectories(uploadsPath);
             }
 
-            // Generate a unique file name using UUID to prevent naming conflicts
+            // Generate a unique file name using UUID
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
             // Define the full path where the file will be saved
@@ -316,11 +313,21 @@ public class FieldService {
 
 
     // 16 - Taha - Returns available (free) time slots for a field on the specified date - Tested
-    public List<TimeSlot> getAvailableTimeSlots(Integer fieldId) {
+    public List<TimeSlot> getAvailableTimeSlots(Integer userId,Integer fieldId) {
 
         // Get the field by ID
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
+
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null) {
+            throw new ApiException("Organizer not fond");
+
+        }
+
+        if (!field.getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("Unauthorized access");
+        }
 
         // Fetch all booked time slots for the given field
         List<TimeSlot> availableSlots = timeSlotRepository.findByFieldAndStatus(field, "AVAILABLE");

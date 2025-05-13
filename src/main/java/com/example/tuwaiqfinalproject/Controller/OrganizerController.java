@@ -35,6 +35,7 @@ public class OrganizerController {
         return ResponseEntity.status(200).body(organizer);
     }
 
+
     @PostMapping("/register")
     public ResponseEntity<?> registerOrganizer(@RequestBody @Valid OrganizerDTO dto) {
         organizerService.registerOrganizer(dto);
@@ -60,15 +61,16 @@ public class OrganizerController {
     }
 
     @PutMapping("/reject/{organizerId}/{isARejected}")
-    public ResponseEntity<?> rejectOrganizer(@PathVariable Integer organizerId) {
-        organizerService.rejectOrganizer(organizerId);
+    public ResponseEntity<?> rejectOrganizer(@PathVariable Integer organizerId, @PathVariable Boolean isARejected) {
+        organizerService.rejectOrganizer(organizerId, isARejected);
         return ResponseEntity.status(200).body(new ApiResponse("Organizer license approval status updated and email sent."));
     }
 
+
     @PutMapping("/block/{organizerId}/{isAblocked}")
-    public ResponseEntity<?> blockOrganizer(@PathVariable Integer organizerId) {
-        organizerService.blockOrganizer(organizerId);
-        return ResponseEntity.status(200).body(new ApiResponse("Organizer license approval status updated and email sent."));
+    public ResponseEntity<?> blockOrganizer(@PathVariable Integer organizerId,@PathVariable Boolean isAblocked) {
+        organizerService.blockOrganizer(organizerId, isAblocked);
+        return ResponseEntity.status(200).body(new ApiResponse("Organizer Account BLOCKED and status updated and email sent."));
     }
 
 }

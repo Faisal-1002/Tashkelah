@@ -59,8 +59,8 @@ public class Configuration {
 //                         "/api/v1/auth/delete/admin/{id}",
 //                         "/api/v1/organizer/all",
 //                         "/api/v1/organizer/approve/{organizerId}/{isApproved}",
-//                         "/api/v1/organizer/reject/{organizerId}",
-//                         "/api/v1/organizer/block/{organizerId}",
+//                         "//api/v1/organizer/reject/{organizerId}/{isARejected}",
+//                         "/api/v1/organizer/block/{organizerId}/{isAblocked}",
 //                         "/api/v1/sports/add",
 //                         "/api/v1/sports/update/{id}",
 //                         "/api/v1/booking/all",
@@ -83,7 +83,8 @@ public class Configuration {
 //                         "/api/v1/public-match/update/{id}",
 //                         "/api/v1/public-match/delete/{id}",
 //                         "/api/v1/public-match/field/{fieldId}/matches",
-//                         "/api/v1/public-match/changeStatus/{publicMatchId}"
+//                         "/api/v1/public-match/changeStatus/{publicMatchId}",
+//                         "/api/v1/public-match/matches/{fieldId}/slots/{slotIds}"
 //                 ).hasAuthority("ORGANIZER")
 //                 // Player-only endpoints
 //                 .requestMatchers("/api/v1/player/info",
@@ -101,6 +102,8 @@ public class Configuration {
 //                         "/api/v1/public-match/not/{bookingId}",
 //                 "/api/v1/booking/getBookingPublicMatch")
 //                 .hasAuthority("PLAYER")
+
+
 
                 // All
                 .requestMatchers("**").permitAll()
@@ -120,12 +123,6 @@ public class Configuration {
 //
 
 
-                 //                        "/api/v1/organizer/register",
-                 //                        "/api/v1/organizer/approve/{organizerId}/{isApproved}",
-
-
-                //Taha
-//                .requestMatchers("/api/v1/field/add/{{sport_id}}","/api/v1/public-match/matches/{{fieldId}}/slots/{{slotIds}}").hasAuthority("ORGANIZER")
 
 
 
@@ -144,7 +141,7 @@ public class Configuration {
 //                        "/api/v1/booking/all",
 //                        "/api/v1/booking/{id}",
 //                        "/api/v1/booking/delete/{id}",
-//                        "/api/v1/sports/delete/{id}"
+//                        "/api/v1/sports/delete/{id}" /
 //                ).hasAuthority("ADMIN")
 //
 //                // Organizer-only endpoints
@@ -200,6 +197,8 @@ public class Configuration {
 //                        "/api/v1/emails/match/{privateMatchId}",
 //                        "/api/v1/emails/delete/{emailId}"
 //                ).hasAnyAuthority("PLAYER", "ORGANIZER")
+
+
 
 
                 .anyRequest().authenticated()
