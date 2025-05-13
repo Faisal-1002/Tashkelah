@@ -67,7 +67,6 @@ public class FieldService {
                 null
         );
         fieldRepository.save(field);
-        timeSlotService.createFullDayTimeSlots(field.getId(), LocalDate.now());
     }
 
     // 11. Taha - Private method to save an uploaded image file - Tested

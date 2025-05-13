@@ -7,6 +7,7 @@ import com.example.tuwaiqfinalproject.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -28,6 +29,7 @@ public class PublicMatchService {
     private final BookingRepository bookingRepository;
     private final EmailsService emailsService;
     private final TeamService teamService;
+    private final WhatsAppService whatsAppService;
 
     public List<PublicMatch> getAllPublicMatches() {
         return publicMatchRepository.findAll();
@@ -234,90 +236,115 @@ public class PublicMatchService {
     }
 
     // 33. Eatzaz - Notification that the payment process has been completed - Tested
-    public void Notifications(Integer playerId,Integer bookingId){
-        Player player=playerRepository.findPlayerById(playerId);
-        if(player==null){
-            throw new ApiException("Player Not Found");
-        }
-        Booking booking=bookingRepository.findBookingById(bookingId);
-        if(booking==null){
-            throw new ApiException("Booking Not Found");
-        }
-        if(! booking.getPublic_match().equals(player.getPublic_match()) &&  booking.getIs_paid().equals(false)){
-            throw new ApiException("valid");
+    public void notifications(Integer playerId, Integer bookingId) {
+        Player player = playerRepository.findPlayerById(playerId);
+        if (player == null) {
+            throw new ApiException("Player not found");
         }
 
+        Booking booking = bookingRepository.findBookingById(bookingId);
+        if (booking == null) {
+            throw new ApiException("Booking not found");
+        }
+
+        PublicMatch match = booking.getPublic_match();
+        if (!match.equals(player.getPublic_match()) || !Boolean.TRUE.equals(booking.getIs_paid())) {
+            throw new ApiException("Invalid booking or payment not completed");
+        }
+        // 1️⃣ Send Email
+        String to = player.getUser().getEmail();
+        String subject = "Booking Confirmed!";
+        String body = "Hello " + player.getUser().getName() + ",\n\n" +
+                "Your booking has been confirmed for the public match at:\n" +
+                "Field: " + match.getField().getName() + "\n" +
+                "Location: " + match.getField().getAddress() + "\n\n" +
+                "Thank you for playing with us!\n\n" +
+                "- Sports Booking Team";
+        emailsService.sendEmail(to, subject, body);
+
+        // 2️⃣ Trigger status update if match is full
+        Integer organizerId = match.getField().getOrganizer().getId();
+        changeStatusAfterCompleted(organizerId, match.getId());
     }
 
-    // 34 . Eatzaz - Change the match status after the number is complete
-    public void changeStatusAfterCompleted(Integer publicMatchId) {
+    // 34. Eatzaz - Change the match status after the number is complete - Tested
+    public void changeStatusAfterCompleted(Integer organizerId, Integer publicMatchId) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null) {
+            throw new ApiException("Organizer not found");
+        }
+
         PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
         if (publicMatch == null) {
             throw new ApiException("Public Match Not Found");
         }
 
-        List<Team> teams = publicMatch.getTeams();
-        int numberPlayer = 0;
-        for (Team team : teams) {
-            numberPlayer += team.getPlayersCount();
+        if (!publicMatch.getField().getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("Unauthorized: This match does not belong to your fields");
         }
-        if (numberPlayer == publicMatch.getField().getCapacity()) {
+
+        List<Team> teams = publicMatch.getTeams();
+        int numberPlayer = teams.stream().mapToInt(Team::getPlayersCount).sum();
+        int fieldCapacity = publicMatch.getField().getCapacity();
+
+        if (numberPlayer >= fieldCapacity) {
             publicMatch.setStatus("FULL");
             publicMatchRepository.save(publicMatch);
-            emailsService.sendEmail("faisal.a.m.2012@gmail.com","Match status updated to FULL","Match status updated to FULL");
-            throw new ApiException( "Match status updated to FULL");
+            String body = "Dear " + organizer.getUser().getName() + ",\n\n"
+                    + "The public match at your field '" + publicMatch.getField().getName() + "' is now FULL.\n"
+                    + "Consider creating another match to accommodate more players.\n\nRegards.";
+
+            whatsAppService.sendMessage(organizer.getUser().getPhone(), body);
         }
     }
 
     // 19. Taha - Create public match - Tested
-    public void createMatchFromTimeSlots(Integer userId, Integer fieldId, List<Integer> slotIds) {
-        Organizer organizer=organizerRepository.findOrganizerById(userId);
-        if(organizer==null)
+    public void createPublicMatch(Integer userId, Integer fieldId, List<Integer> slotIds) {
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
 
-            throw new ApiException("Organizer Not Found");
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ApiException("Field not found"));
 
-        if (!field.getOrganizer().getId().equals(organizer.getId())){
-            throw new ApiException("Unauthorized access");
-        }
+        if (!field.getOrganizer().getId().equals(organizer.getId()))
+            throw new ApiException("Unauthorized access to this field");
 
         List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
         if (slots.isEmpty())
-            throw new ApiException("No slots found for the given IDs");
+            throw new ApiException("No time slots found for the given IDs");
 
-        // Validate all slots belong to same field and same day and are available
-        LocalDate date = slots.get(0).getDate();
+        // Validate slots
         for (TimeSlot slot : slots) {
             if (!slot.getField().getId().equals(fieldId))
-                throw new ApiException("All slots must belong to the same field");
-            if (!slot.getDate().equals(date))
-                throw new ApiException("All slots must be on the same day");
+                throw new ApiException("Slot does not belong to the selected field");
             if (!slot.getStatus().equals("AVAILABLE"))
                 throw new ApiException("One or more slots are not available");
         }
 
-        // Ensure the slots are continuous
+        // Sort and ensure back-to-back continuity
         slots.sort(Comparator.comparing(TimeSlot::getStart_time));
-        for (int i = 0; i < slots.size() - 1; i++) {
-            if (!slots.get(i).getEnd_time().equals(slots.get(i + 1).getStart_time()))
-                throw new ApiException("Selected slots must be continuous");
+        for (int i = 1; i < slots.size(); i++) {
+            LocalTime prevEnd = slots.get(i - 1).getEnd_time();
+            LocalTime currStart = slots.get(i).getStart_time();
+            if (!prevEnd.equals(currStart))
+                throw new ApiException("Time slots must be continuous (back-to-back)");
         }
 
-        // Create the match
+        // Create and save the public match
         PublicMatch match = new PublicMatch();
-        match.setStatus("PENDING");
+        match.setStatus("OPEN");
         match.setField(field);
         publicMatchRepository.save(match);
 
-        // Link slots to match
+        // Assign slots to the match and mark them as PENDING
         for (TimeSlot slot : slots) {
-            slot.setStatus("BOOKED");
+            slot.setStatus("PENDING");
             slot.setPublic_match(match);
         }
-
         timeSlotRepository.saveAll(slots);
+
+        // Create empty teams for players to join
         teamService.addTeamsForPublicMatch(userId, match.getId());
     }
-
 }

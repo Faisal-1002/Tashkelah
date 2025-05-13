@@ -82,22 +82,24 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }
 
-    @GetMapping("/not/{bookingId}")
-    public ResponseEntity Notifications(@AuthenticationPrincipal User user,@PathVariable Integer bookingId){
-        publicMatchService.Notifications(user.getId(),bookingId);
+    //AUTO
+    @GetMapping("/notifications/{bookingId}")
+    public ResponseEntity<?> notifications(@AuthenticationPrincipal User user, @PathVariable Integer bookingId){
+        publicMatchService.notifications(user.getId(),bookingId);
         return ResponseEntity.status(200).body(new ApiResponse("Booking successful, waiting for more players"));
     }
 
+    //AUTO
     @PutMapping("/changeStatus/{publicMatchId}")
-    public ResponseEntity changeStatusAfterCompleted(@PathVariable Integer publicMatchId){
-        publicMatchService.changeStatusAfterCompleted(publicMatchId);
+    public ResponseEntity<?> changeStatusAfterCompleted(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId){
+        publicMatchService.changeStatusAfterCompleted(user.getId(), publicMatchId);
         return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
     }
 
-    // Create a public match by providing only the fieldId as path variable
-    @PostMapping("/matches/{fieldId}/slots/{slotIds}")
-    public ResponseEntity<?> createMatchFromSlots(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @PathVariable List<Integer> slotIds) {
-        publicMatchService.createMatchFromTimeSlots(user.getId(), fieldId, slotIds);
+    //ORGANIZER
+    @PostMapping("/matches/{fieldId}")
+    public ResponseEntity<?> createPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestBody List<Integer> slotIds) {
+        publicMatchService.createPublicMatch(user.getId(), fieldId, slotIds);
         return ResponseEntity.status(200).body(new ApiResponse("Match created successfully"));
     }
 

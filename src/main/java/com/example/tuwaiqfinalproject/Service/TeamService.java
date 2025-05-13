@@ -63,29 +63,40 @@ public class TeamService {
         publicMatchRepository.save(publicMatch);
     }
 
-    public void updateTame(PublicMatch publicMatch, Integer tameAId, Team team) {
+    public void updateTeam(Integer userId, Integer teamId, Team updatedTeam) {
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
 
-        Team oldTeam = teamRepository.findTeamById(tameAId);
-        if (oldTeam == null) {
-            throw new ApiException("TeamA not found");
+        Team oldTeam = teamRepository.findTeamById(teamId);
+        if (oldTeam == null)
+            throw new ApiException("Team not found");
 
-        }
+        PublicMatch match = oldTeam.getPublic_match();
+        if (match == null || !match.getField().getOrganizer().getId().equals(organizer.getId()))
+            throw new ApiException("You are not allowed to update a team that doesn't belong to your match");
 
-        if (!oldTeam.getPublic_match().getId().equals(publicMatch.getId())) {
-            throw new ApiException("You are not allowed to update another Team data");
-        }
-        oldTeam.setName(team.getName());
-        oldTeam.setPlayersCount(team.getPlayersCount());
+        // Update only allowed fields
+        oldTeam.setName(updatedTeam.getName());
+        oldTeam.setPlayersCount(updatedTeam.getPlayersCount());
+
         teamRepository.save(oldTeam);
     }
 
-    public void deleteTeam(PublicMatch publicMatch, Integer teamAId){
-        Team team = teamRepository.findTeamById(teamAId);
-        if (team ==null){
+    public void deleteTeam(Integer userId, Integer teamId) {
+        Organizer organizer = organizerRepository.findOrganizerById(userId);
+        if (organizer == null)
+            throw new ApiException("Organizer not found");
+
+        Team team = teamRepository.findTeamById(teamId);
+        if (team == null)
             throw new ApiException("Team not found");
-        }
-        if (!team.getPublic_match().getId().equals(publicMatch.getId()))
-            throw new ApiException("You are not allowed to delete another team data");
+
+        PublicMatch match = team.getPublic_match();
+        if (match == null || !match.getField().getOrganizer().getId().equals(organizer.getId()))
+            throw new ApiException("You are not allowed to delete a team that doesn't belong to your match");
+
         teamRepository.delete(team);
     }
+
 }

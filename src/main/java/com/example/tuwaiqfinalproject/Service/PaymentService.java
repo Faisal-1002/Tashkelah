@@ -2,11 +2,7 @@ package com.example.tuwaiqfinalproject.Service;
 
 import com.example.tuwaiqfinalproject.Api.ApiException;
 import com.example.tuwaiqfinalproject.Model.*;
-import com.example.tuwaiqfinalproject.Repository.BookingRepository;
-import com.example.tuwaiqfinalproject.Repository.PaymentRepository;
-import com.example.tuwaiqfinalproject.Repository.PlayerRepository;
-import com.example.tuwaiqfinalproject.Repository.PublicMatchRepository;
-import com.example.tuwaiqfinalproject.Repository.PrivateMatchRepository;
+import com.example.tuwaiqfinalproject.Repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +24,7 @@ public class PaymentService {
     private final BookingRepository bookingRepository;
     private final PublicMatchRepository publicMatchRepository;
     private final PrivateMatchRepository privateMatchRepository;
+    private final TimeSlotRepository timeSlotRepository;
 
     @Value("${moyasar.api.key}")
     private String apiKey;
@@ -138,6 +135,15 @@ public class PaymentService {
                 booking.setIs_paid(true);
                 booking.setPayment(payment);
                 bookingRepository.save(booking);
+
+                // ✅ Set all time slots to BOOKED
+                List<TimeSlot> slots = match.getTime_slots();
+                for (TimeSlot slot : slots) {
+                    if ("PENDING".equals(slot.getStatus())) {
+                        slot.setStatus("BOOKED");
+                    }
+                }
+                timeSlotRepository.saveAll(slots);
             }
 
             return response.getBody();
@@ -204,7 +210,6 @@ public class PaymentService {
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
-    // 61. Eatzaz - Payment status - Tested
     public String publicMatchPaymentStatus(Integer userId, Integer publicMatchId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
@@ -215,7 +220,7 @@ public class PaymentService {
             throw new ApiException("Public match not found");
 
         Booking booking = bookingRepository.findByPlayerAndPublicMatch(player, match);
-        if (booking == null || !booking.getStatus().equals("PENDING"))
+        if (booking == null || !"PENDING".equals(booking.getStatus()))
             throw new ApiException("Booking is already confirmed or invalid");
 
         Payment payment = paymentRepository.findPaymentByBooking(booking);
@@ -242,11 +247,20 @@ public class PaymentService {
 
             String paymentStatus = jsonResponse.get("status").asText();
 
-            if (paymentStatus.equalsIgnoreCase("paid")) {
+            if ("paid".equalsIgnoreCase(paymentStatus)) {
                 booking.setStatus("CONFIRMED");
                 booking.setIs_paid(true);
                 booking.setPayment(payment);
                 bookingRepository.save(booking);
+
+                // ✅ Update all related slots to BOOKED
+                List<TimeSlot> slots = match.getTime_slots();
+                for (TimeSlot slot : slots) {
+                    if ("PENDING".equals(slot.getStatus())) {
+                        slot.setStatus("BOOKED");
+                    }
+                }
+                timeSlotRepository.saveAll(slots);
             }
 
             return response.getBody();
@@ -255,5 +269,6 @@ public class PaymentService {
             throw new ApiException("Failed to parse Moyasar response");
         }
     }
+
 
 }
