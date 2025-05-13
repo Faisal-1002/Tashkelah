@@ -24,22 +24,4 @@ public class AuthController {
         return ResponseEntity.status(200).body(users);
     }
 
-//    @PostMapping("/register/admin")
-//    public ResponseEntity<?> registerAdmin(@RequestBody @Valid User user) {
-//        authService.registerAdmin(user);
-//        return ResponseEntity.status(200).body(new ApiResponse("Admin registered successfully"));
-//    }
-//
-//    @PutMapping("/update/admin/{id}")
-//    public ResponseEntity<?> updateAdmin(@PathVariable Integer id, @RequestBody @Valid User user) {
-//        authService.updateAdmin(id, user);
-//        return ResponseEntity.status(200).body(new ApiResponse("Admin updated successfully"));
-//    }
-//
-//    @DeleteMapping("/delete/admin/{id}")
-//    public ResponseEntity<?> deleteAdmin(@PathVariable Integer id) {
-//        authService.deleteAdmin(id);
-//        return ResponseEntity.status(200).body(new ApiResponse("Admin deleted successfully"));
-//    }
-
 }

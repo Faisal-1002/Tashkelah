@@ -56,10 +56,32 @@ public class BookingService {
         return result;
     }
 
-    public void updateBooking(Integer bookingId, Booking updatedBooking) {
+    // Faisal - update booking for public or private match - Tested
+    public void updateBooking(Integer userId, Integer bookingId, Booking updatedBooking) {
+        Player player = playerRepository.findPlayerById(userId);
+        if (player == null)
+            throw new ApiException("Player not found");
+
         Booking existing = bookingRepository.findBookingById(bookingId);
         if (existing == null)
             throw new ApiException("Booking not found");
+
+        boolean isOwner = false;
+
+        // Check if booking is part of a public match the player joined
+        if (player.getPublic_match() != null) {
+            isOwner = player.getPublic_match().getBookings().stream()
+                    .anyMatch(b -> b.getId().equals(bookingId));
+        }
+
+        // Check if booking is part of a private match the player owns
+        if (!isOwner && player.getPrivate_matches() != null) {
+            isOwner = player.getPrivate_matches().stream()
+                    .anyMatch(pm -> pm.getBooking() != null && pm.getBooking().getId().equals(bookingId));
+        }
+
+        if (!isOwner)
+            throw new ApiException("You do not have permission to update this booking");
 
         updatedBooking.setId(existing.getId());
         bookingRepository.save(updatedBooking);
@@ -75,10 +97,11 @@ public class BookingService {
     // 52. Faisal - Book private match - Tested
     public void bookPrivateMatch(Integer userId, Integer matchId) {
         Player player = playerRepository.findPlayerById(userId);
-        if (player == null) throw new ApiException("Player not found");
+        if (player == null)
+            throw new ApiException("Player not found");
 
         PrivateMatch match = privateMatchRepository.findPrivateMatchById(matchId);
-        if (match == null || !match.getStatus().equals("TIME_RESERVED"))
+        if (match == null || !"TIME_RESERVED".equals(match.getStatus()))
             throw new ApiException("Match not found or not in TIME_RESERVED status");
 
         if (!match.getPlayer().getId().equals(player.getId()))
@@ -88,21 +111,38 @@ public class BookingService {
         if (slots == null || slots.isEmpty())
             throw new ApiException("No time slots assigned to this match");
 
+        // Validate all slots are available
         for (TimeSlot slot : slots) {
-            if (!slot.getStatus().equalsIgnoreCase("AVAILABLE"))
-                throw new ApiException("One or more slots have already been booked");
-            slot.setStatus("BOOKED");
+            if (!"AVAILABLE".equalsIgnoreCase(slot.getStatus()))
+                throw new ApiException("One or more slots are already taken");
         }
 
-        Double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
+        // Ensure slots are back-to-back
+        slots.sort(Comparator.comparing(TimeSlot::getStart_time));
+        for (int i = 1; i < slots.size(); i++) {
+            if (!slots.get(i - 1).getEnd_time().equals(slots.get(i).getStart_time())) {
+                throw new ApiException("Time slots must be back-to-back");
+            }
+        }
 
+        // Mark slots as pending
+        for (TimeSlot slot : slots) {
+            slot.setStatus("PENDING");
+        }
+
+        // Calculate total price
+        double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
+
+        // Create booking
         Booking booking = new Booking();
+        booking.setPlayer(player);
         booking.setPrivate_match(match);
         booking.setBooking_time(LocalDateTime.now());
         booking.setStatus("PENDING");
         booking.setIs_paid(false);
         booking.setTotal_amount(totalPrice);
 
+        // Save everything
         bookingRepository.save(booking);
         timeSlotRepository.saveAll(slots);
 
@@ -112,14 +152,16 @@ public class BookingService {
     }
 
     // 36. Eatzaz - Public match booking - Need testing
-    public void bookPublicMatch(Integer userId, List<Integer> slotIds) {
+    public void bookPublicMatch(Integer userId, Integer publicMatchId, List<Integer> slotIds) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
             throw new ApiException("Player not found");
-        PublicMatch match = player.getPublic_match();
-        if (match == null ) {
-            throw new ApiException("Match not found ");
-        }
+
+        PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (match == null)
+            throw new ApiException("Match not found");
+
+        // No need to check player.getPublic_match().equals(match) — instead validate membership through booking logic
 
         Field field = match.getField();
         if (field == null)
@@ -131,9 +173,9 @@ public class BookingService {
 
         for (TimeSlot slot : slots) {
             if (!slot.getField().getId().equals(field.getId()))
-                throw new ApiException("TimeSlot does not belong to the assigned field");
-            if (!slot.getStatus().equals("AVAILABLE") && !slot.getStatus().equals("PENDING"))
-                throw new ApiException("One or more time slots are already booked");
+                throw new ApiException("Time slot does not belong to the assigned field");
+            if (!"AVAILABLE".equals(slot.getStatus()))
+                throw new ApiException("One or more time slots are already taken");
         }
 
         // Check if time slots are back-to-back
@@ -144,39 +186,40 @@ public class BookingService {
             }
         }
 
-        // Book the slots
+        // Mark slots as pending
         for (TimeSlot slot : slots) {
-            slot.setStatus("BOOKED");
+            slot.setStatus("PENDING");
         }
 
-        Double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
+        // Calculate total price
+        double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
 
+        // Create and save booking
         Booking booking = new Booking();
-        match.getBookings().add(booking);
+        booking.setPlayer(player);
         booking.setPublic_match(match);
         booking.setBooking_time(LocalDateTime.now());
         booking.setStatus("PENDING");
         booking.setIs_paid(false);
         booking.setTotal_amount(totalPrice);
 
-        match.getBookings().add(booking);
         bookingRepository.save(booking);
         timeSlotRepository.saveAll(slots);
-        match.setStatus("PENDING");
         publicMatchRepository.save(match);
     }
 
-    //13. Eatzaz - get Player My Booking - tested
-    public List<Booking> getMyBookingForPublicMatch(Integer playerId){
-        Player player=playerRepository.findPlayerById(playerId);
-        if(player==null)
-            throw new ApiException("Player Not Found !");
-
-        List<Booking>myBookings=bookingRepository.findBookingsByPlayerInPublicMatch(player);
-        if (myBookings.isEmpty())
-            throw new ApiException("You have no bookings in public matches.");
-
+    // 13. Eatzaz - Get player's public match bookings using JPQL - Tested
+    public List<Booking> getMyBookingForPublicMatch(Integer playerId) {
+        Player player = playerRepository.findPlayerById(playerId);
+        if (player == null) {
+            throw new ApiException("Player not found");
+        }
+        List<Booking> myBookings = bookingRepository.findPublicMatchBookingsByPlayer(player);
+        if (myBookings == null || myBookings.isEmpty()) {
+            throw new ApiException("No public match bookings found for this player");
+        }
         return myBookings;
     }
+
 }
 

@@ -16,18 +16,27 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/card/{privateMatchId}")
-    public ResponseEntity<?> processPayment(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId, @RequestBody Payment paymentRequest) {
-        return ResponseEntity.status(200).body(paymentService.processPayment(2, privateMatchId, paymentRequest));
+    //PLAYER
+    @PostMapping("/pay-private-match/{privateMatchId}")
+    public ResponseEntity<?> privateMatchPayment(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId, @RequestBody Payment paymentRequest) {
+        return ResponseEntity.status(200).body(paymentService.privateMatchPayment(user.getId(), privateMatchId, paymentRequest));
     }
 
-    @GetMapping("/get-status/{privateMatchId}")
-    public ResponseEntity<?> getPaymentStatus(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
-        return ResponseEntity.status(HttpStatus.OK).body(paymentService.getPaymentStatusAndConfirm(2, privateMatchId));
+    //PLAYER
+    @GetMapping("/get-private-match-status/{privateMatchId}")
+    public ResponseEntity<?> privateMatchPaymentStatus(@AuthenticationPrincipal User user, @PathVariable Integer privateMatchId) {
+        return ResponseEntity.status(HttpStatus.OK).body(paymentService.privateMatchPaymentStatus(user.getId(), privateMatchId));
     }
 
-    @PostMapping("/buy/{matchId}")
-    public ResponseEntity<?> PublicMatchPayment(@AuthenticationPrincipal User user, @PathVariable Integer matchId, @RequestBody Payment paymentRequest) {
-        return ResponseEntity.status(200).body(paymentService.PublicMatchPayment(user.getId(), matchId, paymentRequest));
+    //PLAYER
+    @PostMapping("/pay-public-match/{publicMatchId}")
+    public ResponseEntity<?> publicMatchPayment(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId, @RequestBody Payment paymentRequest) {
+        return ResponseEntity.status(200).body(paymentService.publicMatchPayment(user.getId(), publicMatchId, paymentRequest));
+    }
+
+    //PLAYER
+    @GetMapping("/get-public-match-status/{publicMatchId}")
+    public ResponseEntity<?> publicMatchPaymentStatus(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId) {
+        return ResponseEntity.status(HttpStatus.OK).body(paymentService.publicMatchPaymentStatus(user.getId(), publicMatchId));
     }
 }
