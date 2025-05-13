@@ -24,7 +24,7 @@ public class PrivateMatchController {
     }
 
     //ADMIN
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getPrivateMatchById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(privateMatchService.getPrivateMatchById(id));
     }

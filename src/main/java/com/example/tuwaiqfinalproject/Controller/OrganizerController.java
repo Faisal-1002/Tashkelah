@@ -32,7 +32,7 @@ public class OrganizerController {
     }
 
     //ADMIN
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getOrganizerById(@PathVariable Integer id) {
         Organizer organizer = organizerService.getOrganizerById(id);
         return ResponseEntity.status(200).body(organizer);

@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +25,6 @@ public class FieldService {
     private final SportRepository sportRepository;
     private final PlayerRepository playerRepository;
     private final PrivateMatchRepository privateMatchRepository;
-    private final TimeSlotService timeSlotService;
     private final TimeSlotRepository timeSlotRepository;
 
     public List<Field> getAllFields() {
@@ -58,7 +55,7 @@ public class FieldService {
                 photoPath,
                 fieldDTO.getOpen_time(),
                 fieldDTO.getClose_time(),
-                fieldDTO.getCapacity(),
+                sport.getDefault_player_count()*2,
                 fieldDTO.getPrice(),
                 sport,
                 organizer,

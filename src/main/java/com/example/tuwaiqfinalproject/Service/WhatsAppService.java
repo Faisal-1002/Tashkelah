@@ -20,12 +20,12 @@ public class WhatsAppService {
 
     public String sendMessage(String to, String message) {
         String apiUrl = baseUrl + instanceId + "/messages/chat";
-
+        String formattedNumber = to.replaceFirst("^0", "+966");
         try {
             HttpResponse<String> response = Unirest.post(apiUrl)
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .field("token", apiToken)
-                    .field("to", to)
+                    .field("to", formattedNumber)
                     .field("body", message)
                     .asString();
 

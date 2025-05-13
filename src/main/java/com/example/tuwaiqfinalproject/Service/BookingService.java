@@ -151,61 +151,53 @@ public class BookingService {
         privateMatchRepository.save(match);
     }
 
-    // 36. Eatzaz - Public match booking - Need testing
-    public void bookPublicMatch(Integer userId, Integer publicMatchId, List<Integer> slotIds) {
+    // 36. Eatzaz - Public match booking - Final Version
+    public void bookPublicMatch(Integer userId, Integer publicMatchId) {
         Player player = playerRepository.findPlayerById(userId);
         if (player == null)
             throw new ApiException("Player not found");
 
         PublicMatch match = publicMatchRepository.findPublicMatchById(publicMatchId);
         if (match == null)
-            throw new ApiException("Match not found");
+            throw new ApiException("Public match not found");
 
-        // No need to check player.getPublic_match().equals(match) — instead validate membership through booking logic
+        if (player.getPublic_match() == null || !player.getPublic_match().getId().equals(match.getId()))
+            throw new ApiException("You are not assigned to this public match");
 
-        Field field = match.getField();
-        if (field == null)
-            throw new ApiException("No field assigned to this match");
+        Booking existing = bookingRepository.findByPlayerAndPublicMatch(player, match);
+        if (existing != null)
+            throw new ApiException("You already have a booking for this match");
 
-        List<TimeSlot> slots = timeSlotRepository.findAllById(slotIds);
-        if (slots.size() != slotIds.size())
-            throw new ApiException("One or more time slots are invalid");
+        List<TimeSlot> slots = match.getTime_slots();
+        if (slots == null || slots.isEmpty())
+            throw new ApiException("No time slots assigned to this match");
 
         for (TimeSlot slot : slots) {
-            if (!slot.getField().getId().equals(field.getId()))
-                throw new ApiException("Time slot does not belong to the assigned field");
-            if (!"AVAILABLE".equals(slot.getStatus()))
-                throw new ApiException("One or more time slots are already taken");
+            if (!"PENDING".equals(slot.getStatus()))
+                throw new ApiException("One or more slots are already booked");
         }
 
-        // Check if time slots are back-to-back
-        slots.sort(Comparator.comparing(TimeSlot::getStart_time));
-        for (int i = 1; i < slots.size(); i++) {
-            if (!slots.get(i - 1).getEnd_time().equals(slots.get(i).getStart_time())) {
-                throw new ApiException("Time slots must be back-to-back");
-            }
-        }
-
-        // Mark slots as pending
-        for (TimeSlot slot : slots) {
-            slot.setStatus("PENDING");
-        }
-
-        // Calculate total price
         double totalPrice = slots.stream().mapToDouble(TimeSlot::getPrice).sum();
 
-        // Create and save booking
+        // ✅ Calculate total max players from both teams
+        int teamCapacity = match.getTeams().stream()
+                .mapToInt(Team::getMax_players_count)
+                .sum();
+
+        if (teamCapacity == 0)
+            throw new ApiException("Invalid team capacity for price division");
+
+        double perPlayerPrice = totalPrice / (double) teamCapacity;
+
         Booking booking = new Booking();
         booking.setPlayer(player);
         booking.setPublic_match(match);
         booking.setBooking_time(LocalDateTime.now());
         booking.setStatus("PENDING");
         booking.setIs_paid(false);
-        booking.setTotal_amount(totalPrice);
+        booking.setTotal_amount(perPlayerPrice);
 
         bookingRepository.save(booking);
-        timeSlotRepository.saveAll(slots);
-        publicMatchRepository.save(match);
     }
 
     // 13. Eatzaz - Get player's public match bookings using JPQL - Tested

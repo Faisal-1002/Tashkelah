@@ -25,6 +25,7 @@ public class PaymentService {
     private final PublicMatchRepository publicMatchRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final WhatsAppService whatsAppService;
 
     @Value("${moyasar.api.key}")
     private String apiKey;
@@ -144,6 +145,20 @@ public class PaymentService {
                     }
                 }
                 timeSlotRepository.saveAll(slots);
+
+                String body = "Hi " + player.getUser().getName() + ",\n"
+                        + "Your booking has been confirmed! 🎉\n\n"
+                        + "Match Details:\n"
+                        + "🏟️ Field: " + match.getField().getName() + "\n"
+                        + "📍 Location: " + match.getField().getAddress() + "\n"
+                        + "📅 Date: " + match.getTime_slots().get(0).getDate() + "\n"
+                        + "⏰ Time: " + match.getTime_slots().get(0).getStart_time() + " – "
+                        + match.getTime_slots().get(match.getTime_slots().size() - 1).getEnd_time() + "\n\n"
+                        + "Thank you for booking with us. Good luck and enjoy the match! ⚽\n\n"
+                        + "- Sports Booking Team";
+
+                whatsAppService.sendMessage(player.getUser().getPhone(), body);
+
             }
 
             return response.getBody();

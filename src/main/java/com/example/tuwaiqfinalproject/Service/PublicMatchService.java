@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -259,7 +258,7 @@ public class PublicMatchService {
                 "Field: " + match.getField().getName() + "\n" +
                 "Location: " + match.getField().getAddress() + "\n\n" +
                 "Thank you for playing with us!\n\n" +
-                "- Sports Booking Team";
+                "- Tashkelah Team";
         emailsService.sendEmail(to, subject, body);
 
         // 2️⃣ Trigger status update if match is full
@@ -345,6 +344,6 @@ public class PublicMatchService {
         timeSlotRepository.saveAll(slots);
 
         // Create empty teams for players to join
-        teamService.addTeamsForPublicMatch(userId, match.getId());
+        //teamService.addTeamsForPublicMatch(userId, match.getId());
     }
 }

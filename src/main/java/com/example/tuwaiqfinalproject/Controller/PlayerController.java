@@ -31,7 +31,7 @@ public class PlayerController {
     }
 
     //ADMIN
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getPlayerById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(playerService.getPlayerById(id));
     }
