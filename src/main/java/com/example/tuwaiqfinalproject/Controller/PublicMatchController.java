@@ -53,8 +53,8 @@ public class PublicMatchController {
 
     //ORGANIZER
     @GetMapping("/field/{fieldId}/matches")
-    public ResponseEntity<?> getMatches(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
-        return ResponseEntity.status(200).body(publicMatchService.showFieldMatches(fieldId, user.getId()));
+    public ResponseEntity<?> getMatchesForOneField(@AuthenticationPrincipal User user, @PathVariable Integer fieldId) {
+        return ResponseEntity.status(200).body(publicMatchService.getMatchesForOneField(fieldId, user.getId()));
     }
 
     //PLAYER

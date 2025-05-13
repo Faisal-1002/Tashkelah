@@ -36,6 +36,10 @@ public class FieldService {
         return fieldRepository.findFieldById(id);
     }
 
+
+
+
+
     // 10. Taha - Public method to allow an approved organizer to add a new field with an image - Tested
     public void addField(Integer organizerId, Integer sportId, FieldDTO fieldDTO, MultipartFile photoFile) {
         Organizer organizer = organizerRepository.findOrganizerById(organizerId);
@@ -89,7 +93,7 @@ public class FieldService {
                 Files.createDirectories(uploadsPath);
             }
 
-            // Generate a unique file name using UUID to prevent naming conflicts
+            // Generate a unique file name using UUID
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
             // Define the full path where the file will be saved
