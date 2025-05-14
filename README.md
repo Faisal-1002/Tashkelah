@@ -37,18 +37,18 @@ Tashkelah is a community-driven sports booking platform built as a final project
 ## 📊 Architecture Diagrams
 
 ### 🔷 Class Diagram
-![Class Diagram](https://github.com/user-attachments/assets/34b72330-2fcf-44b2-9601-23ca824e6516)
+> ![Class Diagram](https://github.com/user-attachments/assets/34b72330-2fcf-44b2-9601-23ca824e6516)
 
 
 ### 🔶 Use Case Diagram
-![Use Case Diagram](https://github.com/user-attachments/assets/0168a0d9-2f14-474a-a440-01b87839c040)
+> ![Use Case Diagram](https://github.com/user-attachments/assets/28508414-0733-4256-9e8c-9f1bf774dceb)
 
 
 ---
 
 ## 📬 API Documentation
 
-[Postman Documentation](https://documenter.getpostman.com/view/42844638/2sB2qUmPwG)
+- 🔗 [Postman Documentation](https://documenter.getpostman.com/view/42844638/2sB2qUmPwG)
 - Base URL: `http://tuwaiq-app-env.eba-9nhuvpa3.eu-central-1.elasticbeanstalk.com`
 
 ---
