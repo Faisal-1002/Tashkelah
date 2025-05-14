@@ -30,9 +30,9 @@ Tashkelah is a community-driven sports booking platform built as a final project
 - RESTful APIs
 - Lombok
 - Maven
-- Moyasar API (payment gateway)
-- JavaMailSender (email)
-- WhatsApp API (Twilio or custom)
+- Moyasar API (Payment Gateway)
+- JavaMailSender
+- WhatsApp API (Ultramsg)
 
 ## 📊 Architecture Diagrams
 
