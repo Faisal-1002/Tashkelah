@@ -55,6 +55,9 @@ public class OrganizerService {
 
         authRepository.save(user);
         organizerRepository.save(organizer);
+//        System.out.println("Role: " + user.getRole());
+//        System.out.println("Authorities: " + user.getAuthorities());
+
     }
 
     public void updateOrganizer(Integer organizerId, OrganizerDTO dto) {

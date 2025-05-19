@@ -37,12 +37,12 @@ public class FieldService {
     }
 
     // 10. Taha - Public method to allow an approved organizer to add a new field with an image - Tested
-    public void addField(Integer organizerId, Integer sportId, FieldDTO fieldDTO, MultipartFile photoFile) {
-        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
-        if (organizer == null)
-            throw new ApiException("Organizer not found");
-        if (!organizer.getStatus().equals("ACTIVE"))
-            throw new ApiException("Your account is not yet approved");
+    public void addField(Integer sportId, FieldDTO fieldDTO, MultipartFile photoFile) {
+//        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+//        if (organizer == null)
+//            throw new ApiException("Organizer not found");
+//        if (!organizer.getStatus().equals("ACTIVE"))
+//            throw new ApiException("Your account is not yet approved");
         Sport sport = sportRepository.findSportById(sportId);
         if (sport == null)
             throw new ApiException("Sport not found");
@@ -58,7 +58,8 @@ public class FieldService {
                 sport.getDefault_player_count()*2,
                 fieldDTO.getPrice(),
                 sport,
-                organizer,
+                null,
+                null,
                 null,
                 null,
                 null

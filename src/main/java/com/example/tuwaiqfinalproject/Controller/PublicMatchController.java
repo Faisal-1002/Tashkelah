@@ -76,20 +76,6 @@ public class PublicMatchController {
         return ResponseEntity.status(200).body(publicMatchService.getPlayerMatchSelection(user.getId(),publicMatchId,teamId));
     }
 
-    //AUTO
-    @GetMapping("/notifications/{bookingId}")
-    public ResponseEntity<?> notifications(@AuthenticationPrincipal User user, @PathVariable Integer bookingId){
-        publicMatchService.notifications(user.getId(),bookingId);
-        return ResponseEntity.status(200).body(new ApiResponse("Booking successful, waiting for more players"));
-    }
-
-    //AUTO
-    @PutMapping("/changeStatus/{publicMatchId}")
-    public ResponseEntity<?> changeStatusAfterCompleted(@AuthenticationPrincipal User user, @PathVariable Integer publicMatchId){
-        publicMatchService.changeStatusAfterCompleted(user.getId(), publicMatchId);
-        return ResponseEntity.status(200).body(new ApiResponse("The number has been completed."));
-    }
-
     //ORGANIZER
     @PostMapping("/matches/{fieldId}")
     public ResponseEntity<?> createPublicMatch(@AuthenticationPrincipal User user, @PathVariable Integer fieldId, @RequestBody List<Integer> slotIds) {

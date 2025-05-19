@@ -23,6 +23,7 @@ public class Organizer {
 
     @OneToOne
     @MapsId
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)

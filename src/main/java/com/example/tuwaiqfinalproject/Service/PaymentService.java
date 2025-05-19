@@ -20,12 +20,14 @@ import java.util.List;
 public class PaymentService {
 
     private final PlayerRepository playerRepository;
+    private final OrganizerRepository organizerRepository;
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
     private final PublicMatchRepository publicMatchRepository;
     private final PrivateMatchRepository privateMatchRepository;
     private final TimeSlotRepository timeSlotRepository;
     private final WhatsAppService whatsAppService;
+    private final EmailsService emailsService;
 
     @Value("${moyasar.api.key}")
     private String apiKey;
@@ -225,6 +227,7 @@ public class PaymentService {
         paymentRequest.setPayment_date(LocalDateTime.now());
         paymentRepository.save(paymentRequest);
 
+        notifications(player.getId(),booking.getId());
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
@@ -287,6 +290,66 @@ public class PaymentService {
             throw new ApiException("Failed to parse Moyasar response");
         }
     }
+    // 33. Eatzaz - Notification that the payment process has been completed - Tested
+    public void notifications(Integer playerId, Integer bookingId) {
+        Player player = playerRepository.findPlayerById(playerId);
+        if (player == null) {
+            throw new ApiException("Player not found");
+        }
 
+        Booking booking = bookingRepository.findBookingById(bookingId);
+        if (booking == null) {
+            throw new ApiException("Booking not found");
+        }
+
+        PublicMatch match = booking.getPublic_match();
+        if (!match.equals(player.getPublic_match()) || !Boolean.TRUE.equals(booking.getIs_paid())) {
+            throw new ApiException("Invalid booking or payment not completed");
+        }
+        // 1️⃣ Send Email
+        String to = player.getUser().getEmail();
+        String subject = "Booking Confirmed!";
+        String body = "Hello " + player.getUser().getName() + ",\n\n" +
+                "Your booking has been confirmed for the public match at:\n" +
+                "Field: " + match.getField().getName() + "\n" +
+                "Location: " + match.getField().getAddress() + "\n\n" +
+                "Thank you for playing with us!\n\n" +
+                "- Tashkelah Team";
+        emailsService.sendEmail(to, subject, body);
+
+        // 2️⃣ Trigger status update if match is full
+        Integer organizerId = match.getField().getOrganizer().getId();
+        changeStatusAfterCompleted(organizerId, match.getId());
+    }
+
+    // 34. Eatzaz - Change the match status after the number is complete - Tested
+    public void changeStatusAfterCompleted(Integer organizerId, Integer publicMatchId) {
+        Organizer organizer = organizerRepository.findOrganizerById(organizerId);
+        if (organizer == null) {
+            throw new ApiException("Organizer not found");
+        }
+
+        PublicMatch publicMatch = publicMatchRepository.findPublicMatchById(publicMatchId);
+        if (publicMatch == null) {
+            throw new ApiException("Public Match Not Found");
+        }
+
+        if (!publicMatch.getField().getOrganizer().getId().equals(organizer.getId())) {
+            throw new ApiException("Unauthorized: This match does not belong to your fields");
+        }
+
+        List<Team> teams = publicMatch.getTeams();
+        int numberPlayer = teams.stream().mapToInt(Team::getPlayersCount).sum();
+        int fieldCapacity = publicMatch.getField().getCapacity();
+
+        if (numberPlayer >= fieldCapacity) {
+            publicMatch.setStatus("FULL");
+            publicMatchRepository.save(publicMatch);
+            String body = "Dear " + organizer.getUser().getName() + ",\n\n"
+                    + "The public match at your field '" + publicMatch.getField().getName() + "' is now FULL.\n"
+                    + "Consider creating another match to accommodate more players.\n\nRegards.";
+            whatsAppService.sendMessage(organizer.getUser().getPhone(), body);
+        }
+    }
 
 }

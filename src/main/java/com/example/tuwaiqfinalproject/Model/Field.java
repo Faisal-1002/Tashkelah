@@ -60,4 +60,7 @@ public class Field {
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<TimeSlot> time_slots;
 
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "field")
+    private List<Review> reviews;
+
 }
