@@ -1,4 +1,6 @@
-![Logo](https://github.com/user-attachments/assets/183a3d07-731c-4009-8432-33424ae85cf5)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/183a3d07-731c-4009-8432-33424ae85cf5" alt="Hajz Logo" width="200"/>
+</p>
 
 # Tashkelah ⚽
 
