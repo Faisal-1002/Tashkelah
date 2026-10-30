@@ -87,13 +87,3 @@ Tashkelah is a community-driven sports booking platform built as a final project
 | 62 | Get my private matches                      | Faisal  |
 | 63 | Scheduled slot creation                     | Faisal  |
 | 64 | Get my public matches                       | Faisal  |
-
----
-
-<h3 align="center">🔗 Connect with me</h3>
-
-<p align="center">
-  <a href="https://www.linkedin.com/in/-faisal-al-ghamdi/" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Badge"/>
-  </a>
-</p>
